@@ -357,3 +357,21 @@
     display: none;
   }
 }
+
+// 添加标签样式
+.upload-file-tag {
+  height: 24px !important;
+  padding: 0 6px !important;
+  font-size: 14px !important;
+}
+.button-new-tag {
+  color: var(--app-input-color-placeholder);
+  border: 1px dashed var(--el-button-border-color);
+  padding: 5px 6px !important;
+  font-size: 14px !important;
+  &:hover {
+    background: var(--app-layout-bg-color);
+    color: var(--app-input-color-placeholder);
+    border: 1px dashed var(--el-button-border-color);
+  }
+}

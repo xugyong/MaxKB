@@ -39,14 +39,11 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 .tag-group {
-  :deep(.el-tag__content) {
-    width: 100%;
-  }
   /* tag超出省略号 */
   .tag-ellipsis {
     box-sizing: border-box;
     max-width: 130px;
-    .el-tag__content {
+    :deep(.el-tag__content) {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;

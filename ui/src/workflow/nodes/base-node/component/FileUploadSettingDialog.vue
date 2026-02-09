@@ -179,7 +179,7 @@
                         }}
                       </el-text>
                     </p>
-                    <el-space wrap :size="2" class="mt-4">
+                    <el-space wrap :size="6" class="mt-4">
                       <el-tag
                         v-for="tag in form_data.otherExtensions"
                         :key="tag"
@@ -187,12 +187,8 @@
                         :disable-transitions="false"
                         @close="handleClose(tag)"
                         type="info"
-                        class="mr-4"
                         effect="plain"
-                        style="
-                          --el-tag-border-radius: 4px;
-                          --el-tag-border-color: var(--el-border-color);
-                        "
+                        class="upload-file-tag"
                       >
                         {{ tag }}
                       </el-tag>
@@ -203,9 +199,13 @@
                         size="small"
                         @keyup.enter="handleInputConfirm"
                         @blur="handleInputConfirm"
+                        :style="{
+                          '--el-input-border-radius': '4px',
+                        }"
                       />
                       <el-button v-else class="button-new-tag" size="small" @click.stop="showInput">
-                        + {{ $t('common.fileUpload.addExtensions') }}
+                        <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
+                        {{ $t('common.fileUpload.addExtensions') }}
                       </el-button>
                     </el-space>
                   </div>

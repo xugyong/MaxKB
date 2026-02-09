@@ -168,7 +168,6 @@
               <template #reference>
                 <TagGroup
                   class="cursor"
-                  style="width: fit-content"
                   :tags="row.role_name"
                   tooltipDisabled
                 />
