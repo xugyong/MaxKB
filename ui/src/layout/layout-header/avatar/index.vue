@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown trigger="click" type="primary">
+  <el-dropdown trigger="click" placement="bottom-end">
     <div class="flex-center cursor">
       <el-avatar :size="30">
         <img src="@/assets/user-icon.svg" style="width: 54%" alt="" />

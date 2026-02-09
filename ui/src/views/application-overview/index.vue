@@ -1,8 +1,8 @@
 <template>
-  <div class="p-16-24">
-    <h2 class="mb-16">{{ $t('views.applicationOverview.title') }}</h2>
+  <div class="p-16">
+    <h2 class="mb-16 ml-8">{{ $t('views.applicationOverview.title') }}</h2>
     <el-scrollbar>
-      <div class="main-calc-height">
+      <div class="main-calc-height p-8 pt-0">
         <el-card style="--el-card-padding: 24px">
           <h4 class="title-decoration-1 mb-16">
             {{ $t('common.info') }}
@@ -173,6 +173,7 @@
             />
           </div>
         </el-card>
+        <br />
       </div>
     </el-scrollbar>
 
