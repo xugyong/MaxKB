@@ -1,5 +1,5 @@
 <template>
-  <div class="item-content mb-16 lighter">
+  <div class="item-content lighter">
     <template v-for="(answer_text, index) in answer_text_list" :key="index">
       <div class="avatar mr-8" v-if="showAvatar">
         <img v-if="application.avatar" :src="application.avatar" height="28px" width="28px" />
@@ -12,7 +12,7 @@
           'padding-right': showUserAvatar ? 'var(--padding-left)' : '0',
         }"
       >
-        <el-card shadow="always" class="mb-8 border-r-8" style="--el-card-padding: 6px 16px">
+        <el-card shadow="always" class="border-r-8" style="--el-card-padding: 6px 16px">
           <MdRenderer
             v-if="
               (chatRecord.write_ed === undefined || chatRecord.write_ed === true) &&
@@ -60,6 +60,7 @@
         'padding-left': showAvatar ? 'var(--padding-left)' : '0',
         'padding-right': showUserAvatar ? 'var(--padding-left)' : '0',
       }"
+      v-if="!selection"
     >
       <OperationButton
         :type="type"
@@ -88,8 +89,9 @@ const props = defineProps<{
   loading: boolean
   sendMessage: (question: string, other_params_data?: any, chat?: chatType) => Promise<boolean>
   chatManagement: any
-  type: 'log' | 'ai-chat' | 'debug-ai-chat'
+  type: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
   executionIsRightPanel?: boolean
+  selection?: boolean
 }>()
 
 const emit = defineEmits([
