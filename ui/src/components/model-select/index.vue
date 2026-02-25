@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <el-select v-model="modelValue" popper-class="select-model" :clearable="true" v-bind="$attrs">
+    <el-select v-model="modelValue" popper-class="select-model" :clearable="true" filterable v-bind="$attrs">
       <el-option-group
         v-for="(value, label) in options"
         :key="value"
