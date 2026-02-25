@@ -93,7 +93,12 @@
           <template #header>
             <div>
               <span>{{ $t('views.workspace.title') }}</span>
-              <el-popover :width="200" trigger="click" :visible="workspaceVisible">
+              <el-popover
+                :width="200"
+                trigger="click"
+                :visible="workspaceVisible"
+                :persistent="false"
+              >
                 <template #reference>
                   <el-button
                     style="margin-top: -2px"

@@ -7,6 +7,7 @@
       placement="bottom"
       :disabled="tooltipDisabled"
       :popper-style="{ width: 'auto', maxWidth: '300px' }"
+      :persistent="false"
     >
       <template #reference>
         <el-tag :size="props.size" class="info-tag ml-4 cursor" v-if="props.tags?.length > 1">

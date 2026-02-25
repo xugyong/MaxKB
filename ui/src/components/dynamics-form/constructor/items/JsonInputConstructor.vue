@@ -8,13 +8,14 @@
 
     <el-row style="width: 100%" :gutter="10">
       <el-radio-group v-model="formValue.default_value_assignment_method">
-        <el-radio :value="item.value" size="large" v-for="item in assignment_method_option_list"
+        <el-radio :value="item.value" size="large" v-for="(item,index) in assignment_method_option_list" :key="index"
           >{{ item.label }}
           <el-popover
             width="300px"
             v-if="item.value == 'ref_variables'"
             class="box-item"
             placement="top-start"
+            :persistent="false"
           >
             {{ $t('dynamicsForm.AssignmentMethod.ref_variables.popover') }}:
             {{ $t('dynamicsForm.AssignmentMethod.ref_variables.json_format') }}

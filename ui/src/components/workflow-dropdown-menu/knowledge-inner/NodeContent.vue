@@ -14,6 +14,7 @@
         placement="right"
         :width="280"
         :show-after="500"
+        :persistent="false"
       >
         <template #reference>
           <div

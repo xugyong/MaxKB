@@ -95,7 +95,13 @@
     />
 
     <div class="hit-test__operate">
-      <el-popover :visible="popoverVisible" placement="right-end" :width="500" trigger="click">
+      <el-popover
+        :visible="popoverVisible"
+        placement="right-end"
+        :width="500"
+        trigger="click"
+        :persistent="false"
+      >
         <template #reference>
           <el-button
             class="mb-8"

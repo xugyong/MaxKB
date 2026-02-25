@@ -70,6 +70,7 @@
           placement="bottom-start"
           :width="360"
           popper-class="vote-popover"
+          :persistent="false"
           v-if="buttonData?.vote_status === '-1' && mode !== 'mobile'"
         >
           <template #reference>
@@ -118,6 +119,7 @@
           placement="bottom-start"
           :width="360"
           popper-class="vote-popover"
+          :persistent="false"
           v-if="buttonData?.vote_status === '-1' && mode !== 'mobile'"
         >
           <template #reference>

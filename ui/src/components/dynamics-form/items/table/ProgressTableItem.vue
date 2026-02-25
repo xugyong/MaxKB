@@ -1,6 +1,12 @@
 <template>
   <div class="progress-table-item">
-    <el-popover placement="top-start" :title="row[text_field]" :width="200" trigger="hover">
+    <el-popover
+      placement="top-start"
+      :title="row[text_field]"
+      :width="200"
+      trigger="hover"
+      :persistent="false"
+    >
       <template #reference>
         <el-progress v-bind="$attrs" :percentage="row[value_field]"></el-progress
       ></template>

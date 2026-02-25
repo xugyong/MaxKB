@@ -168,6 +168,7 @@
                 <el-popover
                   placement="top-start"
                   :popper-style="{ width: 'auto', maxWidth: '300px' }"
+                  :persistent="false"
                 >
                   <template #reference>
                     <div class="flex">

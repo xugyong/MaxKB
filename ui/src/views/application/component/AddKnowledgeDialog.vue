@@ -59,14 +59,56 @@
                 :key="index"
                 class="mb-16"
               >
-                <CardCheckbox
-                  value-field="id"
-                  :data="item"
-                  v-model="checkList"
-                  @change="changeHandle"
+                <el-popover
+                  placement="bottom-start"
+                  :width="350"
+                  popper-style="--el-popover-border-radius:8px;--el-popover-padding:16px 16px 0"
+                  :persistent="false"
                 >
-                  <span class="ellipsis cursor ml-12" :title="item.name"> {{ item.name }}</span>
-                </CardCheckbox>
+                  <template #reference>
+                    <CardCheckbox
+                      value-field="id"
+                      :data="item"
+                      v-model="checkList"
+                      @change="changeHandle"
+                    >
+                      <span class="ellipsis cursor ml-12" :title="item.name"> {{ item.name }}</span>
+                    </CardCheckbox>
+                  </template>
+                  <template #default>
+                    <CardBox
+                      :title="item.name"
+                      :description="item.desc"
+                      class="cursor border-none popover-card-box"
+                      shadow="never"
+                      style="--el-card-padding: 0px; --card-min-height: 148px"
+                    >
+                      <template #icon>
+                        <KnowledgeIcon :type="item.type" />
+                      </template>
+                      <template #subTitle>
+                        <el-text class="color-secondary lighter" size="small">
+                          {{ $t('common.creator') }}: {{ i18n_name(item.nick_name) }}
+                        </el-text>
+                      </template>
+                      <template #footer>
+                        <div class="footer-content flex-between">
+                          <div>
+                            <span class="bold mr-4">{{ item?.document_count || 0 }}</span>
+                            <span class="color-secondary">{{
+                              $t('views.knowledge.document_count')
+                            }}</span>
+                            <el-divider direction="vertical" />
+                            <span class="bold mr-4">{{
+                              numberFormat(item?.char_length) || 0
+                            }}</span>
+                            <span class="color-secondary">{{ $t('common.character') }}</span>
+                          </div>
+                        </div>
+                      </template>
+                    </CardBox>
+                  </template>
+                </el-popover>
               </el-col>
             </el-row>
             <el-empty :description="$t('common.noData')" v-else />
@@ -103,6 +145,7 @@ import { useRoute } from 'vue-router'
 import useStore from '@/stores'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
 import { uniqueArray } from '@/utils/array'
+import { numberFormat, i18n_name } from '@/utils/common'
 const route = useRoute()
 const props = defineProps({
   data: {
@@ -212,7 +255,7 @@ function folderClickHandle(row: any) {
 
 function getFolder() {
   const params = {}
-  folder.asyncGetFolder('KNOWLEDGE', params,apiType.value, folderLoading).then((res: any) => {
+  folder.asyncGetFolder('KNOWLEDGE', params, apiType.value, folderLoading).then((res: any) => {
     folderList.value = res.data
     currentFolder.value = res.data?.[0] || {}
     getList()

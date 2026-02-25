@@ -164,13 +164,9 @@
           v-if="user.isEE() || user.isPE()"
         >
           <template #default="{ row }">
-            <el-popover :width="500">
+            <el-popover :width="500" :persistent="false">
               <template #reference>
-                <TagGroup
-                  class="cursor"
-                  :tags="row.role_name"
-                  tooltipDisabled
-                />
+                <TagGroup class="cursor" :tags="row.role_name" tooltipDisabled />
               </template>
               <template #default>
                 <el-table

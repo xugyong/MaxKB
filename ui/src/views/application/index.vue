@@ -325,29 +325,27 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, reactive, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import CreateApplicationDialog from '@/views/application/component/CreateApplicationDialog.vue'
 import CreateFolderDialog from '@/components/folder-tree/CreateFolderDialog.vue'
 import CopyApplicationDialog from '@/views/application/component/CopyApplicationDialog.vue'
 import MoveToDialog from '@/components/folder-tree/MoveToDialog.vue'
 import ResourceAuthorizationDrawer from '@/components/resource-authorization-drawer/index.vue'
 import ResourceTriggerDrawer from '@/views/trigger/ResourceTriggerDrawer.vue'
+import TemplateStoreDialog from '@/views/application/template-store/TemplateStoreDialog.vue'
 import ApplicationApi from '@/api/application/application'
+import WorkspaceApi from '@/api/workspace/workspace'
 import { MsgSuccess, MsgConfirm, MsgError } from '@/utils/message'
-import useStore from '@/stores'
-import { t } from '@/locales'
-import { i18n_name } from '@/utils/common'
-import { useRouter, useRoute } from 'vue-router'
+import { i18n_name, resetUrl } from '@/utils/common'
 import { isWorkFlow } from '@/utils/application'
-import { resetUrl } from '@/utils/common'
 import { dateFormat } from '@/utils/time'
 import { SourceTypeEnum } from '@/enums/common'
 import permissionMap from '@/permission'
-import WorkspaceApi from '@/api/workspace/workspace'
 import { hasPermission } from '@/utils/permission'
 import { ComplexPermission } from '@/utils/permission/type'
 import { EditionConst, PermissionConst, RoleConst } from '@/utils/permission/data'
-import TemplateStoreDialog from '@/views/application/template-store/TemplateStoreDialog.vue'
-
+import useStore from '@/stores'
+import { t } from '@/locales'
 const router = useRouter()
 
 const apiType = computed<'workspace'>(() => {

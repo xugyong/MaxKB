@@ -14,6 +14,7 @@
         placement="right"
         :width="280"
         :show-after="500"
+        :persistent="false"
       >
         <template #reference>
           <div
@@ -99,6 +100,4 @@ watch([() => filterText.value, () => props.list], () => {
 })
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

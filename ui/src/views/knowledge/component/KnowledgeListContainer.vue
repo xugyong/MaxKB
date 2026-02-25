@@ -171,7 +171,7 @@
                 </template>
                 <template #tag>
                   <el-tag v-if="isShared || isSystemShare" type="info" class="info-tag">
-                    {{ t('views.shared.title') }}
+                    {{ $t('views.shared.title') }}
                   </el-tag>
                 </template>
                 <template #footer>
@@ -248,7 +248,7 @@
                               iconName="app-resource-mapping"
                               class="color-secondary"
                             ></AppIcon>
-                            {{ $t('views.system.resourceMapping.title')}}
+                            {{ $t('views.system.resourceMapping.title') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             @click.stop="openMoveToDialog(item)"
@@ -342,16 +342,15 @@ import MoveToDialog from '@/components/folder-tree/MoveToDialog.vue'
 import GenerateRelatedDialog from '@/components/generate-related-dialog/index.vue'
 import AuthorizedWorkspace from '@/views/system-shared/AuthorizedWorkspaceDialog.vue'
 import ResourceAuthorizationDrawer from '@/components/resource-authorization-drawer/index.vue'
+import TemplateStoreDialog from '@/views/knowledge/template-store/TemplateStoreDialog.vue'
+import ResourceMappingDrawer from '@/components/resource_mapping/index.vue'
 import { MsgSuccess, MsgConfirm } from '@/utils/message'
-import useStore from '@/stores'
-import { numberFormat } from '@/utils/common'
-import { t } from '@/locales'
-import { i18n_name } from '@/utils/common'
+import { numberFormat, i18n_name } from '@/utils/common'
 import { SourceTypeEnum } from '@/enums/common'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
 import permissionMap from '@/permission'
-import TemplateStoreDialog from '@/views/knowledge/template-store/TemplateStoreDialog.vue'
-import ResourceMappingDrawer from '@/components/resource_mapping/index.vue'
+import useStore from '@/stores'
+import { t } from '@/locales'
 const resourceMappingDrawerRef = ref<InstanceType<typeof ResourceMappingDrawer>>()
 
 const openResourceMappingDrawer = (knowledge: any) => {
@@ -495,7 +494,9 @@ const exportZipKnowledge = (item: any) => {
 function deleteKnowledge(row: any) {
   MsgConfirm(
     `${t('views.knowledge.delete.confirmTitle')}${row.name} ?`,
-    row.resource_count > 0 ? t('views.knowledge.delete.resourceCountMessage', row.resource_count) : '',
+    row.resource_count > 0
+      ? t('views.knowledge.delete.resourceCountMessage', row.resource_count)
+      : '',
     {
       confirmButtonText: t('common.confirm'),
       confirmButtonClass: 'danger',

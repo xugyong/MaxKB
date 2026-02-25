@@ -5,11 +5,7 @@
       <div class="p-24">
         <div class="flex-between">
           <div>
-            <el-select
-              v-model="history_day"
-              class="mr-12 w-180"
-              @change="changeDayHandle"
-            >
+            <el-select v-model="history_day" class="mr-12 w-180" @change="changeDayHandle">
               <el-option
                 v-for="item in dayOptions"
                 :key="item.value"
@@ -110,7 +106,12 @@
             <template #header>
               <div>
                 <span>{{ $t('views.operateLog.table.menu') }}</span>
-                <el-popover :width="200" trigger="click" :visible="popoverVisible">
+                <el-popover
+                  :width="200"
+                  trigger="click"
+                  :visible="popoverVisible"
+                  :persistent="false"
+                >
                   <template #reference>
                     <el-button
                       style="margin-top: -2px"
@@ -182,7 +183,12 @@
             <template #header>
               <div>
                 <span>{{ $t('views.workspace.title') }}</span>
-                <el-popover :width="200" trigger="click" :visible="workspaceVisible">
+                <el-popover
+                  :width="200"
+                  trigger="click"
+                  :visible="workspaceVisible"
+                  :persistent="false"
+                >
                   <template #reference>
                     <el-button
                       style="margin-top: -2px"

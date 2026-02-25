@@ -13,7 +13,6 @@
             @change="search_type_change"
           >
             <el-option :label="$t('common.creator')" value="create_user" />
-
             <el-option :label="$t('common.name')" value="name" />
           </el-select>
           <el-input
@@ -136,33 +135,6 @@
       >
         <el-row v-if="tool.toolList.length > 0" :gutter="15" class="w-full">
           <template v-for="(item, index) in tool.toolList" :key="index">
-            <!-- <el-col
-              v-if="item.resource_type === 'folder'"
-              :xs="24"
-              :sm="12"
-              :md="12"
-              :lg="8"
-              :xl="6"
-              class="mb-16"
-            >
-              <CardBox
-                :title="item.name"
-                :description="item.desc || $t('components.noDesc')"
-                class="cursor"
-                @click="clickFolder(item)"
-              >
-                <template #icon>
-                  <el-avatar shape="square" :size="32" style="background: none">
-                    <AppIcon iconName="app-folder" style="font-size: 32px"></AppIcon>
-                  </el-avatar>
-                </template>
-                <template #subTitle>
-                  <el-text class="color-secondary lighter" size="small">
-                    {{ $t('common.creator') }}: {{ i18n_name(item.nick_name) }}
-                  </el-text>
-                </template>
-              </CardBox>
-            </el-col> -->
             <el-col :xs="24" :sm="12" :md="12" :lg="8" :xl="6" class="mb-16">
               <CardBox
                 :title="item.name"
@@ -420,20 +392,19 @@ import MoveToDialog from '@/components/folder-tree/MoveToDialog.vue'
 import ResourceAuthorizationDrawer from '@/components/resource-authorization-drawer/index.vue'
 import McpToolConfigDialog from '@/views/tool/component/McpToolConfigDialog.vue'
 import ResourceTriggerDrawer from '@/views/trigger/ResourceTriggerDrawer.vue'
-import { resetUrl } from '@/utils/common'
+import ToolStoreDescDrawer from '@/views/tool/component/ToolStoreDescDrawer.vue'
+import ResourceMappingDrawer from '@/components/resource_mapping/index.vue'
+import ToolRecordDrawer from '@/views/tool/execution-record/TriggerRecordDrawer.vue'
+import ToolStoreApi from '@/api/tool/store.ts'
+import { resetUrl, i18n_name } from '@/utils/common'
 import { MsgSuccess, MsgConfirm, MsgError } from '@/utils/message'
 import { SourceTypeEnum } from '@/enums/common'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
 import permissionMap from '@/permission'
 import useStore from '@/stores'
 import { t } from '@/locales'
-import { i18n_name } from '@/utils/common'
-import ToolStoreApi from '@/api/tool/store.ts'
-import ToolStoreDescDrawer from '@/views/tool/component/ToolStoreDescDrawer.vue'
 
 import bus from '@/bus'
-import ResourceMappingDrawer from '@/components/resource_mapping/index.vue'
-import ToolRecordDrawer from '@/views/tool/execution-record/TriggerRecordDrawer.vue'
 
 const route = useRoute()
 

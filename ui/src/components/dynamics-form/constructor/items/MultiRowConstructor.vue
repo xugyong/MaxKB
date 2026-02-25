@@ -8,13 +8,14 @@
 
     <el-row style="width: 100%" :gutter="10">
       <el-radio-group @change="formValue.option_list = []" v-model="formValue.assignment_method">
-        <el-radio :value="item.value" size="large" v-for="item in assignment_method_option_list"
+        <el-radio :value="item.value" size="large" v-for="(item,index) in assignment_method_option_list" :key="index"
           >{{ item.label }}
           <el-popover
             width="300px"
             v-if="item.value == 'ref_variables'"
             class="box-item"
             placement="top-start"
+            :persistent="false"
           >
             {{ $t('dynamicsForm.AssignmentMethod.ref_variables.popover') }}:<br />
             [<br />
@@ -177,9 +178,7 @@ const default_ref_variables_value_rule = {
   validator: (rule: any, value: any, callback: any) => {
     console.log(value.length)
     if (!(Array.isArray(value) && value.length > 1)) {
-      callback(
-        t('workflow.variable.Referencing') + t('common.required'),
-      )
+      callback(t('workflow.variable.Referencing') + t('common.required'))
     }
 
     return true
@@ -237,5 +236,4 @@ onMounted(() => {
     top: -35px;
   }
 }
-
 </style>

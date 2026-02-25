@@ -375,3 +375,14 @@
     border: 1px dashed var(--el-button-border-color);
   }
 }
+
+// card-box 在popover中的样式
+.popover-card-box {
+  .card-footer {
+    padding: 0 !important;
+  }
+  .status-tag {
+    top: 0!important;
+    right: 0!important;
+  }
+}

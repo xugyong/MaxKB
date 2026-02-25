@@ -94,7 +94,6 @@
       :maxTableHeight="200"
       :row-key="(row: any) => row.id"
       v-loading="loading"
-
     >
       <el-table-column prop="name" :label="$t('common.name')" min-width="130" show-overflow-tooltip>
         <template #default="{ row }">
@@ -151,7 +150,12 @@
         <template #header>
           <div>
             <span>{{ $t('views.workspace.title') }}</span>
-            <el-popover :width="200" trigger="click" :visible="workspaceVisible">
+            <el-popover
+              :width="200"
+              trigger="click"
+              :visible="workspaceVisible"
+              :persistent="false"
+            >
               <template #reference>
                 <el-button
                   style="margin-top: -2px"

@@ -51,26 +51,87 @@
           <div class="p-16-24 pt-0" style="height: calc(100vh - 200px)">
             <el-row :gutter="12" v-loading="apiLoading" v-if="searchData.length">
               <el-col :span="12" v-for="(item, index) in searchData" :key="index" class="mb-16">
-                <CardCheckbox
-                  value-field="id"
-                  :data="item"
-                  v-model="checkList"
-                  @change="changeHandle"
+                <el-popover
+                  placement="bottom-start"
+                  :width="350"
+                  popper-style="--el-popover-border-radius:8px;--el-popover-padding:16px 16px 0"
                 >
-                  <template #icon>
-                    <el-avatar
-                      v-if="item?.icon"
-                      shape="square"
-                      :size="32"
-                      style="background: none"
-                      class="mr-8"
+                  <template #reference>
+                    <CardCheckbox
+                      value-field="id"
+                      :data="item"
+                      v-model="checkList"
+                      @change="changeHandle"
                     >
-                      <img :src="resetUrl(item?.icon)" alt="" />
-                    </el-avatar>
-                    <ToolIcon v-else :size="32" :type="item?.tool_type" />
+                      <template #icon>
+                        <el-avatar
+                          v-if="item?.icon"
+                          shape="square"
+                          :size="32"
+                          style="background: none"
+                          class="mr-8"
+                        >
+                          <img :src="resetUrl(item?.icon)" alt="" />
+                        </el-avatar>
+                        <ToolIcon v-else :size="32" :type="item?.tool_type" />
+                      </template>
+                      <span class="ellipsis cursor ml-12" :title="item.name"> {{ item.name }}</span>
+                    </CardCheckbox>
                   </template>
-                  <span class="ellipsis cursor ml-12" :title="item.name"> {{ item.name }}</span>
-                </CardCheckbox>
+                  <template #default>
+                    <CardBox
+                      :title="item.name"
+                      :description="item.desc"
+                      class="cursor border-none popover-card-box"
+                      shadow="never"
+                      style="--el-card-padding: 0px; --card-min-height: 148px"
+                    >
+                      <template #icon>
+                        <el-avatar
+                          v-if="item?.icon"
+                          shape="square"
+                          :size="32"
+                          style="background: none"
+                        >
+                          <img :src="resetUrl(item?.icon)" alt="" />
+                        </el-avatar>
+                        <ToolIcon v-else :size="32" :type="item?.tool_type" />
+                      </template>
+                      <template #title>
+                        <div class="flex align-center" style="margin-top: 1px;">
+                          <span class="ellipsis-1" :title="item.name">
+                            {{ item.name }}
+                          </span>
+                          <el-tag v-if="item.version" class="ml-4" type="info" effect="plain">
+                            {{ item.version }}
+                          </el-tag>
+                        </div>
+                      </template>
+                      <template #subTitle>
+                        <el-text class="color-secondary lighter" size="small">
+                          {{ $t('common.creator') }}: {{ i18n_name(item.nick_name) }}
+                        </el-text>
+                      </template>
+
+                      <template #footer>
+                        <div v-if="item.is_active" class="flex align-center">
+                          <el-icon class="color-success mr-8" style="font-size: 16px">
+                            <SuccessFilled />
+                          </el-icon>
+                          <span class="color-secondary">
+                            {{ $t('common.status.enabled') }}
+                          </span>
+                        </div>
+                        <div v-else class="flex align-center">
+                          <AppIcon iconName="app-disabled" class="color-secondary mr-8"></AppIcon>
+                          <span class="color-secondary">
+                            {{ $t('common.status.disabled') }}
+                          </span>
+                        </div>
+                      </template>
+                    </CardBox>
+                  </template>
+                </el-popover>
               </el-col>
             </el-row>
             <el-empty :description="$t('common.noData')" v-else />
@@ -106,8 +167,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import useStore from '@/stores'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
-import { uniqueArray } from '@/utils/array'
-import { resetUrl } from '@/utils/common'
+import { resetUrl, i18n_name } from '@/utils/common'
 const route = useRoute()
 
 const emit = defineEmits(['refresh'])

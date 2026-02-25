@@ -4,6 +4,7 @@
     placement="top"
     trigger="hover"
     :popper-style="{ width: 'auto' }"
+    :persistent="false"
   >
     <template #default
       ><StatusTable
@@ -15,7 +16,10 @@
       ></StatusTable>
     </template>
     <template #reference>
-      <el-text class="color-text-primary" v-if="aggStatus?.value === State.SUCCESS || aggStatus?.value === State.REVOKED">
+      <el-text
+        class="color-text-primary"
+        v-if="aggStatus?.value === State.SUCCESS || aggStatus?.value === State.REVOKED"
+      >
         <el-icon class="color-success"><SuccessFilled /></el-icon>
         {{ stateMap[aggStatus.value](aggStatus.key) }}
       </el-text>
@@ -51,7 +55,7 @@ const checkList: Array<string> = [
   State.PENDING,
   State.FAILURE,
   State.REVOKED,
-  State.SUCCESS
+  State.SUCCESS,
 ]
 const aggStatus = computed(() => {
   let obj = { key: 0, value: '' }
@@ -68,12 +72,12 @@ const aggStatus = computed(() => {
 const startedMap = {
   [TaskType.EMBEDDING]: t('views.document.fileStatus.EMBEDDING'),
   [TaskType.GENERATE_PROBLEM]: t('views.document.fileStatus.GENERATE'),
-  [TaskType.SYNC]: t('views.document.fileStatus.SYNC')
+  [TaskType.SYNC]: t('views.document.fileStatus.SYNC'),
 }
 const taskTypeMap = {
   [TaskType.EMBEDDING]: t('views.knowledge.setting.vectorization'),
   [TaskType.GENERATE_PROBLEM]: t('views.document.generateQuestion.title'),
-  [TaskType.SYNC]: t('views.knowledge.setting.sync')
+  [TaskType.SYNC]: t('views.knowledge.setting.sync'),
 }
 const stateMap: any = {
   [State.PENDING]: (type: number) => t('views.document.fileStatus.PENDING'),
