@@ -419,7 +419,7 @@ const quickInputRef = ref()
 const props = withDefaults(
   defineProps<{
     applicationDetails: any
-    type: 'log' | 'ai-chat' | 'debug-ai-chat'
+    type: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
     loading: boolean
     isMobile: boolean
     appId?: string

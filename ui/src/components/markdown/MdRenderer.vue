@@ -80,7 +80,7 @@ const props = withDefaults(
     chat_record_id?: string
     runtime_node_id?: string
     disabled?: boolean
-    type?: 'log' | 'ai-chat' | 'debug-ai-chat'
+    type?: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
   }>(),
   {
     source: '',

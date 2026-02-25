@@ -32,7 +32,7 @@ import useStore from '@/stores'
 const props = defineProps<{
   application: any
   available: boolean
-  type: 'log' | 'ai-chat' | 'debug-ai-chat'
+  type: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
   sendMessage: (question: string, other_params_data?: any, chat?: chatType) => void
 }>()
 

@@ -62,7 +62,7 @@ const {
 } = route
 const props = defineProps<{
   application: any
-  type: 'log' | 'ai-chat' | 'debug-ai-chat'
+  type: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
   api_form_data: any
   form_data: any
   first?: boolean

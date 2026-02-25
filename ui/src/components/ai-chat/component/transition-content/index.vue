@@ -23,7 +23,7 @@
 defineProps<{
   text: string
   application: any
-  type: 'log' | 'ai-chat' | 'debug-ai-chat'
+  type: 'log' | 'ai-chat' | 'debug-ai-chat' | 'share'
 }>()
 </script>
 <style lang="scss" scoped>
