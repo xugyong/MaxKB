@@ -43,7 +43,8 @@
                 <el-checkbox :value="item.id" v-if="selection" />
                 <div
                   class="w-full border-r-8"
-                  :class="selection ? 'is-selected p-12 mt-8 mb-8' : 'mt-24'"
+                  :class="selection ? 'is-selected p-12 mt-8 mb-8 cursor' : 'mt-24'"
+                  @click="toggleSelect(item.id)"
                 >
                   <!-- 问题 -->
                   <QuestionContent
@@ -59,7 +60,11 @@
               </div>
               <div class="flex align-center w-full">
                 <el-checkbox :value="item.id" v-if="selection" />
-                <div class="w-full border-r-8" :class="selection ? 'is-selected p-12' : ''">
+                <div
+                  class="w-full border-r-8"
+                  :class="selection ? 'is-selected p-12 cursor' : ''"
+                  @click="toggleSelect(item.id)"
+                >
                   <!-- 回答 -->
                   <AnswerContent
                     :application="applicationDetails"
@@ -299,6 +304,21 @@ watch(
   },
 )
 
+watch(
+  () => props.selection,
+  (value) => {
+    if (value) {
+      if (value && multipleSelectionChat.value.length === 0) {
+        multipleSelectionChat.value = chatList.value.map((v) => v.id)
+        checkAll.value = true
+      }
+    }
+  },
+  {
+    immediate: true,
+  },
+)
+
 // 选择对话分享
 const checkAll = ref(false)
 const multipleSelectionChat = ref<any[]>([])
@@ -322,6 +342,15 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 const handleCheckedChatChange = (value: CheckboxValueType[]) => {
   const checkedCount = value.length
   checkAll.value = checkedCount === chatList.value.length
+}
+
+function toggleSelect(id: number) {
+  const index = multipleSelectionChat.value.indexOf(id)
+  if (index === -1) {
+    multipleSelectionChat.value.push(id)
+  } else {
+    multipleSelectionChat.value.splice(index, 1)
+  }
 }
 function cancelCheckHandle() {
   checkAll.value = false
@@ -819,6 +848,10 @@ onMounted(() => {
         scrollDiv.value.setScrollTop(getMaxHeight())
       }
     })
+  })
+  bus.on('click:share', (id: string) => {
+    multipleSelectionChat.value.push(id)
+    emit('update:selection', true)
   })
 })
 

@@ -125,10 +125,11 @@
               <span v-if="paginationConfig.total" class="lighter">
                 {{ paginationConfig.total }} {{ $t('chat.question_count') }}
               </span>
-              <el-button text class="ml-12" @click="clickShareHandle">
-                <AppIcon iconName="app-share"></AppIcon>
-              </el-button>
-
+              <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
+                <el-button text class="ml-12" @click="clickShareHandle">
+                  <AppIcon iconName="app-share"></AppIcon>
+                </el-button>
+              </el-tooltip>
               <el-dropdown class="ml-8">
                 <el-button text>
                   <AppIcon iconName="app-export" :title="$t('chat.exportRecords')"></AppIcon>

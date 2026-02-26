@@ -24,41 +24,41 @@
               <AppIcon iconName="app-video-pause" class="color-secondary"></AppIcon>
             </el-button>
           </el-tooltip>
-          <el-divider direction="vertical" />
         </span>
-        <el-tooltip effect="dark" :content="$t('common.copy')" placement="top">
-          <el-button text @click="copyClick(data?.answer_text)">
-            <AppIcon iconName="app-copy" class="color-secondary"></AppIcon>
-          </el-button>
-        </el-tooltip>
-        <el-divider direction="vertical" />
+        <span class="ml-8">
+          <el-tooltip effect="dark" :content="$t('common.copy')" placement="top">
+            <el-button text @click="copyClick(data?.answer_text)">
+              <AppIcon iconName="app-copy" class="color-secondary"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
+
         <template v-if="permissionPrecise.chat_log_add_knowledge(id)">
-          <el-tooltip
-            v-if="buttonData.improve_paragraph_id_list.length === 0"
-            effect="dark"
-            :content="$t('views.chatLog.editContent')"
-            placement="top"
-          >
-            <el-button text @click="editContent(data)">
-              <AppIcon iconName="app-edit" class="color-secondary"></AppIcon>
-            </el-button>
-          </el-tooltip>
-
-          <el-tooltip v-else effect="dark" :content="$t('views.chatLog.editMark')" placement="top">
-            <el-button text @click="editMark(data)">
-              <AppIcon iconName="app-document-active" class="primary"></AppIcon>
-            </el-button>
-          </el-tooltip>
+          <span class="ml-8" v-if="buttonData.improve_paragraph_id_list.length === 0">
+            <el-tooltip effect="dark" :content="$t('views.chatLog.editContent')" placement="top">
+              <el-button text @click="editContent(data)">
+                <AppIcon iconName="app-edit" class="color-secondary"></AppIcon>
+              </el-button>
+            </el-tooltip>
+          </span>
+          <span v-else class="ml-8">
+            <el-tooltip effect="dark" :content="$t('views.chatLog.editMark')" placement="top">
+              <el-button text @click="editMark(data)">
+                <AppIcon iconName="app-document-active" class="primary"></AppIcon>
+              </el-button>
+            </el-tooltip>
+          </span>
         </template>
-
-        <el-divider direction="vertical" v-if="buttonData?.vote_status !== '-1'" />
-        <el-button text disabled v-if="buttonData?.vote_status === '0'">
-          <AppIcon iconName="app-like-color"></AppIcon>
-        </el-button>
-
-        <el-button text disabled v-if="buttonData?.vote_status === '1'">
-          <AppIcon iconName="app-oppose-color"></AppIcon>
-        </el-button>
+        <span class="ml-8" v-if="buttonData?.vote_status === '0'">
+          <el-button text disabled>
+            <AppIcon iconName="app-like-color"></AppIcon>
+          </el-button>
+        </span>
+        <span class="ml-8" v-if="buttonData?.vote_status === '1'">
+          <el-button text disabled>
+            <AppIcon iconName="app-oppose-color"></AppIcon>
+          </el-button>
+        </span>
         <EditContentDialog ref="EditContentDialogRef" @refresh="refreshContent" />
         <EditMarkDialog ref="EditMarkDialogRef" @refresh="refreshMark" />
         <!-- 先渲染，不然不能播放   -->

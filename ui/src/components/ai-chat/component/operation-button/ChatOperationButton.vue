@@ -36,33 +36,29 @@
             <AppIcon class="color-secondary" iconName="app-video-play"></AppIcon>
           </el-button>
         </el-tooltip>
-
-        <el-divider direction="vertical" />
       </span>
       <span v-if="type == 'ai-chat' || type == 'log'">
-        <el-tooltip effect="dark" :content="$t('common.copy')" placement="top">
-          <el-button text @click="copy(data)">
-            <AppIcon class="color-secondary" iconName="app-copy"></AppIcon>
-          </el-button>
-        </el-tooltip>
-        <el-divider direction="vertical" />
-        <el-tooltip effect="dark" :content="$t('chat.operation.regeneration')" placement="top">
-          <el-button :disabled="chat_loading" text @click="regeneration">
-            <AppIcon iconName="app-refresh" class="color-secondary"></AppIcon>
-          </el-button>
-        </el-tooltip>
-        <el-divider direction="vertical" />
-
-        <el-tooltip
-          v-if="buttonData?.vote_status === '-1' && mode === 'mobile'"
-          effect="dark"
-          :content="$t('chat.operation.like')"
-          placement="top"
-        >
-          <el-button text :disabled="loading" @click="mobileVoteReasonHandler('0')">
-            <AppIcon class="color-secondary" iconName="app-like"></AppIcon>
-          </el-button>
-        </el-tooltip>
+        <span class="ml-8">
+          <el-tooltip effect="dark" :content="$t('common.copy')" placement="top">
+            <el-button text @click="copy(data)">
+              <AppIcon class="color-secondary" iconName="app-copy"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
+        <span class="ml-8">
+          <el-tooltip effect="dark" :content="$t('chat.operation.regeneration')" placement="top">
+            <el-button :disabled="chat_loading" text @click="regeneration">
+              <AppIcon iconName="app-refresh" class="color-secondary"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
+        <span class="ml-8" v-if="buttonData?.vote_status === '-1' && mode === 'mobile'">
+          <el-tooltip effect="dark" :content="$t('chat.operation.like')" placement="top">
+            <el-button text :disabled="loading" @click="mobileVoteReasonHandler('0')">
+              <AppIcon class="color-secondary" iconName="app-like"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
 
         <el-popover
           ref="likePopoverRef"
@@ -74,7 +70,7 @@
           v-if="buttonData?.vote_status === '-1' && mode !== 'mobile'"
         >
           <template #reference>
-            <span>
+            <span class="ml-8">
               <el-tooltip effect="dark" :content="$t('chat.operation.like')" placement="top">
                 <el-button text :disabled="loading">
                   <AppIcon class="color-secondary" iconName="app-like"></AppIcon>
@@ -91,28 +87,21 @@
           >
           </VoteReasonContent>
         </el-popover>
+        <span v-if="buttonData?.vote_status === '0'" class="ml-8">
+          <el-tooltip effect="dark" :content="$t('chat.operation.cancelLike')" placement="top">
+            <el-button text @click="cancelVoteHandle('-1')" :disabled="loading">
+              <AppIcon class="color-secondary" iconName="app-like-color"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
+        <span v-if="buttonData?.vote_status === '-1' && mode === 'mobile'" class="ml-8">
+          <el-tooltip effect="dark" :content="$t('chat.operation.oppose')" placement="top">
+            <el-button text :disabled="loading" @click="mobileVoteReasonHandler('1')">
+              <AppIcon class="color-secondary" iconName="app-oppose"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
 
-        <el-tooltip
-          effect="dark"
-          :content="$t('chat.operation.cancelLike')"
-          placement="top"
-          v-if="buttonData?.vote_status === '0'"
-        >
-          <el-button text @click="cancelVoteHandle('-1')" :disabled="loading">
-            <AppIcon class="color-secondary" iconName="app-like-color"></AppIcon>
-          </el-button>
-        </el-tooltip>
-        <el-divider direction="vertical" v-if="buttonData?.vote_status === '-1'" />
-        <el-tooltip
-          v-if="buttonData?.vote_status === '-1' && mode === 'mobile'"
-          effect="dark"
-          :content="$t('chat.operation.oppose')"
-          placement="top"
-        >
-          <el-button text :disabled="loading" @click="mobileVoteReasonHandler('1')">
-            <AppIcon class="color-secondary" iconName="app-oppose"></AppIcon>
-          </el-button>
-        </el-tooltip>
         <el-popover
           ref="opposePopoverRef"
           trigger="click"
@@ -123,7 +112,7 @@
           v-if="buttonData?.vote_status === '-1' && mode !== 'mobile'"
         >
           <template #reference>
-            <span>
+            <span class="ml-8">
               <el-tooltip effect="dark" :content="$t('chat.operation.oppose')" placement="top">
                 <el-button text :disabled="loading">
                   <AppIcon class="color-secondary" iconName="app-oppose"></AppIcon>
@@ -140,16 +129,20 @@
           >
           </VoteReasonContent>
         </el-popover>
-        <el-tooltip
-          effect="dark"
-          :content="$t('chat.operation.cancelOppose')"
-          placement="top"
-          v-if="buttonData?.vote_status === '1'"
-        >
-          <el-button text @click="cancelVoteHandle('-1')" :disabled="loading">
-            <AppIcon class="color-secondary" iconName="app-oppose-color"></AppIcon>
-          </el-button>
-        </el-tooltip>
+        <span class="ml-8" v-if="buttonData?.vote_status === '1'">
+          <el-tooltip effect="dark" :content="$t('chat.operation.cancelOppose')" placement="top">
+            <el-button text @click="cancelVoteHandle('-1')" :disabled="loading">
+              <AppIcon class="color-secondary" iconName="app-oppose-color"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
+        <span class="ml-8">
+          <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
+            <el-button text @click.stop="clickShareHandle(props.data.record_id)">
+              <AppIcon class="color-secondary" iconName="app-share"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </span>
       </span>
       <div ref="audioCiontainer"></div>
     </div>
@@ -196,7 +189,11 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits(['update:data', 'regeneration'])
+const emit = defineEmits(['update:data', 'regeneration', 'clickShare'])
+
+const clickShareHandle = (id: string) => {
+  bus.emit('click:share', id)
+}
 
 const copy = (data: any) => {
   try {
