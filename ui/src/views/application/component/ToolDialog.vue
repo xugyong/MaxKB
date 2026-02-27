@@ -170,6 +170,12 @@ import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
 import { resetUrl, i18n_name } from '@/utils/common'
 const route = useRoute()
 
+const props = defineProps({
+  tool_type: {
+    type: String,
+    default: 'CUSTOM',
+  },
+})
 const emit = defineEmits(['refresh'])
 const { folder, user } = useStore()
 const apiType = computed(() => {
@@ -264,7 +270,7 @@ function getList() {
   })
     .getToolList({
       folder_id: folder_id,
-      tool_type: 'CUSTOM',
+      tool_type: props.tool_type,
     })
     .then((res: any) => {
       toolList.value = res.data?.tools || res.data || []

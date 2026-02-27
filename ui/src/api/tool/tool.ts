@@ -199,6 +199,12 @@ const getToolRecordDetail = (
   return get(`${prefix.value}/${tool_id}/tool_record/${record_id}`)
 }
 
+const uploadSkillFile: (data: toolData, loading?: Ref<boolean>) => Promise<Result<any>> = (
+  data,
+  loading,
+) => {
+  return put(`${prefix.value}/upload_skill_file`, data, undefined, loading)
+}
 
 
 export default {
@@ -220,4 +226,5 @@ export default {
   postToolTestConnection,
   pageToolRecord,
   getToolRecordDetail,
+  uploadSkillFile,
 }

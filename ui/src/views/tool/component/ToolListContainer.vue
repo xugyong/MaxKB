@@ -61,6 +61,16 @@
                   </div>
                 </div>
               </el-dropdown-item>
+              <el-dropdown-item @click="openCreateSkillDialog()">
+                <div class="flex align-center">
+                  <el-avatar class="avatar-green" shape="square" :size="32">
+                    <img src="@/assets/tool/icon_tool.svg" style="width: 58%" alt="" />
+                  </el-avatar>
+                  <div class="pre-wrap ml-8">
+                    <div class="lighter">{{ $t('views.tool.createSkillTool') }}</div>
+                  </div>
+                </div>
+              </el-dropdown-item>
               <el-dropdown-item @click="openCreateMcpDialog()">
                 <div class="flex align-center">
                   <el-avatar shape="square" :size="32">
@@ -343,6 +353,7 @@
   <InitParamDrawer ref="InitParamDrawerRef" @refresh="refresh" />
   <ToolFormDrawer ref="ToolFormDrawerRef" @refresh="refresh" :title="ToolDrawertitle" />
   <McpToolFormDrawer ref="McpToolFormDrawerRef" @refresh="refresh" :title="McpToolDrawertitle" />
+  <SkillToolFormDrawer ref="SkillToolFormDrawerRef" @refresh="refresh" :title="SkillToolDrawertitle" />
   <DataSourceToolFormDrawer
     ref="DataSourceToolFormDrawerRef"
     @refresh="refresh"
@@ -383,6 +394,7 @@ import { useRoute, onBeforeRouteLeave } from 'vue-router'
 import InitParamDrawer from '@/views/tool/component/InitParamDrawer.vue'
 import ToolFormDrawer from '@/views/tool/ToolFormDrawer.vue'
 import McpToolFormDrawer from '@/views/tool/McpToolFormDrawer.vue'
+import SkillToolFormDrawer from '@/views/tool/SkillToolFormDrawer.vue'
 import DataSourceToolFormDrawer from '@/views/tool/DataSourceToolFormDrawer.vue'
 import CreateFolderDialog from '@/components/folder-tree/CreateFolderDialog.vue'
 import AuthorizedWorkspace from '@/views/system-shared/AuthorizedWorkspaceDialog.vue'
@@ -490,9 +502,11 @@ const search_type_change = () => {
 }
 const ToolFormDrawerRef = ref()
 const McpToolFormDrawerRef = ref()
+const SkillToolFormDrawerRef = ref()
 const DataSourceToolFormDrawerRef = ref()
 const ToolDrawertitle = ref('')
 const McpToolDrawertitle = ref('')
+const SkillToolDrawertitle = ref('')
 const DataSourceToolDrawertitle = ref('')
 
 const MoveToDialogRef = ref()
@@ -538,6 +552,13 @@ function openCreateDialog(data?: any) {
     openCreateDataSourceDialog(data)
     return
   }
+  // 技能
+  if (data?.tool_type === 'SKILL') {
+    bus.emit('select_node', data.folder_id)
+    openCreateSkillDialog(data)
+    return
+  }
+
   // 有版本号的展示readme，是商店更新过来的
   if (data?.version) {
     let readMe = ''
@@ -592,6 +613,27 @@ function openCreateMcpDialog(data?: any) {
       })
   } else {
     McpToolFormDrawerRef.value.open(data)
+  }
+}
+
+function openCreateSkillDialog(data?: any) {
+  // 有template_id的不允许编辑，是模板转换来的
+  if (data?.template_id) {
+    return
+  }
+  // 共享过来的工具不让编辑
+  if (isShared.value) {
+    return
+  }
+  SkillToolDrawertitle.value = data ? t('views.tool.editSkillTool') : t('views.tool.createSkillTool')
+  if (data) {
+    loadSharedApi({ type: 'tool', systemType: apiType.value })
+      .getToolById(data?.id, loading)
+      .then((res: any) => {
+        SkillToolFormDrawerRef.value.open(res.data)
+      })
+  } else {
+    SkillToolFormDrawerRef.value.open(data)
   }
 }
 
@@ -690,6 +732,12 @@ async function copyTool(row: any) {
     await copyDataSource(row)
     return
   }
+  // 技能
+  if (row?.tool_type === 'SKILL') {
+    bus.emit('select_node', row.folder_id)
+    await copySkillTool(row)
+    return
+  }
   ToolDrawertitle.value = t('views.tool.copyTool')
   const res = await loadSharedApi({ type: 'tool', systemType: apiType.value }).getToolById(
     row.id,
@@ -723,6 +771,18 @@ async function copyDataSource(row: any) {
   delete obj['id']
   obj['name'] = obj['name'] + `  ${t('common.copyTitle')}`
   DataSourceToolFormDrawerRef.value.open(obj)
+}
+
+async function copySkillTool(row: any) {
+  SkillToolDrawertitle.value = t('views.tool.skill.copySkillTool')
+  const res = await loadSharedApi({ type: 'tool', systemType: apiType.value }).getToolById(
+    row.id,
+    changeStateloading,
+  )
+  const obj = cloneDeep(res.data)
+  delete obj['id']
+  obj['name'] = obj['name'] + `  ${t('common.copyTitle')}`
+  SkillToolFormDrawerRef.value.open(obj)
 }
 
 function exportTool(row: any) {

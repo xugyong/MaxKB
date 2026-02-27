@@ -33,6 +33,7 @@ class ToolScope(models.TextChoices):
 class ToolType(models.TextChoices):
     INTERNAL = "INTERNAL", '内置'
     CUSTOM = "CUSTOM", "自定义"
+    SKILL = "SKILL", "技能"
     MCP = "MCP", "MCP工具"
     DATA_SOURCE = "DATA_SOURCE", "数据源"
 

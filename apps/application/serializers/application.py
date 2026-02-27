@@ -854,6 +854,7 @@ class ApplicationOperateSerializer(serializers.Serializer):
             'mcp_enable': 'mcp_enable', 'mcp_tool_ids': 'mcp_tool_ids', 'mcp_servers': 'mcp_servers',
             'mcp_source': 'mcp_source', 'tool_enable': 'tool_enable', 'tool_ids': 'tool_ids',
             'application_enable': 'application_enable', 'application_ids': 'application_ids',
+            'skill_tool_ids': 'skill_tool_ids',
             'mcp_output_enable': 'mcp_output_enable',
             'type': 'type'
         }
@@ -1001,7 +1002,7 @@ class ApplicationOperateSerializer(serializers.Serializer):
                        'api_key_is_active', 'icon', 'work_flow', 'model_params_setting', 'tts_model_params_setting',
                        'stt_model_params_setting',
                        'mcp_enable', 'mcp_tool_ids', 'mcp_servers', 'mcp_source', 'tool_enable', 'tool_ids',
-                       'mcp_output_enable', 'application_enable', 'application_ids',
+                       'mcp_output_enable', 'application_enable', 'application_ids', 'skill_tool_ids',
                        'problem_optimization_prompt', 'clean_time', 'file_clean_time', 'folder_id']
         for update_key in update_keys:
             if update_key in instance and instance.get(update_key) is not None:

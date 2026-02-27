@@ -353,11 +353,11 @@ class File(AppModelMixin):
             return super().save()
 
         compressed_data = self._compress_data(bytea)
+        self.file_size = len(compressed_data)
 
         self.loid = self._create_large_object()
 
         self._write_compressed_data(compressed_data)
-
         # 调用父类保存
         return super().save()
 

@@ -184,6 +184,7 @@ class ChatInfo:
             'tool_ids': self.application.tool_ids,
             'application_enable': self.application.application_enable,
             'application_ids': self.application.application_ids,
+            'skill_tool_ids': self.application.skill_tool_ids,
             'mcp_output_enable': self.application.mcp_output_enable,
         }
 

@@ -159,6 +159,7 @@ class BaseChatNode(IChatNode):
                 mcp_source=None,
                 tool_ids=None,
                 application_ids=None,
+                skill_tool_ids=None,
                 mcp_output_enable=True,
                 **kwargs) -> NodeResult:
         if dialogue_type is None:
@@ -187,7 +188,7 @@ class BaseChatNode(IChatNode):
         # 处理 MCP 请求
         mcp_result = self._handle_mcp_request(
             mcp_source, mcp_servers, mcp_tool_id, mcp_tool_ids, tool_ids,
-            application_ids, mcp_output_enable,
+            application_ids, skill_tool_ids, mcp_output_enable,
             chat_model, message_list, history_message, question
         )
         if mcp_result:
@@ -207,7 +208,7 @@ class BaseChatNode(IChatNode):
                               _write_context=write_context)
 
     def _handle_mcp_request(self, mcp_source, mcp_servers, mcp_tool_id, mcp_tool_ids, tool_ids,
-                            application_ids,
+                            application_ids, skill_tool_ids,
                             mcp_output_enable, chat_model, message_list, history_message, question):
 
         mcp_servers_config = {}
@@ -272,6 +273,27 @@ class BaseChatNode(IChatNode):
                 executor = ToolExecutor()
                 app_config = executor.get_app_mcp_config(api_key)
                 mcp_servers_config[app.name] = app_config
+
+        if skill_tool_ids and len(skill_tool_ids) > 0:
+            self.context['skill_tool_ids'] = skill_tool_ids
+            skill_file_items = []
+
+            for tool_id in skill_tool_ids:
+                tool = QuerySet(Tool).filter(id=tool_id, is_active=True).first()
+                if tool is None or tool.is_active is False:
+                    continue
+                if tool.init_params is not None:
+                    params = json.loads(rsa_long_decrypt(tool.init_params))
+                    tool_init_params = json.loads(rsa_long_decrypt(tool.init_params))
+                else:
+                    params = {}
+
+                skill_file_items.append({
+                    'tool_id': str(tool.id),
+                    'file_id': tool.code,
+                    'params': params
+                })
+            mcp_servers_config['skills'] = skill_file_items
 
         if len(mcp_servers_config) > 0:
             # 安全获取 application

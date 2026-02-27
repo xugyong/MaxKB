@@ -42,6 +42,8 @@ class ChatNodeSerializer(serializers.Serializer):
                                      label=_("Tool IDs"), )
     application_ids = serializers.ListField(child=serializers.UUIDField(), required=False, allow_empty=True,
                                      label=_("App IDs"), )
+    skill_tool_ids = serializers.ListField(child=serializers.UUIDField(), required=False, allow_empty=True,
+                                     label=_("Skill IDs"), )
     mcp_output_enable = serializers.BooleanField(required=False, default=True, label=_("Whether to enable MCP output"))
 
 
@@ -72,6 +74,7 @@ class IChatNode(INode):
                 mcp_source=None,
                 tool_ids=None,
                 application_ids=None,
+                skill_tool_ids=None,
                 mcp_output_enable=True,
                 **kwargs) -> NodeResult:
         pass

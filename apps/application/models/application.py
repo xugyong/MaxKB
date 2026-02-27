@@ -102,6 +102,7 @@ class Application(AppModelMixin):
     tool_ids = models.JSONField(verbose_name="工具ID列表", default=list)
     application_enable = models.BooleanField(verbose_name="应用是否启用", default=False)
     application_ids = models.JSONField(verbose_name="应用ID列表", default=list)
+    skill_tool_ids = models.JSONField(verbose_name="技能ID列表", default=list)
     mcp_output_enable = models.BooleanField(verbose_name="MCP输出是否启用", default=True)
     file_clean_time = models.IntegerField(verbose_name="文件清理时间", default=180)
 
@@ -178,6 +179,7 @@ class ApplicationVersion(AppModelMixin):
     tool_ids = models.JSONField(verbose_name="工具ID列表", default=list)
     application_enable = models.BooleanField(verbose_name="应用是否启用", default=False)
     application_ids = models.JSONField(verbose_name="应用ID列表", default=list)
+    skill_tool_ids = models.JSONField(verbose_name="技能ID列表", default=list)
     mcp_output_enable = models.BooleanField(verbose_name="MCP输出是否启用", default=True)
 
     class Meta:

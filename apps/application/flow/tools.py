@@ -7,24 +7,32 @@
     @desc:
 """
 import asyncio
+import io
 import json
+import os
 import queue
 import re
+import shutil
+import tempfile
 import threading
+import zipfile
 from functools import reduce
 from typing import Iterator
 
 import uuid_utils.compat as uuid
 from asgiref.sync import sync_to_async
+from deepagents import create_deep_agent
 from django.db.models import QuerySet
 from django.http import StreamingHttpResponse
 from langchain_core.messages import BaseMessageChunk, BaseMessage, ToolMessage, AIMessageChunk
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
 
+from application.flow.backend.sandbox_shell import SandboxShellBackend
 from application.flow.i_step_node import WorkFlowPostHandler
 from common.result import result
 from common.utils.logger import maxkb_logger
+from knowledge.models import File
 from knowledge.models.knowledge_action import State
 from maxkb.const import CONFIG
 from tools.models import ToolRecord, Tool
@@ -321,15 +329,59 @@ def _extract_tool_id(raw_id):
     return tool_id or raw_id
 
 
+async def _initialize_skills(mcp_servers, temp_dir):
+    skills_dir = os.path.join(temp_dir, 'skills')
+    mcp_config = json.loads(mcp_servers)
+    if "skills" in mcp_config:
+        skill_file_items = mcp_config.pop('skills')
+        for skill_file in skill_file_items:
+            # 使用 sync_to_async 包装 ORM 查询
+            file = await sync_to_async(lambda: QuerySet(File).filter(id=skill_file['file_id']).first())()
+            if not file:
+                continue
+            # get_bytes 可能也涉及 IO，也用 sync_to_async 包装
+            file_bytes = await sync_to_async(file.get_bytes)()
+            with zipfile.ZipFile(io.BytesIO(file_bytes), 'r') as zip_ref:
+                members = [
+                    m for m in zip_ref.namelist()
+                    if not m.startswith('__MACOSX/') and '__MACOSX' not in m
+                ]
+                for member in members:
+                    if ".." in member or member.startswith("/"):
+                        raise ValueError(f"非法路径: {member}")
+                zip_ref.extractall(skills_dir, members=members)
+
+        os.system("chmod -R g+rx " + temp_dir)  # 确保技能目录可访问
+
+    client = MultiServerMCPClient(mcp_config)
+
+    return client, skills_dir
+
+
 async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_enable=True, tool_init_params={},
-                              source_id=None, source_type=None):
+                              source_id=None, source_type=None, temp_dir=None):
     try:
-        client = MultiServerMCPClient(json.loads(mcp_servers))
+        checkpointer = MemorySaver()
+        client, skills_dir = await _initialize_skills(mcp_servers, temp_dir)
         tools = await client.get_tools()
-        agent = create_react_agent(chat_model, tools)
+        agent = create_deep_agent(
+            model=chat_model,
+            backend=SandboxShellBackend(root_dir=temp_dir, virtual_mode=False),
+            skills=[skills_dir],
+            tools=tools,
+            interrupt_on={
+                "write_file": False,  # Default: approve, edit, reject
+                "read_file": False,  # No interrupts needed
+                "edit_file": False  # Default: approve, edit, reject
+            },
+            checkpointer=checkpointer,  # Required!
+        )
         recursion_limit = int(CONFIG.get("LANGCHAIN_GRAPH_RECURSION_LIMIT", '25'))
-        response = agent.astream({"messages": message_list}, config={"recursion_limit": recursion_limit},
-                                 stream_mode='messages')
+        response = agent.astream(
+            {"messages": message_list},
+            config={"recursion_limit": recursion_limit, "configurable": {"thread_id": str(uuid.uuid7())}},
+            stream_mode='messages'
+        )
 
         # 用于存储工具调用信息
         tool_calls_info = {}  # tool_id -> {'name': ..., 'input': ...}
@@ -466,11 +518,17 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     """使用全局事件循环，不创建新实例"""
     result_queue = queue.Queue()
     loop = get_global_loop()  # 使用共享循环
+    # 创建临时文件夹
+    temp_dir = tempfile.mkdtemp(dir='/tmp')
+    skills_dir = os.path.join(temp_dir, 'skills')
+    os.makedirs(skills_dir, exist_ok=True)
+
+    print(f"Initializing skills in temporary directory: {skills_dir}")
 
     async def _run():
         try:
             async_gen = _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_enable, tool_init_params,
-                                            source_id, source_type)
+                                            source_id, source_type, temp_dir)
             async for chunk in async_gen:
                 result_queue.put(('data', chunk))
         except Exception as e:
@@ -485,8 +543,12 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     while True:
         msg_type, data = result_queue.get()
         if msg_type == 'done':
+            # 清理临时文件夹
+            shutil.rmtree(temp_dir, ignore_errors=True)
             break
         if msg_type == 'error':
+            # 清理临时文件夹
+            shutil.rmtree(temp_dir, ignore_errors=True)
             raise data
         yield data
 

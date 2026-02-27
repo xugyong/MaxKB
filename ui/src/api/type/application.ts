@@ -36,6 +36,7 @@ interface ApplicationFormType {
   tool_ids?: string[]
   application_enable?: boolean
   application_ids?: string[]
+  skill_tool_ids?: string[]
   mcp_output_enable?: boolean
   work_flow_template?: any
 }

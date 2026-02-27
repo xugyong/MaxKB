@@ -280,6 +280,57 @@
             </div>
           </div>
 
+          <!-- 技能       -->
+          <div>
+            <div class="flex-between mb-8" @click="collapseData.skill = !collapseData.skill">
+              <div class="flex align-center lighter cursor">
+                <el-icon class="mr-8 arrow-icon" :class="collapseData.skill ? 'rotate-90' : ''">
+                  <CaretRight />
+                </el-icon>
+                {{ $t('views.application.skill') }}
+                <span class="ml-4" v-if="chat_data.skill_tool_ids?.length">
+                  ({{ chat_data.skill_tool_ids?.length }})</span
+                >
+              </div>
+              <div class="flex">
+                <el-button type="primary" link @click="openSkillToolDialog" @refreshForm="refreshParam">
+                  <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
+                </el-button>
+              </div>
+            </div>
+            <div class="w-full mb-16" v-if="chat_data.skill_tool_ids?.length > 0 && collapseData.skill">
+              <template v-for="(item, index) in chat_data.skill_tool_ids" :key="index">
+                <div class="flex-between border border-r-6 white-bg mb-4" style="padding: 5px 8px">
+                  <div class="flex align-center" style="line-height: 20px">
+                    <el-avatar
+                      v-if="relatedObject(skillToolSelectOptions, item, 'id')?.icon"
+                      shape="square"
+                      :size="20"
+                      style="background: none"
+                      class="mr-8"
+                    >
+                      <img
+                        :src="resetUrl(relatedObject(skillToolSelectOptions, item, 'id')?.icon)"
+                        alt=""
+                      />
+                    </el-avatar>
+                    <ToolIcon v-else class="mr-8" :size="20" />
+
+                    <div
+                      class="ellipsis"
+                      :title="relatedObject(skillToolSelectOptions, item, 'id')?.name"
+                    >
+                      {{ relatedObject(skillToolSelectOptions, item, 'id')?.name }}
+                    </div>
+                  </div>
+                  <el-button text @click="removeTool(item)">
+                    <el-icon><Close /></el-icon>
+                  </el-button>
+                </div>
+              </template>
+            </div>
+          </div>
+
           <!-- 应用 没有共享应用，在共享知识库工作流不显示这个      -->
           <div v-if="apiType !== 'systemShare'">
             <div class="flex-between" @click="collapseData.agent = !collapseData.agent">
@@ -391,7 +442,8 @@
       @refresh="submitReasoningDialog"
     />
     <McpServersDialog ref="mcpServersDialogRef" @refresh="submitMcpServersDialog" />
-    <ToolDialog ref="toolDialogRef" @refresh="submitToolDialog" />
+    <ToolDialog ref="toolDialogRef" @refresh="submitToolDialog" tool_type="CUSTOM"/>
+    <ToolDialog ref="skillToolDialogRef" @refresh="submitSkillToolDialog" tool_type="SKILL"/>
     <ApplicationDialog ref="applicationDialogRef" @refresh="submitApplicationDialog" />
   </NodeContainer>
 </template>
@@ -466,6 +518,7 @@ ${t('views.problem.title')}：
 const collapseData = reactive({
   MCP: true,
   tool: true,
+  skill: true,
   agent: true,
 })
 
@@ -678,6 +731,41 @@ function removeApplication(id: any) {
   }
 }
 
+
+const skillToolDialogRef = ref()
+function openSkillToolDialog() {
+  skillToolDialogRef.value.open(chat_data.value.skill_tool_ids)
+}
+
+function submitSkillToolDialog(config: any) {
+  chat_data.value.skill_tool_ids = config.tool_ids
+  collapseData.skill = true
+}
+
+const skillToolSelectOptions = ref<any[]>([])
+function getSkillToolSelectOptions() {
+  const obj =
+    apiType.value === 'systemManage'
+      ? {
+          scope: 'WORKSPACE',
+          tool_type: 'SKILL',
+          workspace_id: chat_data.value?.workspace_id,
+        }
+      : {
+          scope: 'WORKSPACE',
+          tool_type: 'SKILL',
+        }
+
+  loadSharedApi({ type: 'tool', systemType: apiType.value })
+    .getAllToolList(obj)
+    .then((res: any) => {
+      skillToolSelectOptions.value = [...res.data.shared_tools, ...res.data.tools].filter(
+        (item: any) => item.is_active,
+      )
+    })
+}
+
+
 onMounted(() => {
   getSelectModel()
   if (typeof props.nodeModel.properties.node_data?.is_result === 'undefined') {
@@ -703,6 +791,7 @@ onMounted(() => {
   getToolSelectOptions()
   getMcpToolSelectOptions()
   getApplicationSelectOptions()
+  getSkillToolSelectOptions()
 })
 </script>
 <style lang="scss" scoped></style>

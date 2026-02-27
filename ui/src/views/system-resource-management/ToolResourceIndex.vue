@@ -92,6 +92,9 @@
             <span v-else-if="scope.row.tool_type === 'DATA_SOURCE'">
               {{ $t('views.tool.dataSource.title') }}
             </span>
+            <span v-else-if="scope.row.tool_type === 'SKILL'">
+              {{ $t('views.application.skill') }}
+            </span>
             <span v-else> {{ $t('views.tool.title') }} </span>
           </template>
         </el-table-column>
@@ -277,6 +280,23 @@
                 </el-button>
               </span>
             </el-tooltip>
+            <el-tooltip
+              effect="dark"
+              :content="$t('common.edit')"
+              placement="top"
+              v-if="!row.template_id && row.tool_type === 'SKILL' && permissionPrecise.edit()"
+            >
+              <span class="mr-8">
+                <el-button
+                  type="primary"
+                  text
+                  @click.stop="openCreateSkillToolDialog(row)"
+                  :title="$t('common.edit')"
+                >
+                  <AppIcon iconName="app-edit"></AppIcon>
+                </el-button>
+              </span>
+            </el-tooltip>
 
             <el-tooltip
               effect="dark"
@@ -376,6 +396,7 @@
 
     <InitParamDrawer ref="InitParamDrawerRef" @refresh="refresh" />
     <ToolFormDrawer ref="ToolFormDrawerRef" @refresh="refresh" :title="ToolDrawertitle" />
+    <SkillToolFormDrawer ref="SkillToolFormDrawerRef" @refresh="refresh" :title="ToolDrawertitle" />
     <McpToolFormDrawer ref="McpToolFormDrawerRef" @refresh="refresh" :title="McpToolDrawertitle" />
     <DataSourceToolFormDrawer
       ref="DataSourceToolFormDrawerRef"
@@ -418,6 +439,7 @@ import permissionMap from '@/permission'
 import McpToolConfigDialog from '@/views/tool/component/McpToolConfigDialog.vue'
 import ResourceMappingDrawer from '@/components/resource_mapping/index.vue'
 import ToolRecordDrawer from '@/views/tool/execution-record/TriggerRecordDrawer.vue'
+import SkillToolFormDrawer from "@/views/tool/SkillToolFormDrawer.vue";
 
 const { user } = useStore()
 
@@ -441,6 +463,10 @@ const type_options = ref<any[]>([
   {
     label: t('views.tool.title'),
     value: 'CUSTOM',
+  },
+  {
+    label: t('views.application.skill'),
+    value: 'SKILL',
   },
 ])
 const source_options = ref<any[]>([
@@ -546,9 +572,11 @@ async function copyTool(row: any) {
 const ToolFormDrawerRef = ref()
 const McpToolFormDrawerRef = ref()
 const DataSourceToolFormDrawerRef = ref()
+const SkillToolFormDrawerRef = ref()
 const ToolDrawertitle = ref('')
 const McpToolDrawertitle = ref('')
 const DataSourceToolDrawertitle = ref('')
+const SkillToolDrawertitle = ref('')
 
 function openCreateDialog(data?: any) {
   // 有template_id的不允许编辑，是模板转换来的
@@ -597,6 +625,24 @@ function openCreateDataSourceDialog(data?: any) {
     })
   } else {
     DataSourceToolFormDrawerRef.value.open(data)
+  }
+}
+
+function openCreateSkillToolDialog(data?: any) {
+  // 有template_id的不允许编辑，是模板转换来的
+  if (data?.template_id) {
+    return
+  }
+
+  SkillToolDrawertitle.value = data
+    ? t('views.application.skill.editSkill')
+    : t('views.application.skill.createSkill')
+  if (data) {
+    ToolResourceApi.getToolById(data?.id, loading).then((res: any) => {
+      SkillToolFormDrawerRef.value.open(res.data)
+    })
+  } else {
+    SkillToolFormDrawerRef.value.open(data)
   }
 }
 

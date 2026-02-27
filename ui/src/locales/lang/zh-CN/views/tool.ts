@@ -4,6 +4,8 @@ export default {
   editTool: '编辑工具',
   createMcpTool: '创建 MCP',
   editMcpTool: '编辑 MCP',
+  createSkillTool: '创建技能',
+  editSkillTool: '编辑技能',
   copyTool: '复制工具',
   copyMcpTool: '复制 MCP',
   importTool: '导入工具',
@@ -32,6 +34,10 @@ export default {
     confirmTip: '是否更新工具：',
     updateStoreToolMessage: '更新工具可能会影响正在使用的资源，请谨慎操作。',
   },
+  skill: {
+    title: '技能',
+    copySkillTool: '复制技能',
+  },
   delete: {
     confirmTitle: '是否刪除工具',
     confirmMessage: '删除后，引用了该工具的智能体提问时会报错 ，请谨慎操作。',
@@ -55,11 +61,19 @@ export default {
       placeholder: '请输入 MCP 名称',
       requiredMessage: '请输入 MCP 名称',
     },
+    skillName: {
+      name: '技能名称',
+      placeholder: '请输入技能名称',
+      requiredMessage: '请输入技能名称',
+    },
     toolDescription: {
       placeholder: '请输入工具的描述',
     },
     mcpDescription: {
       placeholder: '请输入 MCP 的描述',
+    },
+    skillDescription: {
+      placeholder: '请输入技能的描述',
     },
     paramName: {
       label: '参数名',
@@ -89,6 +103,13 @@ export default {
       placeholder: '请输入 MCP Server 配置',
       tip: '仅支持 SSE、Streamable HTTP 调用方式',
       requiredMessage: '请输入 MCP Server Config',
+    },
+    skill: {
+      title: '技能文件',
+      label: '技能配置',
+      placeholder: '请输入技能配置',
+      tip: '上传 Skill 文件包(格式为.zip)',
+      requiredMessage: '请上传技能文件',
     },
     debug: {
       run: '运行',
