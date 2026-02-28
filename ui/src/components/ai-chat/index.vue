@@ -877,6 +877,7 @@ watch(
 
 defineExpose({
   setScrollBottom,
+  loading,
 })
 </script>
 <style lang="scss">

@@ -33,6 +33,7 @@
           @refreshFieldTitle="refreshFieldTitle"
           @clickShare="clickShareHandle"
           :isPcCollapse="isPcCollapse"
+          :chat-loading="AiChatRef?.loading"
         >
           <div class="user-info p-16 cursor">
             <el-avatar
@@ -126,7 +127,12 @@
                 {{ paginationConfig.total }} {{ $t('chat.question_count') }}
               </span>
               <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
-                <el-button text class="ml-12" @click="clickShareHandle">
+                <el-button
+                  text
+                  class="ml-12"
+                  @click="clickShareHandle"
+                  :disabled="AiChatRef?.loading"
+                >
                   <AppIcon iconName="app-share"></AppIcon>
                 </el-button>
               </el-tooltip>

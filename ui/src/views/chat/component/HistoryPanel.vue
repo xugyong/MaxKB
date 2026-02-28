@@ -88,7 +88,7 @@
                           <el-dropdown-menu>
                             <el-dropdown-item
                               @click.stop="shareHandle()"
-                              :disabled="currentChatId !== row.id"
+                              :disabled="currentChatId !== row.id && chat_loading"
                             >
                               <AppIcon iconName="app-share" class="color-secondary"></AppIcon>
                               {{ $t('chat.share') }}
@@ -225,6 +225,7 @@ const props = defineProps<{
   leftLoading?: boolean
   currentChatId: string
   isPcCollapse?: boolean
+  chat_loading?: boolean
 }>()
 const emit = defineEmits([
   'newChat',

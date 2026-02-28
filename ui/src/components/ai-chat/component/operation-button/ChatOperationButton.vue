@@ -138,7 +138,7 @@
         </span>
         <span class="ml-8">
           <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
-            <el-button text @click.stop="clickShareHandle(props.data.record_id)">
+            <el-button text @click.stop="clickShareHandle(props.data.record_id)" :disabled="chat_loading">
               <AppIcon class="color-secondary" iconName="app-share"></AppIcon>
             </el-button>
           </el-tooltip>
