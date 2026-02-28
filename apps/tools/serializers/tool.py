@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import asyncio
+import base64
 import io
 import json
 import os
@@ -613,6 +614,11 @@ class ToolSerializer(serializers.Serializer):
                 id = self.data.get('id')
                 tool = QuerySet(Tool).filter(id=id).first()
                 tool_dict = ToolExportModelSerializer(tool).data
+                # 如果是SKILL类型的工具，校验文件是否存在
+                if tool.tool_type == ToolType.SKILL:
+                    skill_file = QuerySet(File).filter(id=tool.code).first()
+                    if skill_file:
+                        tool_dict['code'] = base64.b64encode(skill_file.get_bytes()).decode('utf-8')
                 mk_instance = ToolInstance(tool_dict, 'v2')
                 tool_pickle = pickle.dumps(mk_instance)
                 response = HttpResponse(content_type='text/plain', content=tool_pickle)
@@ -662,11 +668,23 @@ class ToolSerializer(serializers.Serializer):
                 folder_id = self.data.get('folder_id')
             tool = tool_instance.tool
             tool_id = uuid.uuid7()
+            code = tool.get('code')
+            if tool.get('tool_type') == ToolType.SKILL:
+                skill_file_id = uuid.uuid7()
+                skill_file = File(
+                    id=skill_file_id,
+                    file_name=f"{tool.get('name')}.zip",
+                    source_type=FileSourceType.TOOL,
+                    source_id=tool_id,
+                    meta={}
+                )
+                skill_file.save(base64.b64decode(code))
+                code = skill_file_id
             tool_model = Tool(
                 id=tool_id,
                 name=tool.get('name'),
                 desc=tool.get('desc'),
-                code=tool.get('code'),
+                code=code,
                 user_id=user_id,
                 workspace_id=self.data.get('workspace_id'),
                 input_field_list=tool.get('input_field_list'),
