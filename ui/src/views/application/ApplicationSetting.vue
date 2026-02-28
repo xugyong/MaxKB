@@ -563,7 +563,7 @@
                               {{ relatedObject(skillToolSelectOptions, item, 'id')?.name }}
                             </div>
                           </div>
-                          <el-button text @click="removeTool(item)">
+                          <el-button text @click="removeSkillTool(item)">
                             <el-icon><Close /></el-icon>
                           </el-button>
                         </div>
@@ -1101,6 +1101,14 @@ function removeTool(id: any) {
 function removeMcpTool(id: any) {
   if (applicationForm.value.mcp_tool_ids) {
     applicationForm.value.mcp_tool_ids = applicationForm.value.mcp_tool_ids.filter(
+      (v: any) => v !== id,
+    )
+  }
+}
+
+function removeSkillTool(id: any) {
+  if (applicationForm.value.skill_tool_ids) {
+    applicationForm.value.skill_tool_ids = applicationForm.value.skill_tool_ids.filter(
       (v: any) => v !== id,
     )
   }

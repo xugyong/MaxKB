@@ -323,7 +323,7 @@
                       {{ relatedObject(skillToolSelectOptions, item, 'id')?.name }}
                     </div>
                   </div>
-                  <el-button text @click="removeTool(item)">
+                  <el-button text @click="removeSkillTool(item)">
                     <el-icon><Close /></el-icon>
                   </el-button>
                 </div>
@@ -656,6 +656,10 @@ function removeTool(id: any) {
 function removeMcpTool(id: any) {
   const list = props.nodeModel.properties.node_data.mcp_tool_ids.filter((v: any) => v !== id)
   set(props.nodeModel.properties.node_data, 'mcp_tool_ids', list)
+}
+function removeSkillTool(id: any) {
+ const list = props.nodeModel.properties.node_data.skill_tool_ids.filter((v: any) => v !== id)
+  set(props.nodeModel.properties.node_data, 'skill_tool_ids', list)
 }
 
 const toolSelectOptions = ref<any[]>([])
