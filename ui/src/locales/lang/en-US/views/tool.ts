@@ -5,6 +5,8 @@ export default {
   editTool: 'Edit Tool',
   createMcpTool: 'Create MCP',
   editMcpTool: 'Edit MCP',
+  createSkillTool: 'Create Skill',
+  editSkillTool: 'Edit Skill',
   copyTool: 'Copy Tool',
   copyMcpTool: 'Copy MCP',
   importTool: 'Import Tool',
@@ -40,7 +42,8 @@ export default {
     confirmTitle: 'Confirm deletion of tool:',
     confirmMessage:
       'Deleting this tool will cause errors in agent that reference it when they are queried. Please proceed with caution.',
-    resourceCountMessage: 'This tool is associated with {count} resources, and will be unavailable after deletion. Please proceed with caution.',
+    resourceCountMessage:
+      'This tool is associated with {count} resources, and will be unavailable after deletion. Please proceed with caution.',
   },
   disabled: {
     confirmTitle: 'Confirm disable tool:',

@@ -63,8 +63,8 @@
               </el-dropdown-item>
               <el-dropdown-item @click="openCreateSkillDialog()">
                 <div class="flex align-center">
-                  <el-avatar class="avatar-green" shape="square" :size="32">
-                    <img src="@/assets/tool/icon_tool.svg" style="width: 58%" alt="" />
+                  <el-avatar shape="square" :size="32">
+                    <img src="@/assets/tool/icon_skill.svg" style="width: 58%" alt="" />
                   </el-avatar>
                   <div class="pre-wrap ml-8">
                     <div class="lighter">{{ $t('views.tool.createSkillTool') }}</div>

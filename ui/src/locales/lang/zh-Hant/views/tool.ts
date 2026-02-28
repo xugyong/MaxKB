@@ -4,6 +4,8 @@ export default {
   editTool: '編輯工具',
   createMcpTool: '建立 MCP',
   editMcpTool: '編輯 MCP',
+  createSkillTool: '创建技能',
+  editSkillTool: '编辑技能',
   copyTool: '複製工具',
   copyMcpTool: '複製 MCP',
   importTool: '匯入工具',
