@@ -523,7 +523,7 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     skills_dir = os.path.join(temp_dir, 'skills')
     os.makedirs(skills_dir, exist_ok=True)
 
-    print(f"Initializing skills in temporary directory: {skills_dir}")
+    # print(f"Initializing skills in temporary directory: {skills_dir}")
 
     async def _run():
         try:
