@@ -13,6 +13,7 @@ from models_provider.base_model_provider import IModelProvider, ModelProvideInfo
     ModelTypeConst, ModelInfoManage
 from models_provider.impl.siliconCloud_model_provider.credential.embedding import \
     SiliconCloudEmbeddingCredential
+from models_provider.impl.siliconCloud_model_provider.credential.image import SiliconCloudImageModelCredential
 from models_provider.impl.siliconCloud_model_provider.credential.llm import SiliconCloudLLMModelCredential
 from models_provider.impl.siliconCloud_model_provider.credential.reranker import SiliconCloudRerankerCredential
 from models_provider.impl.siliconCloud_model_provider.credential.stt import SiliconCloudSTTModelCredential
@@ -20,6 +21,7 @@ from models_provider.impl.siliconCloud_model_provider.credential.tti import \
     SiliconCloudTextToImageModelCredential
 from models_provider.impl.siliconCloud_model_provider.credential.tts import SiliconCloudTTSModelCredential
 from models_provider.impl.siliconCloud_model_provider.model.embedding import SiliconCloudEmbeddingModel
+from models_provider.impl.siliconCloud_model_provider.model.image import SiliconCloudImage
 from models_provider.impl.siliconCloud_model_provider.model.llm import SiliconCloudChatModel
 from models_provider.impl.siliconCloud_model_provider.model.reranker import SiliconCloudReranker
 from models_provider.impl.siliconCloud_model_provider.model.stt import SiliconCloudSpeechToText
@@ -32,6 +34,7 @@ openai_llm_model_credential = SiliconCloudLLMModelCredential()
 openai_stt_model_credential = SiliconCloudSTTModelCredential()
 openai_reranker_model_credential = SiliconCloudRerankerCredential()
 openai_tti_model_credential = SiliconCloudTextToImageModelCredential()
+openai_image_model_credential = SiliconCloudImageModelCredential()
 openai_tts_model_credential = SiliconCloudTTSModelCredential()
 model_info_list = [
     ModelInfo('deepseek-ai/DeepSeek-R1-Distill-Llama-8B', '', ModelTypeConst.LLM,
@@ -112,6 +115,11 @@ model_tts_list = [
               ModelTypeConst.TTS, openai_tts_model_credential,
               SiliconCloudTextToSpeech),
 ]
+model_image_info_list = [
+    ModelInfo('Qwen/Qwen3-VL-32B-Instruct', '',
+              ModelTypeConst.IMAGE, openai_image_model_credential,
+              SiliconCloudImage),
+]
 model_info_manage = (
     ModelInfoManage.builder()
     .append_model_info_list(model_info_list)
@@ -130,6 +138,8 @@ model_info_manage = (
     .append_default_model_info(model_rerank_list[0])
     .append_model_info_list(model_tts_list)
     .append_default_model_info(model_tts_list[0])
+    .append_model_info_list(model_image_info_list)
+    .append_default_model_info(model_image_info_list[0])
 
     .build()
 )
