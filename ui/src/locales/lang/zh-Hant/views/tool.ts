@@ -2,15 +2,9 @@ export default {
   title: '工具',
   createTool: '创建工具',
   editTool: '編輯工具',
-  createMcpTool: '建立 MCP',
-  editMcpTool: '編輯 MCP',
-  createSkillTool: '创建技能',
-  editSkillTool: '编辑技能',
   copyTool: '複製工具',
-  copyMcpTool: '複製 MCP',
   importTool: '匯入工具',
   settingTool: '設定工具',
-  mcpConfig: 'MCP服務配置',
   updatedVersion: '更新版本',
   dataSource: {
     title: '數據源',
@@ -33,6 +27,26 @@ export default {
     searchResult: '的搜索結果 {count} 個',
     confirmTip: '是否更新工具：',
     updateStoreToolMessage: '更新工具可能會影響正在使用的資源，請謹慎操作。',
+  },
+  mcp: {
+    title: 'MCP 服務',
+    label: 'MCP Server Config',
+    placeholder: '請輸入 MCP Server配置',
+    tip: '僅支援 SSE、Streamable HTTP 呼叫方式',
+    requiredMessage: '請輸入 MCP Server Config',
+    createMcpTool: '建立 MCP',
+    editMcpTool: '編輯 MCP',
+    copyMcpTool: '複製 MCP',
+    mcpConfig: 'MCP服務配置',
+  },
+  skill: {
+    title: '技能',
+    copySkillTool: '複製技能',
+    createSkillTool: '創建技能',
+    editSkillTool: '編輯技能',
+    initParamPlaceholder: '啟用技能時需要配置的參數',
+    skillFile: '技能文件',
+    reUpload: '重新上傳',
   },
   tip: {
     saveMessage: '當前的更改尚未保存，確認退出嗎？',
@@ -57,12 +71,6 @@ export default {
       placeholder: '請輸入 MCP 名稱',
       requiredMessage: '請輸入 MCP 名稱',
     },
-    toolDescription: {
-      placeholder: '請輸入工具的描述',
-    },
-    mcpDescription: {
-      placeholder: '請輸入 MCP 的描述',
-    },
     paramName: {
       label: '參數名',
       placeholder: '請輸入參數名',
@@ -75,22 +83,12 @@ export default {
       label: '來源',
       reference: '引用參數',
     },
-    required: {
-      label: '是否必填',
-    },
     param: {
       paramInfo1: '使用工具時顯示',
       paramInfo2: '使用工具時不顯示',
       code: '工具内容（Python）',
       selectPlaceholder: '請选择參數',
       inputPlaceholder: '請輸入參數值',
-    },
-    mcp: {
-      title: 'MCP 服務',
-      label: 'MCP Server Config',
-      placeholder: '請輸入 MCP Server配置',
-      tip: '僅支援 SSE、Streamable HTTP 呼叫方式',
-      requiredMessage: '請輸入 MCP Server Config',
     },
     debug: {
       run: '運行',

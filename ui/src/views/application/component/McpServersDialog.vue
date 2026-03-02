@@ -72,15 +72,15 @@
         :rules="[
           {
             required: true,
-            message: $t('common.inputPlaceholder') + ' ' + $t('views.tool.form.mcp.label'),
+            message: $t('common.inputPlaceholder') + ' ' + $t('views.tool.mcp.label'),
           },
         ]"
       >
         <template #label>
-          {{ $t('views.tool.form.mcp.label') }}
+          {{ $t('views.tool.mcp.label') }}
           <span class="color-danger">*</span>
           <el-text type="info" class="color-secondary">
-            （{{ $t('views.tool.form.mcp.tip') }}）
+            （{{ $t('views.tool.mcp.tip') }}）
           </el-text>
         </template>
         <el-input

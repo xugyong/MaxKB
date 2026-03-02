@@ -39,6 +39,7 @@ export default {
     // errorMessage4: '每次最多上传50个文件',
     template: '模板',
     download: '下载',
+    fileLimitSizeTip: '大小不超过',
   },
 
   fileType: {

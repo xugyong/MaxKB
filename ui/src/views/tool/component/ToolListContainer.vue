@@ -67,7 +67,7 @@
                     <img src="@/assets/tool/icon_skill.svg" style="width: 58%" alt="" />
                   </el-avatar>
                   <div class="pre-wrap ml-8">
-                    <div class="lighter">{{ $t('views.tool.createSkillTool') }}</div>
+                    <div class="lighter">{{ $t('views.tool.skill.createSkillTool') }}</div>
                   </div>
                 </div>
               </el-dropdown-item>
@@ -77,7 +77,7 @@
                     <img src="@/assets/tool/icon_mcp.svg" style="width: 75%" alt="" />
                   </el-avatar>
                   <div class="pre-wrap ml-8">
-                    <div class="lighter">{{ $t('views.tool.createMcpTool') }}</div>
+                    <div class="lighter">{{ $t('views.tool.mcp.createMcpTool') }}</div>
                   </div>
                 </div>
               </el-dropdown-item>
@@ -232,7 +232,7 @@
                             @click.stop="showMcpConfig(item)"
                           >
                             <AppIcon iconName="app-operate-log" class="color-secondary"></AppIcon>
-                            {{ $t('views.tool.mcpConfig') }}
+                            {{ $t('views.tool.mcp.mcpConfig') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             v-if="item.template_id && permissionPrecise.edit(item.id)"
@@ -604,7 +604,7 @@ function openCreateMcpDialog(data?: any) {
   if (isShared.value) {
     return
   }
-  McpToolDrawertitle.value = data ? t('views.tool.editMcpTool') : t('views.tool.createMcpTool')
+  McpToolDrawertitle.value = data ? t('views.tool.mcp.editMcpTool') : t('views.tool.mcp.createMcpTool')
   if (data) {
     loadSharedApi({ type: 'tool', systemType: apiType.value })
       .getToolById(data?.id, loading)
@@ -625,7 +625,7 @@ function openCreateSkillDialog(data?: any) {
   if (isShared.value) {
     return
   }
-  SkillToolDrawertitle.value = data ? t('views.tool.editSkillTool') : t('views.tool.createSkillTool')
+  SkillToolDrawertitle.value = data ? t('views.tool.skill.editSkillTool') : t('views.tool.skill.createSkillTool')
   if (data) {
     loadSharedApi({ type: 'tool', systemType: apiType.value })
       .getToolById(data?.id, loading)
@@ -750,7 +750,7 @@ async function copyTool(row: any) {
 }
 
 async function copyMcpTool(row: any) {
-  McpToolDrawertitle.value = t('views.tool.copyMcpTool')
+  McpToolDrawertitle.value = t('views.tool.mcp.copyMcpTool')
   const res = await loadSharedApi({ type: 'tool', systemType: apiType.value }).getToolById(
     row.id,
     changeStateloading,

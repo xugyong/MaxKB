@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="$t('views.tool.mcpConfig')"
+    :title="$t('views.tool.mcp.mcpConfig')"
     width="600"
     v-model="dialogVisible"
     :close-on-click-modal="false"

@@ -43,7 +43,7 @@
           <el-option :label="$t('common.custom')" value="custom" />
         </el-select>
       </el-form-item>
-      <el-form-item :label="$t('views.tool.form.required.label')" @click.prevent>
+      <el-form-item :label="$t('dynamicsForm.paramForm.required.label')" @click.prevent>
         <el-switch size="small" v-model="form.is_required"></el-switch>
       </el-form-item>
     </el-form>

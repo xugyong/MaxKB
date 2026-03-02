@@ -386,3 +386,16 @@
     right: 0!important;
   }
 }
+
+// card upload
+.upload__decoration {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--el-text-color-secondary);
+}
+.el-upload__text {
+  .hover:hover {
+    color: var(--el-color-primary-light-5);
+  }
+}
+

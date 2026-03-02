@@ -26,6 +26,7 @@ export default {
     fileLimitCountTip2: '個文件',
     fileLimitSizeTip1: '每個文件不超過',
     toImportDocConfirm: '當前知識庫的工作流未發布，無法導入文檔，請先發布工作流。',
+    fileLimitSizeTip2: '大小不超過',
   },
   upload: {
     selectFile: '選擇文件',

@@ -32,11 +32,11 @@
                 :size="32"
                 style="background: none"
               >
-                <img :src="String(form.icon)" alt=""/>
+                <img :src="String(form.icon)" alt="" />
               </el-Avatar>
 
               <el-avatar v-else shape="square" :size="32">
-                <img src="@/assets/tool/icon_skill.svg" style="width: 75%" alt=""/>
+                <img src="@/assets/tool/icon_skill.svg" style="width: 75%" alt="" />
               </el-avatar>
               <el-Avatar
                 v-if="showEditIcon"
@@ -51,7 +51,7 @@
             </div>
 
             <el-avatar v-else shape="square" :size="32" class="mr-12">
-              <img src="@/assets/tool/icon_skill.svg" style="width: 65%" alt=""/>
+              <img src="@/assets/tool/icon_skill.svg" style="width: 65%" alt="" />
             </el-avatar>
             <el-input
               v-model="form.name"
@@ -67,7 +67,7 @@
           <el-input
             v-model="form.desc"
             type="textarea"
-            :placeholder="$t('views.tool.form.skillDescription.placeholder')"
+            :placeholder="$t('common.descPlaceholder')"
             maxlength="128"
             show-word-limit
             :autosize="{ minRows: 3 }"
@@ -77,6 +77,9 @@
         <div class="flex-between">
           <h4 class="title-decoration-1 mb-16">
             {{ $t('common.param.initParam') }}
+            <el-text type="info" class="color-secondary lighter">
+              {{ $t('views.tool.skill.initParamPlaceholder') }}
+            </el-text>
           </h4>
           <el-button link type="primary" @click="openAddInitDialog()">
             <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
@@ -92,50 +95,50 @@
           <el-table-column :label="$t('dynamicsForm.paramForm.input_type.label')">
             <template #default="{ row }">
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'TextInput'"
-              >{{ $t('dynamicsForm.input_type_list.TextInput') }}
+                >{{ $t('dynamicsForm.input_type_list.TextInput') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'PasswordInput'"
-              >{{ $t('dynamicsForm.input_type_list.PasswordInput') }}
+                >{{ $t('dynamicsForm.input_type_list.PasswordInput') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'Slider'"
-              >{{ $t('dynamicsForm.input_type_list.Slider') }}
+                >{{ $t('dynamicsForm.input_type_list.Slider') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'SwitchInput'"
-              >{{ $t('dynamicsForm.input_type_list.SwitchInput') }}
+                >{{ $t('dynamicsForm.input_type_list.SwitchInput') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'SingleSelect'"
-              >{{ $t('dynamicsForm.input_type_list.SingleSelect') }}
+                >{{ $t('dynamicsForm.input_type_list.SingleSelect') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'MultiSelect'"
-              >{{ $t('dynamicsForm.input_type_list.MultiSelect') }}
+                >{{ $t('dynamicsForm.input_type_list.MultiSelect') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'RadioCard'"
-              >{{ $t('dynamicsForm.input_type_list.RadioCard') }}
+                >{{ $t('dynamicsForm.input_type_list.RadioCard') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'DatePicker'"
-              >{{ $t('dynamicsForm.input_type_list.DatePicker') }}
+                >{{ $t('dynamicsForm.input_type_list.DatePicker') }}
               </el-tag>
               <el-tag type="info" class="info-tag" v-if="row.input_type === 'JsonInput'"
-              >{{ $t('dynamicsForm.input_type_list.JsonInput') }}
+                >{{ $t('dynamicsForm.input_type_list.JsonInput') }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column :label="$t('common.required')">
             <template #default="{ row }">
               <div @click.stop>
-                <el-switch disabled size="small" v-model="row.required"/>
+                <el-switch disabled size="small" v-model="row.required" />
               </div>
             </template>
           </el-table-column>
           <el-table-column :label="$t('common.operation')" align="left" width="90">
             <template #default="{ row, $index }">
-            <span class="mr-4">
-              <el-tooltip effect="dark" :content="$t('common.modify')" placement="top">
-                <el-button type="primary" text @click.stop="openAddInitDialog(row, $index)">
-                  <AppIcon iconName="app-edit"></AppIcon>
-                </el-button>
-              </el-tooltip>
-            </span>
+              <span class="mr-4">
+                <el-tooltip effect="dark" :content="$t('common.modify')" placement="top">
+                  <el-button type="primary" text @click.stop="openAddInitDialog(row, $index)">
+                    <AppIcon iconName="app-edit"></AppIcon>
+                  </el-button>
+                </el-tooltip>
+              </span>
               <el-tooltip effect="dark" :content="$t('common.delete')" placement="top">
                 <el-button type="primary" text @click="deleteInitField($index)">
                   <AppIcon iconName="app-delete"></AppIcon>
@@ -145,28 +148,68 @@
           </el-table-column>
         </el-table>
         <h4 class="title-decoration-1 mb-16">
-          {{ $t('views.tool.form.skill.title') }}
-          <el-text type="info" class="color-secondary">
-            {{ $t('views.tool.form.skill.tip') }}
-          </el-text>
+          {{ $t('views.tool.skill.skillFile') }}
         </h4>
 
         <el-form-item>
+          <div v-if="form.fileList?.length" class="w-full">
+            <template v-for="(item, index) in form.fileList" :key="index">
+              <el-card shadow="never" style="--el-card-padding: 8px 12px; line-height: normal">
+                <div class="flex-between">
+                  <div class="flex">
+                    <img :src="getImgUrl(item && item?.name)" alt="" width="40" />
+                    <div class="ml-8">
+                      <p class="ellipsis-1" :title="item && item?.name">
+                        {{ item && item?.name }}
+                      </p>
+                      <el-text type="info" size="small">{{
+                        filesize(item && item?.size) || '0K'
+                      }}</el-text>
+                    </div>
+                  </div>
+                  <el-button text @click="deleteFile(index)">
+                    <AppIcon iconName="app-delete"></AppIcon>
+                  </el-button>
+                </div>
+              </el-card>
+            </template>
+
+            <el-upload
+              v-model:file-list="form.fileList"
+              action="#"
+              :auto-upload="false"
+              :show-file-list="false"
+              accept=".zip"
+              :on-change="fileHandleChange"
+            >
+              <el-button link type="primary">{{ $t('views.tool.skill.reUpload') }}</el-button>
+            </el-upload>
+          </div>
           <el-upload
-            ref="uploadRef"
-            class="w-full"
-            accept=".zip"
+            v-else
+            class="w-full mb-4"
+            drag
+            v-model:file-list="form.fileList"
             action="#"
             :auto-upload="false"
-            drag
-            :show-file-list="true"
+            :show-file-list="false"
+            accept=".zip"
             :on-change="fileHandleChange"
           >
-            <el-icon class="el-icon--upload">
-              <upload-filled/>
-            </el-icon>
+            <img src="@/assets/upload-icon.svg" alt="" />
             <div class="el-upload__text">
-              {{ $t('views.tool.form.skill.tip') }} <em>上传文件</em>
+              <p>
+                {{ $t('views.document.upload.uploadMessage') }}
+                <em class="hover">
+                  {{ $t('views.document.upload.selectFile') }}
+                </em>
+              </p>
+              <div class="upload__decoration">
+                <p>
+                  {{ $t('views.document.upload.formats') }}ZIP,
+                  {{ $t('views.document.upload.fileLimitSizeTip') }} {{ file_size_limit }} MB
+                </p>
+              </div>
             </div>
           </el-upload>
         </el-form-item>
@@ -186,9 +229,8 @@
         </el-button>
       </div>
     </template>
-    <EditAvatarDialog ref="EditAvatarDialogRef" @refresh="refreshTool" iconType="SKILL"/>
-    <UserFieldFormDialog ref="UserFieldFormDialogRef" @refresh="refreshInitFieldList"/>
-
+    <EditAvatarDialog ref="EditAvatarDialogRef" @refresh="refreshTool" iconType="SKILL" />
+    <UserFieldFormDialog ref="UserFieldFormDialogRef" @refresh="refreshInitFieldList" />
   </el-drawer>
 </template>
 
@@ -200,20 +242,19 @@ import type { FormInstance, UploadFiles } from 'element-plus'
 import { MsgConfirm, MsgError, MsgSuccess } from '@/utils/message'
 import { cloneDeep } from 'lodash'
 import { t } from '@/locales'
-import { isAppIcon } from '@/utils/common'
+import { filesize, getImgUrl, isAppIcon } from '@/utils/common'
 import { useRoute } from 'vue-router'
 import useStore from '@/stores'
 import permissionMap from '@/permission'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
-import UserFieldFormDialog from "@/views/tool/component/UserFieldFormDialog.vue";
-import { UploadFilled } from '@element-plus/icons-vue'
+import UserFieldFormDialog from '@/views/tool/component/UserFieldFormDialog.vue'
 
 const route = useRoute()
 
 const props = defineProps({
   title: String,
 })
-const {folder, user} = useStore()
+const { folder, user } = useStore()
 
 const apiType = computed(() => {
   if (route.path.includes('shared')) {
@@ -240,7 +281,7 @@ const visible = ref(false)
 const showEditor = ref(false)
 const currentIndex = ref<any>(null)
 const showEditIcon = ref(false)
-const file_size_limit = ref(10)
+const file_size_limit = ref(100)
 
 const form = ref<toolData>({
   name: '',
@@ -250,6 +291,7 @@ const form = ref<toolData>({
   input_field_list: [],
   init_field_list: [],
   tool_type: 'SKILL',
+  fileList: [],
 })
 
 watch(visible, (bool) => {
@@ -265,6 +307,7 @@ watch(visible, (bool) => {
       input_field_list: [],
       init_field_list: [],
       tool_type: 'SKILL',
+      fileList: [],
     }
     FormRef.value?.clearValidate()
   }
@@ -297,8 +340,7 @@ function close() {
       .then(() => {
         visible.value = false
       })
-      .catch(() => {
-      })
+      .catch(() => {})
   }
 }
 
@@ -341,7 +383,7 @@ function deleteInitField(index: any) {
 }
 
 const fileHandleChange = (file: any, fileList: UploadFiles) => {
-  //1、判断文件大小是否合法，文件限制不能大于10M
+  //1、判断文件大小是否合法，文件限制不能大于100M
   const isLimit = file?.size / 1024 / 1024 < file_size_limit.value
   if (!isLimit) {
     MsgError(t('views.document.tip.fileLimitSizeTip1') + file_size_limit.value + 'MB')
@@ -354,14 +396,22 @@ const fileHandleChange = (file: any, fileList: UploadFiles) => {
     fileList.splice(-1, 1)
     return false
   }
+  if (fileList.length > 1) {
+    form.value.fileList = fileList.slice(-1) // 截取最后一个文件
+  }
   const fd = new FormData()
   fd.append('file', file.raw)
-  loadSharedApi({type: 'tool', systemType: apiType.value})
+  loadSharedApi({ type: 'tool', systemType: apiType.value })
     .uploadSkillFile(fd, loading)
     .then((res: any) => {
       form.value.code = res.data
       loading.value = false
     })
+}
+
+function deleteFile(index: number | string) {
+  form.value.fileList?.splice(Number(index), 1)
+  form.value.code = ''
 }
 
 const submit = async (formEl: FormInstance | undefined) => {
@@ -370,7 +420,7 @@ const submit = async (formEl: FormInstance | undefined) => {
     if (valid) {
       loading.value = true
       if (isEdit.value) {
-        loadSharedApi({type: 'tool', systemType: apiType.value})
+        loadSharedApi({ type: 'tool', systemType: apiType.value })
           .putTool(form.value?.id as string, form.value)
           .then((res: any) => {
             MsgSuccess(t('common.editSuccess'))
@@ -389,7 +439,7 @@ const submit = async (formEl: FormInstance | undefined) => {
           folder_id: folder.currentFolder?.id,
           ...form.value,
         }
-        loadSharedApi({type: 'tool', systemType: apiType.value})
+        loadSharedApi({ type: 'tool', systemType: apiType.value })
           .postTool(obj)
           .then((res: any) => {
             MsgSuccess(t('common.createSuccess'))
@@ -407,7 +457,6 @@ const submit = async (formEl: FormInstance | undefined) => {
     }
   })
 }
-
 
 const open = (data: any) => {
   if (data) {

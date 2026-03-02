@@ -275,7 +275,7 @@ function radioChange() {
   form.value.fileList = []
 }
 
-function deleteFile(index: number) {
+function deleteFile(index: number | string) {
   form.value.fileList.splice(index, 1)
 }
 
@@ -361,15 +361,4 @@ defineExpose({
   form,
 })
 </script>
-<style scoped lang="scss">
-.upload__decoration {
-  font-size: 12px;
-  line-height: 20px;
-  color: var(--el-text-color-secondary);
-}
-.el-upload__text {
-  .hover:hover {
-    color: var(--el-color-primary-light-5);
-  }
-}
-</style>
+<style scoped lang="scss"></style>

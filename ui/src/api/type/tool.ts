@@ -9,6 +9,7 @@ interface toolData {
   is_active?: boolean
   folder_id?: string
   tool_type?: string
+  fileList?: Array<any>
 }
 
 interface AddInternalToolParam {

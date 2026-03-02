@@ -64,7 +64,7 @@
           <el-input
             v-model="form.desc"
             type="textarea"
-            :placeholder="$t('views.tool.form.toolDescription.placeholder')"
+            :placeholder="$t('common.descPlaceholder')"
             maxlength="128"
             show-word-limit
             :autosize="{ minRows: 3 }"
@@ -145,7 +145,7 @@
       <div class="flex-between">
         <h4 class="title-decoration-1 mb-16">
           {{ $t('common.param.inputParam') }}
-          <el-text type="info" class="color-secondary">
+          <el-text type="info" class="color-secondary lighter">
             {{ $t('views.tool.form.param.paramInfo1') }}
           </el-text>
         </h4>
@@ -211,7 +211,7 @@
       </div>
       <h4 class="title-decoration-1 mb-16 mt-16">
         {{ $t('common.param.outputParam') }}
-        <el-text type="info" class="color-secondary">
+        <el-text type="info" class="color-secondary lighter">
           {{ $t('views.tool.form.param.paramInfo1') }}
         </el-text>
       </h4>
@@ -333,7 +333,6 @@ const rules = reactive({
     },
   ],
 })
-
 
 function submitCodemirrorEditor(val: string) {
   form.value.code = val

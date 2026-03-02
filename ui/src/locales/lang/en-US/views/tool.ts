@@ -3,15 +3,9 @@ export default {
   all: 'All',
   createTool: 'Create Tool',
   editTool: 'Edit Tool',
-  createMcpTool: 'Create MCP',
-  editMcpTool: 'Edit MCP',
-  createSkillTool: 'Create Skill',
-  editSkillTool: 'Edit Skill',
   copyTool: 'Copy Tool',
-  copyMcpTool: 'Copy MCP',
   importTool: 'Import Tool',
   settingTool: 'Set Tool',
-  mcpConfig: 'MCP Service Config',
   updatedVersion: 'Updated Version',
   dataSource: {
     title: 'Data Source',
@@ -34,6 +28,26 @@ export default {
     searchResult: '{count} search results for',
     confirmTip: 'Are you sure to update tool: ',
     updateStoreToolMessage: 'Updating tools may affect resources in use, so proceed with caution.',
+  },
+  mcp: {
+    title: 'MCP Service',
+    label: 'MCP Server Config',
+    placeholder: 'Please enter MCP Server config',
+    tip: 'Only supports SSE and Streamable HTTP calling methods',
+    requiredMessage: 'Please enter MCP Server Config',
+    createMcpTool: 'Create MCP',
+    editMcpTool: 'Edit MCP',
+    copyMcpTool: 'Copy MCP',
+    mcpConfig: 'MCP Service Config',
+  },
+  skill: {
+    title: 'Skill',
+    copySkillTool: 'Copy Skill',
+    createSkillTool: 'Create Skill',
+    editSkillTool: 'Edit Skill',
+    initParamPlaceholder: 'Parameters required to configure when enabling the skill',
+    skillFile: 'Skill File',
+    reUpload: 'Re-upload',
   },
   tip: {
     saveMessage: 'Unsaved changes will be lost. Are you sure you want to exit?',
@@ -62,12 +76,6 @@ export default {
       placeholder: 'Please enter the MCP name',
       requiredMessage: 'Please enter the MCP name',
     },
-    toolDescription: {
-      placeholder: 'Please enter a description of the tool',
-    },
-    mcpDescription: {
-      placeholder: 'Please enter a description of the MCP',
-    },
     paramName: {
       label: 'Parameter Name',
       placeholder: 'Please enter the parameter name',
@@ -80,22 +88,12 @@ export default {
       label: 'Source',
       reference: 'Reference Parameter',
     },
-    required: {
-      label: 'Required',
-    },
     param: {
       paramInfo1: 'Displayed when using the tool',
       paramInfo2: 'Not displayed when using the tool',
       code: 'Content (Python)',
       selectPlaceholder: 'Please select parameter',
       inputPlaceholder: 'Please enter parameter values',
-    },
-    mcp: {
-      title: 'MCP Service',
-      label: 'MCP Server Config',
-      placeholder: 'Please enter MCP Server config',
-      tip: 'Only supports SSE and Streamable HTTP calling methods',
-      requiredMessage: 'Please enter MCP Server Config',
     },
     debug: {
       run: 'Run',

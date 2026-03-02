@@ -143,14 +143,4 @@ const file_count_limit = computed(() => {
 })
 </script>
 <style lang="scss" scoped>
-.upload__decoration {
-  font-size: 12px;
-  line-height: 20px;
-  color: var(--el-text-color-secondary);
-}
-.el-upload__text {
-  .hover:hover {
-    color: var(--el-color-primary-light-5);
-  }
-}
 </style>

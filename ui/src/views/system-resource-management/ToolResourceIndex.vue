@@ -352,7 +352,7 @@
                     @click.stop="showMcpConfig(row)"
                   >
                     <AppIcon iconName="app-operate-log" class="color-secondary"></AppIcon>
-                    {{ $t('views.tool.mcpConfig') }}
+                    {{ $t('views.tool.mcp.mcpConfig') }}
                   </el-dropdown-item>
 
                   <el-dropdown-item
@@ -600,7 +600,7 @@ function openCreateMcpDialog(data?: any) {
     return
   }
 
-  McpToolDrawertitle.value = data ? t('views.tool.editMcpTool') : t('views.tool.createMcpTool')
+  McpToolDrawertitle.value = data ? t('views.tool.mcp.editMcpTool') : t('views.tool.mcp.createMcpTool')
   if (data) {
     ToolResourceApi.getToolById(data?.id, loading).then((res: any) => {
       McpToolFormDrawerRef.value.open(res.data)

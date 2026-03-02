@@ -293,12 +293,20 @@
                 >
               </div>
               <div class="flex">
-                <el-button type="primary" link @click="openSkillToolDialog" @refreshForm="refreshParam">
+                <el-button
+                  type="primary"
+                  link
+                  @click="openSkillToolDialog"
+                  @refreshForm="refreshParam"
+                >
                   <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
                 </el-button>
               </div>
             </div>
-            <div class="w-full mb-16" v-if="chat_data.skill_tool_ids?.length > 0 && collapseData.skill">
+            <div
+              class="w-full mb-16"
+              v-if="chat_data.skill_tool_ids?.length > 0 && collapseData.skill"
+            >
               <template v-for="(item, index) in chat_data.skill_tool_ids" :key="index">
                 <div class="flex-between border border-r-6 white-bg mb-4" style="padding: 5px 8px">
                   <div class="flex align-center" style="line-height: 20px">
@@ -314,7 +322,7 @@
                         alt=""
                       />
                     </el-avatar>
-                    <ToolIcon v-else class="mr-8" :size="20" :type="relatedObject(skillToolSelectOptions, item, 'id')?.tool_type"/>
+                    <ToolIcon v-else class="mr-8" :size="20" type="SKILL" />
 
                     <div
                       class="ellipsis"
@@ -442,8 +450,8 @@
       @refresh="submitReasoningDialog"
     />
     <McpServersDialog ref="mcpServersDialogRef" @refresh="submitMcpServersDialog" />
-    <ToolDialog ref="toolDialogRef" @refresh="submitToolDialog" tool_type="CUSTOM"/>
-    <ToolDialog ref="skillToolDialogRef" @refresh="submitSkillToolDialog" tool_type="SKILL"/>
+    <ToolDialog ref="toolDialogRef" @refresh="submitToolDialog" tool_type="CUSTOM" />
+    <ToolDialog ref="skillToolDialogRef" @refresh="submitSkillToolDialog" tool_type="SKILL" />
     <ApplicationDialog ref="applicationDialogRef" @refresh="submitApplicationDialog" />
   </NodeContainer>
 </template>
@@ -658,7 +666,7 @@ function removeMcpTool(id: any) {
   set(props.nodeModel.properties.node_data, 'mcp_tool_ids', list)
 }
 function removeSkillTool(id: any) {
- const list = props.nodeModel.properties.node_data.skill_tool_ids.filter((v: any) => v !== id)
+  const list = props.nodeModel.properties.node_data.skill_tool_ids.filter((v: any) => v !== id)
   set(props.nodeModel.properties.node_data, 'skill_tool_ids', list)
 }
 
@@ -735,7 +743,6 @@ function removeApplication(id: any) {
   }
 }
 
-
 const skillToolDialogRef = ref()
 function openSkillToolDialog() {
   skillToolDialogRef.value.open(chat_data.value.skill_tool_ids)
@@ -768,7 +775,6 @@ function getSkillToolSelectOptions() {
       )
     })
 }
-
 
 onMounted(() => {
   getSelectModel()
