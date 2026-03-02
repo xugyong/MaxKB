@@ -314,7 +314,7 @@
                         alt=""
                       />
                     </el-avatar>
-                    <ToolIcon v-else class="mr-8" :size="20" />
+                    <ToolIcon v-else class="mr-8" :size="20" :type="relatedObject(skillToolSelectOptions, item, 'id')?.tool_type"/>
 
                     <div
                       class="ellipsis"
