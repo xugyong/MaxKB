@@ -392,8 +392,9 @@ class DocumentSerializers(serializers.Serializer):
         status = serializers.CharField(required=False, label=_('status'), allow_null=True, allow_blank=True)
         order_by = serializers.CharField(required=False, label=_('order by'), allow_null=True, allow_blank=True)
         tag = serializers.CharField(required=False, label=_('tag'), allow_null=True, allow_blank=True)
-        tag_ids = serializers.ListField(child=serializers.UUIDField(),allow_null=True,required=False,allow_empty=True)
-        no_tag = serializers.BooleanField(required=False,default=False, allow_null=True)
+        tag_ids = serializers.ListField(child=serializers.UUIDField(), allow_null=True, required=False,
+                                        allow_empty=True)
+        no_tag = serializers.BooleanField(required=False, default=False, allow_null=True)
 
         def get_query_set(self):
             query_set = QuerySet(model=Document)
@@ -587,10 +588,14 @@ class DocumentSerializers(serializers.Serializer):
             if with_valid:
                 self.is_valid(raise_exception=True)
             document = QuerySet(Document).filter(id=self.data.get("document_id")).first()
-            paragraph_list = native_search(QuerySet(Paragraph).filter(document_id=self.data.get("document_id")),
-                                           get_file_content(
-                                               os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql',
-                                                            'list_paragraph_document_name.sql')))
+            paragraph_query_set = QuerySet(Paragraph).filter(
+                document_id=self.data.get("document_id")
+            ).order_by('position')
+            paragraph_list = native_search(
+                paragraph_query_set,
+                get_file_content(
+                    os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql', 'list_paragraph_document_name.sql'))
+            )
             problem_mapping_list = native_search(
                 QuerySet(ProblemParagraphMapping).filter(document_id=self.data.get("document_id")), get_file_content(
                     os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql', 'list_problem_mapping.sql')),
@@ -606,10 +611,15 @@ class DocumentSerializers(serializers.Serializer):
             if with_valid:
                 self.is_valid(raise_exception=True)
             document = QuerySet(Document).filter(id=self.data.get("document_id")).first()
-            paragraph_list = native_search(QuerySet(Paragraph).filter(document_id=self.data.get("document_id")),
-                                           get_file_content(
-                                               os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql',
-                                                            'list_paragraph_document_name.sql')))
+            paragraph_query_set = QuerySet(Paragraph).filter(
+                document_id=self.data.get("document_id")
+            ).order_by('position')
+            paragraph_list = native_search(
+                paragraph_query_set,
+                get_file_content(
+                    os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql', 'list_paragraph_document_name.sql')
+                )
+            )
             problem_mapping_list = native_search(
                 QuerySet(ProblemParagraphMapping).filter(document_id=self.data.get("document_id")), get_file_content(
                     os.path.join(PROJECT_DIR, "apps", "knowledge", 'sql', 'list_problem_mapping.sql')),
@@ -1350,7 +1360,6 @@ class DocumentSerializers(serializers.Serializer):
             if new_relations:
                 QuerySet(DocumentTag).bulk_create(new_relations)
 
-
         def batch_export(self, instance: Dict, with_valid=True):
             if with_valid:
                 BatchSerializer(data=instance).is_valid(model=Document, raise_exception=True)
@@ -1410,7 +1419,6 @@ class DocumentSerializers(serializers.Serializer):
                 zip_dir(tempdir, zip_buffer)
             response.write(zip_buffer.getvalue())
             return response
-
 
     class BatchGenerateRelated(serializers.Serializer):
         workspace_id = serializers.CharField(required=True, label=_('workspace id'))
