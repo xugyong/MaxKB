@@ -11,6 +11,25 @@
         >
           <!-- 登录方式选择框 -->
           <el-form-item
+            :label="$t('views.system.login_method')"
+            :rules="[
+              {
+                required: true,
+                message: $t('views.applicationOverview.appInfo.LimitDialog.loginMethodRequired'),
+                trigger: 'change',
+              },
+            ]"
+            prop="login_methods"
+            style="padding-top: 16px"
+          >
+            <el-checkbox-group v-model="form.login_methods" @change="handleLoginMethodsChange">
+              <template v-for="t in systemLoginMethods" :key="t.value">
+                <el-checkbox :label="t.label" :value="t.value"/>
+              </template>
+            </el-checkbox-group>
+          </el-form-item>
+
+          <el-form-item
             :label="$t('views.system.default_login')"
             :rules="[
               {
@@ -20,7 +39,6 @@
               },
             ]"
             prop="default_value"
-            style="padding-top: 16px"
           >
             <el-radio-group
               v-model="form.default_value"
@@ -209,19 +227,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { ComplexPermission } from '@/utils/permission/type'
-import { EditionConst, PermissionConst, RoleConst } from '@/utils/permission/data'
-import type { FormInstance } from 'element-plus'
-import { t } from '@/locales'
+import {computed, onMounted, ref, watch} from 'vue'
+import {ComplexPermission} from '@/utils/permission/type'
+import {EditionConst, PermissionConst, RoleConst} from '@/utils/permission/data'
+import type {FormInstance} from 'element-plus'
+import {t} from '@/locales'
 import authApi from '@/api/system-settings/auth-setting.ts'
-import { MsgSuccess } from '@/utils/message.ts'
+import {MsgSuccess} from '@/utils/message.ts'
 import WorkspaceApi from '@/api/workspace/workspace.ts'
 import useStore from '@/stores'
-import { AuthorizationEnum } from '@/enums/system.ts'
-import { hasPermission } from '@/utils/permission'
+import {AuthorizationEnum} from '@/enums/system.ts'
+import {hasPermission} from '@/utils/permission'
 
 const loginMethods = ref<Array<{ label: string; value: string }>>([])
+const systemLoginMethods = ref<Array<{ label: string; value: string }>>([])
 const loading = ref(false)
 // 明确允许 null，避免未挂载时访问出错
 const authFormRef = ref<FormInstance | null>(null)
@@ -234,6 +253,7 @@ const form = ref<any>({
   role_id: 'USER',
   workspace_id: 'default',
   permission: 'NOT_AUTH',
+  login_methods: ['LOCAL'],
 })
 
 const normalizeInputValue = (val: number | null): number => {
@@ -275,6 +295,7 @@ const submit = async () => {
       role_id: form.value.role_id,
       workspace_id: form.value.workspace_id,
       permission: form.value.permission,
+      login_methods: form.value.login_methods,
     }
     await authApi.putLoginSetting(params)
     MsgSuccess(t('common.saveSuccess'))
@@ -288,7 +309,7 @@ const submit = async () => {
 
 const roleOptions = ref<Array<{ id: string; name: string; type?: string }>>([])
 const workspaceOptions = ref<Array<{ id: string; name: string }>>([])
-const { user } = useStore()
+const {user} = useStore()
 const selectedRoleType = ref<string>('') // 存储选中角色类型，用于控制 workspace 显示
 const showWorkspaceSelector = computed(() => selectedRoleType.value !== 'ADMIN')
 const showPermissionSelector = computed(() => selectedRoleType.value === 'USER')
@@ -329,6 +350,26 @@ const handleRoleChange = (roleId: string) => {
     form.value.workspace_id = 'default'
   }
 }
+const handleLoginMethodsChange = (values: string[]) => {
+  // 根据选中的登录方式过滤 systemLoginMethods
+  loginMethods.value = systemLoginMethods.value.filter(method =>
+    values.includes(method.value)
+  )
+
+  // 如果当前默认登录方式不在选中的范围内，则重置为第一个选中的方式
+  if (values.length > 0 && !values.includes(form.value.default_value)) {
+    form.value.default_value = values[0]
+  }
+
+  // 如果没有任何选中的登录方式，清空默认登录方式
+  if (values.length === 0) {
+    form.value.default_value = ''
+    // 重新触发验证
+    setTimeout(() => {
+      authFormRef.value?.validateField('login_methods')
+    }, 0)
+  }
+}
 
 onMounted(async () => {
   loading.value = true
@@ -338,24 +379,24 @@ onMounted(async () => {
     // 并行请求：角色列表 + 登录设置；若为 EE 同时请求 workspace 列表
     const roleP = WorkspaceApi.getWorkspaceRoleList()
       .then((r) => r)
-      .catch(() => ({ data: [] }))
+      .catch(() => ({data: []}))
     const settingP = authApi
       .getLoginSetting()
       .then((r) => r)
-      .catch(() => ({ data: {} }))
+      .catch(() => ({data: {}}))
     const tasks: Promise<any>[] = [roleP, settingP]
     if (isEE) {
       tasks.push(
         WorkspaceApi.getWorkspaceList()
           .then((r) => r)
-          .catch(() => ({ data: [] })),
+          .catch(() => ({data: []})),
       )
     }
 
     const results = await Promise.all(tasks)
-    const roleRes = results[0] ?? { data: [] }
-    const settingRes = results[1] ?? { data: {} }
-    const workspaceRes = isEE ? (results[2] ?? { data: [] }) : null
+    const roleRes = results[0] ?? {data: []}
+    const settingRes = results[1] ?? {data: {}}
+    const workspaceRes = isEE ? (results[2] ?? {data: []}) : null
 
     // 处理角色列表（尽早回显）
     const rolesData = Array.isArray(roleRes?.data) ? roleRes.data : []
@@ -377,11 +418,12 @@ onMounted(async () => {
       permission: data.permission ?? form.value.permission ?? 'NOT_AUTH',
     }
     loginMethods.value = Array.isArray(data.auth_types) ? data.auth_types : []
+    systemLoginMethods.value = Array.isArray(data.system_options) ? data.system_options : []
 
     // 处理 workspace 列表（如果需要）
     if (isEE && workspaceRes) {
       const wks = Array.isArray(workspaceRes.data) ? workspaceRes.data : []
-      workspaceOptions.value = wks.map((item: any) => ({ id: item.id, name: item.name }))
+      workspaceOptions.value = wks.map((item: any) => ({id: item.id, name: item.name}))
     }
 
     // 初始化 selectedRoleType（基于当前回显的 role_id 与已加载的 roleOptions）

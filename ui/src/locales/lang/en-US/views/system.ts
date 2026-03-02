@@ -154,6 +154,7 @@ export default {
     management: 'Manage',
   },
   default_login: 'Default Login Method',
+  login_method: 'Login Method',
   display_code: 'Account login verification code setting',
   loginFailed: 'Login failed',
   loginFailedMessage: 'Display verification code twice',

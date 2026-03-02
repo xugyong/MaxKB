@@ -155,6 +155,7 @@ export default {
     management: '管理',
   },
   default_login: '預設登入方式',
+  login_method: '登入方式',
   display_code: '帳號登入驗證碼設定',
   loginFailed: '登入失敗',
   loginFailedMessage: '次顯示驗證碼',
