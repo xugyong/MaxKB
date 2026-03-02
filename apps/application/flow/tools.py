@@ -615,10 +615,16 @@ def get_workflow_resource(workflow, node_handle):
 
 
 application_instance_field_call_dict = {
-    'TOOL': [lambda instance: instance.mcp_tool_ids or [], lambda instance: instance.tool_ids or []],
-    'MODEL': [lambda instance: [instance.model_id] if instance.model_id else [],
-              lambda instance: [instance.tts_model_id] if instance.tts_model_id else [],
-              lambda instance: [instance.stt_model_id] if instance.stt_model_id else []]
+    'TOOL': [
+        lambda instance: instance.mcp_tool_ids or [],
+        lambda instance: instance.skill_tool_ids or [],
+        lambda instance: instance.tool_ids or []
+    ],
+    'MODEL': [
+        lambda instance: [instance.model_id] if instance.model_id else [],
+        lambda instance: [instance.tts_model_id] if instance.tts_model_id else [],
+        lambda instance: [instance.stt_model_id] if instance.stt_model_id else []
+    ]
 }
 knowledge_instance_field_call_dict = {
     'MODEL': [lambda instance: [instance.embedding_model_id] if instance.embedding_model_id else []],
