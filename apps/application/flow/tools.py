@@ -330,6 +330,7 @@ async def _initialize_skills(mcp_servers, temp_dir):
                 continue
             # get_bytes 可能也涉及 IO，也用 sync_to_async 包装
             file_bytes = await sync_to_async(file.get_bytes)()
+            params = skill_file.get('params', {})
             with zipfile.ZipFile(io.BytesIO(file_bytes), 'r') as zip_ref:
                 members = [
                     m for m in zip_ref.namelist()
@@ -339,6 +340,25 @@ async def _initialize_skills(mcp_servers, temp_dir):
                     if ".." in member or member.startswith("/"):
                         raise ValueError(f"非法路径: {member}")
                 zip_ref.extractall(skills_dir, members=members)
+
+                # 获取技能解压后的顶级目录名
+                top_level_dirs = set()
+                for member in members:
+                    parts = member.split('/')
+                    if parts[0]:
+                        top_level_dirs.add(parts[0])
+
+                # 将 params 写入每个顶级目录下的 .env 文件
+                if params:
+                    env_lines = []
+                    for key, value in params.items():
+                        # 对含空格或特殊字符的值加引号
+                        env_lines.append(f'{key}={value}')
+                    env_content = '\n'.join(env_lines) + '\n'
+                    for top_dir in top_level_dirs:
+                        env_path = os.path.join(skills_dir, top_dir, '.env')
+                        with open(env_path, 'w', encoding='utf-8') as f:
+                            f.write(env_content)
 
         os.system("chmod -R g+rx " + temp_dir)  # 确保技能目录可访问
 
