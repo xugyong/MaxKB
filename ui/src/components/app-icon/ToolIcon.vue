@@ -2,6 +2,9 @@
   <el-avatar v-if="type == 'MCP'" shape="square" :size="size">
     <img src="@/assets/tool/icon_mcp.svg" style="width: 75%" alt="" />
   </el-avatar>
+  <el-avatar v-else-if="type == 'SKILL'" shape="square" :size="size">
+    <img src="@/assets/tool/icon_skill.svg" style="width: 75%" alt="" />
+  </el-avatar>
   <el-avatar v-else-if="type == 'DATA_SOURCE'" class="avatar-purple" shape="square" :size="size">
     <img src="@/assets/tool/icon_datasource.svg" style="width: 58%" alt="" />
   </el-avatar>
