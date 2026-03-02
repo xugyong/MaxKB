@@ -237,29 +237,10 @@ def to_stream_response_simple(stream_event):
 
 
 tool_message_json_template = """
-```json
 %s
-```
 """
 
-tool_message_complete_template = """
-<details>
-    <summary>
-        <strong>Called MCP Tool: <em>%s</em></strong>
-    </summary>
-
-**Input:**
-%s
-
-**Output:**
-%s
-
-</details>
-
-"""
-
-
-def generate_tool_message_complete(name, input_content, output_content):
+def generate_tool_message_complete(icon, name, input_content, output_content):
     """生成包含输入和输出的工具消息模版"""
     # 格式化输入
     if '```' not in input_content:
@@ -276,8 +257,16 @@ def generate_tool_message_complete(name, input_content, output_content):
             output_formatted = output_content
     else:
         output_formatted = output_content
-
-    return tool_message_complete_template % (name, input_formatted, output_formatted)
+    content = {
+        "icon": icon,
+        "title": name,
+        "type": "simple-tool-calls",
+        "content": {
+            "input": input_formatted,
+            "output": output_formatted
+        }
+    }
+    return f'<tool_calls_render>{json.dumps(content)}</tool_calls_render>'
 
 
 # 全局单例事件循环
@@ -472,6 +461,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                     except Exception as e:
                         tool_result = chunk[0].content
                     content = generate_tool_message_complete(
+                        tool_info.get('icon', ''),
                         tool_info['name'],
                         tool_info['input'],
                         tool_result
@@ -501,6 +491,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
 
 async def save_tool_record(tool_id, tool_info, tool_result, source_id, source_type):
     tool = await sync_to_async(lambda: QuerySet(Tool).filter(id=tool_id).first())()
+    tool_info['icon'] = tool.icon
     tool_record = ToolRecord(
         id=uuid.uuid7(),
         workspace_id=tool.workspace_id,
