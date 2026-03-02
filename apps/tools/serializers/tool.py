@@ -602,10 +602,18 @@ class ToolSerializer(serializers.Serializer):
                     for k in tool.init_params:
                         if k in password_fields and tool.init_params[k]:
                             tool.init_params[k] = encryption(tool.init_params[k])
+            if tool.tool_type == 'SKILL':
+                skill_file = QuerySet(File).filter(id=tool.code).first()
+                skill_file_dict = {
+                    'id': str(skill_file.id),
+                    'name': skill_file.file_name,
+                    'size': skill_file.file_size,
+                } if skill_file else None
             return {
                 **ToolModelSerializer(tool).data,
                 'init_params': tool.init_params if tool.init_params else {},
-                'nick_name': nick_name
+                'nick_name': nick_name,
+                'fileList': [skill_file_dict] if tool.tool_type == 'SKILL' else []
             }
 
         def export(self):
