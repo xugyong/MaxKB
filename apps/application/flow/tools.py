@@ -560,7 +560,8 @@ async def anext_async(agen):
 target_source_node_mapping = {
     'TOOL': {'tool-lib-node': lambda n: [n.get('properties').get('node_data').get('tool_lib_id')],
              'ai-chat-node': lambda n: [*(n.get('properties').get('node_data').get('mcp_tool_ids') or []),
-                                        *(n.get('properties').get('node_data').get('tool_ids') or [])],
+                                        *(n.get('properties').get('node_data').get('tool_ids') or []),
+                                        *(n.get('properties').get('node_data').get('skill_tool_ids') or [])],
              'mcp-node': lambda n: [n.get('properties').get('node_data').get('mcp_tool_id')]
              },
     'MODEL': {'ai-chat-node': lambda n: [n.get('properties').get('node_data').get('model_id')],
@@ -672,8 +673,9 @@ def get_tool_id_list(workflow):
         elif node.get('type') == 'ai-chat-node':
             node_data = node.get('properties', {}).get('node_data', {})
             mcp_tool_ids = node_data.get('mcp_tool_ids') or []
+            skill_tool_ids = node_data.get('skill_tool_ids') or []
             tool_ids = node_data.get('tool_ids') or []
-            for _id in mcp_tool_ids + tool_ids:
+            for _id in mcp_tool_ids + tool_ids + skill_tool_ids:
                 _result.append(_id)
         elif node.get('type') == 'mcp-node':
             mcp_tool_id = node.get('properties', {}).get('node_data', {}).get('mcp_tool_id')
