@@ -13,7 +13,6 @@
         :rules="rules"
         label-position="top"
         require-asterisk-position="right"
-        hide-required-asterisk
         v-loading="loading"
         @submit.prevent
       >
@@ -151,7 +150,7 @@
           {{ $t('views.tool.skill.skillFile') }}
         </h4>
 
-        <el-form-item>
+        <el-form-item prop="fileList">
           <div v-if="form.fileList?.length" class="w-full">
             <template v-for="(item, index) in form.fileList" :key="index">
               <el-card shadow="never" style="--el-card-padding: 8px 12px; line-height: normal">
@@ -167,9 +166,6 @@
                       }}</el-text>
                     </div>
                   </div>
-                  <el-button text @click="deleteFile(index)">
-                    <AppIcon iconName="app-delete"></AppIcon>
-                  </el-button>
                 </div>
               </el-card>
             </template>
@@ -321,12 +317,8 @@ const rules = reactive({
       trigger: 'blur',
     },
   ],
-  code: [
-    {
-      required: true,
-      message: t('views.tool.form.skill.requiredMessage'),
-      trigger: 'blur',
-    },
+  fileList: [
+    { required: true, message: t('views.document.upload.requiredMessage'), trigger: 'change' },
   ],
 })
 
@@ -407,11 +399,6 @@ const fileHandleChange = (file: any, fileList: UploadFiles) => {
       form.value.code = res.data
       loading.value = false
     })
-}
-
-function deleteFile(index: number | string) {
-  form.value.fileList?.splice(Number(index), 1)
-  form.value.code = ''
 }
 
 const submit = async (formEl: FormInstance | undefined) => {
