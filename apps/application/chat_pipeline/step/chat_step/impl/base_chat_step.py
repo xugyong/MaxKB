@@ -211,9 +211,9 @@ class BaseChatStep(IChatStep):
             'run_time': self.context.get('run_time') or 0,
             'model_id': str(manage.context['model_id']),
             'message_list': self.reset_message_list(self.context['step_args'].get('message_list'),
-                                                    self.context['answer_text']),
-            'message_tokens': self.context['message_tokens'],
-            'answer_tokens': self.context['answer_tokens'],
+                                                    self.context.get('answer_text')),
+            'message_tokens': self.context.get('message_tokens'),
+            'answer_tokens': self.context.get('answer_tokens'),
             'cost': 0,
         }
 
