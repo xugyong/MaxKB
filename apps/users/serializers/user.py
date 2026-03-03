@@ -26,7 +26,7 @@ from common.constants.permission_constants import RoleConstants, Auth, ResourceA
 from common.database_model_manage.database_model_manage import DatabaseModelManage
 from common.db.search import page_search
 from common.exception.app_exception import AppApiException
-from common.utils.common import valid_license, password_encrypt
+from common.utils.common import valid_license, password_encrypt, get_random_chars
 from common.utils.rsa_util import decrypt
 from maxkb import settings
 from maxkb.conf import PROJECT_DIR
