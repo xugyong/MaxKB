@@ -315,7 +315,7 @@
             >
               <img
                 v-show="isDisabledChat || loading || uploadLoading"
-                src="@/assets/icon_send.svg"
+                src="@/assets/chat/icon_send.svg"
                 alt=""
               />
               <SendIcon v-show="!isDisabledChat && !loading && !uploadLoading" />

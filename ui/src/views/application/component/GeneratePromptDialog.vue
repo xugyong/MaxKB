@@ -83,7 +83,7 @@
                 >
                   <img
                     v-show="!inputValue.trim() || loading || isStreaming"
-                    src="@/assets/icon_send.svg"
+                    src="@/assets/chat/icon_send.svg"
                     alt=""
                   />
                   <SendIcon v-show="inputValue.trim() && !loading && !isStreaming" />

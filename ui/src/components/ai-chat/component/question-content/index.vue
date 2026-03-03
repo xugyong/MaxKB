@@ -123,7 +123,7 @@
             >
               <img
                 v-show="!editText.trim() || editText.trim() === chatRecord.problem_text.trim()"
-                src="@/assets/icon_send.svg"
+                src="@/assets/chat/icon_send.svg"
                 alt=""
               />
               <SendIcon

@@ -222,10 +222,10 @@
             :disabled="isDisabledChart || loading"
             @click="sendChatHandle"
           >
-            <img v-show="isDisabledChart || loading" src="@/assets/icon_send.svg" alt="" />
+            <img v-show="isDisabledChart || loading" src="@/assets/chat/icon_send.svg" alt="" />
             <img
               v-show="!isDisabledChart && !loading"
-              src="@/assets/icon_send_colorful.svg"
+              src="@/assets/chat/icon_send_colorful.svg"
               alt=""
             />
           </el-button>

@@ -327,7 +327,7 @@
                     />
                   </div>
                 </div>
-                <el-card shadow="never" class="card-never" style="--el-card-padding: 12px">
+                <el-card shadow="never" class="card-never mb-8" style="--el-card-padding: 12px">
                   <!-- MCP-->
                   <div v-if="toolPermissionPrecise.read()">
                     <div class="flex-between mb-8" @click="collapseData.MCP = !collapseData.MCP">
