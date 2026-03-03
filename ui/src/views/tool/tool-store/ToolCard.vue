@@ -29,6 +29,9 @@
       <el-tag type="info" v-if="props.tool?.label === 'data_source'" class="info-tag">
         {{ $t('views.tool.dataSource.title') }}
       </el-tag>
+      <el-tag type="info" v-else-if="props.tool?.label === 'skill'" class="info-tag">
+        {{ $t('views.tool.skill.title') }}
+      </el-tag>
       <el-tag type="info" class="info-tag" v-else>
         {{ $t('views.tool.title') }}
       </el-tag>
