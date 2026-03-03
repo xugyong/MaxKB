@@ -55,7 +55,7 @@ export default {
   verificationCode: {
     placeholder: 'Please enter the verification code',
     getVerificationCode: 'Get Verification Code',
-    successMessage: 'Verification code sent successfully',
+    successMessage: 'If the email address is already registered, we will send an email. Please check your inbox',
     resend: 'Resend',
   },
 }

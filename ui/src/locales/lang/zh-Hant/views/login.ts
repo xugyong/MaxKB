@@ -55,7 +55,7 @@ export default {
   verificationCode: {
     placeholder: '請輸入驗證碼',
     getVerificationCode: '獲取驗證碼',
-    successMessage: '驗證碼發送成功',
+    successMessage: '若該郵箱已註冊，我們將發送郵件，請注意查收',
     resend: '重新發送',
   },
 }

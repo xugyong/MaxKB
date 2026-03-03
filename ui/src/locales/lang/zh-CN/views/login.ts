@@ -55,7 +55,7 @@ export default {
   verificationCode: {
     placeholder: '请输入验证码',
     getVerificationCode: '获取验证码',
-    successMessage: '验证码发送成功',
+    successMessage: '如果该邮箱已注册，我们将发送邮件，请注意查收',
     resend: '重新发送',
   },
 }

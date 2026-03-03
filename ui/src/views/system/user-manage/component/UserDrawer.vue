@@ -128,6 +128,7 @@ import {AuthorizationEnum, RoleTypeEnum} from '@/enums/system'
 import useStore from '@/stores'
 import {hasPermission} from "@/utils/permission";
 import {EditionConst} from "@/utils/permission/data.ts";
+import forge from "node-forge";
 
 const {user} = useStore()
 const props = defineProps({
@@ -439,6 +440,11 @@ const submit = async (formEl: FormInstance | undefined) => {
           })
       } else {
         params.defaultPermission = defaultPermission.value
+        const publicKey = forge.pki.publicKeyFromPem(user.rasKey);
+        const utf8Bytes = forge.util.encodeUtf8(params.password);
+        const encrypted = publicKey.encrypt(utf8Bytes, 'RSAES-PKCS1-V1_5');
+        params.password = forge.util.encode64(encrypted);
+        params.encrypted = true;
         userManageApi
           .postUserManage(params, loading)
           .then((res) => {
