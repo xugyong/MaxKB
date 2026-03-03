@@ -1,6 +1,6 @@
 <template>
   <div class="item-content lighter">
-    <el-space :fill="true" wrap>
+    <el-space :fill="true" wrap class="w-full">
       <div v-for="(answer_text, index) in answer_text_list" :key="index">
         <div class="avatar mr-8" v-if="showAvatar">
           <img v-if="application.avatar" :src="application.avatar" height="28px" width="28px" />
