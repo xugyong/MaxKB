@@ -27,6 +27,7 @@ from common.database_model_manage.database_model_manage import DatabaseModelMana
 from common.db.search import page_search
 from common.exception.app_exception import AppApiException
 from common.utils.common import valid_license, password_encrypt
+from common.utils.rsa_util import decrypt
 from maxkb import settings
 from maxkb.conf import PROJECT_DIR
 from system_manage.models import SystemSetting, SettingType, AuthTargetType, WorkspaceUserResourcePermission
@@ -333,6 +334,8 @@ class UserManageSerializer(serializers.Serializer):
     @transaction.atomic
     def save(self, instance, user_id, with_valid=True):
         if with_valid:
+            if instance.get('encrypted'):
+                instance['password'] = decrypt(instance.get('password'))
             self.UserInstance(data=instance).is_valid(raise_exception=True)
 
         user = User(
@@ -1105,7 +1108,7 @@ class SendEmailSerializer(serializers.Serializer):
                 recipient_list=[email], fail_silently=False, connection=connection)
         except Exception as e:
             cache.delete(get_key(code_cache_key_lock))
-            raise AppApiException(500, f"{str(e)}" + _("Email sending failed"))
+            return True
         cache.set(get_key(code_cache_key), code, timeout=60 * 30, version=version)
         return True
 
