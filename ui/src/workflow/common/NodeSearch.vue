@@ -1,25 +1,27 @@
 <template>
   <div>
-    <!-- 搜索遮罩层 -->
-    <Teleport to="body">
-      <div v-if="showSearch" class="search-mask" @click.self="closeSearch">
-        <div class="search-container">
-          <el-input
-            ref="searchInputRef"
-            v-model="searchText"
-            placeholder="搜索..."
-            :prefix-icon="Search"
-            clearable
-            @keyup.enter="handleSearch"
-            @keyup.esc="closeSearch"
-          >
-            <template #append>
-              <el-button @click="closeSearch">取消</el-button>
-            </template>
-          </el-input>
-        </div>
+    <!-- 搜索 -->
+    <el-card
+      v-if="showSearch"
+      shadow="always"
+      style="--el-card-padding: 8px 12px; --el-card-border-radius: 8px"
+    >
+      <div class="workflow-search-container">
+        <el-input
+          ref="searchInputRef"
+          v-model="searchText"
+          placeholder="搜索..."
+          :prefix-icon="Search"
+          clearable
+          @keyup.enter="handleSearch"
+          @keyup.esc="closeSearch"
+        >
+          <template #append>
+            <el-button @click="closeSearch">取消</el-button>
+          </template>
+        </el-input>
       </div>
-    </Teleport>
+    </el-card>
   </div>
 </template>
 
@@ -91,79 +93,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.search-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  z-index: 9999;
-  padding-top: 20vh;
-}
-
-.search-container {
-  width: 500px;
-  max-width: 90%;
-  animation: slideDown 0.2s ease;
-}
-
-/* 原生输入框样式 */
-.native-search {
-  display: flex;
-  gap: 8px;
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.native-search input {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  font-size: 14px;
-  outline: none;
-}
-
-.native-search input:focus {
-  border-color: #409eff;
-}
-
-.native-search button {
-  padding: 0 16px;
-  background: white;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.native-search button:hover {
-  border-color: #409eff;
-  color: #409eff;
-}
-
-.content {
-  padding: 20px;
-}
-
-.item {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.workflow-search-container {
+  width: 360px;
 }
 </style>

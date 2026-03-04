@@ -3,7 +3,7 @@
   <!-- 辅助工具栏 -->
   <Control class="workflow-control" v-if="lf" :lf="lf"></Control>
   <TeleportContainer :flow-id="flowId" />
-  <NodeSearch :on-search="onSearch"></NodeSearch>
+  <NodeSearch class="workflow-search" :on-search="onSearch"></NodeSearch>
 </template>
 <script setup lang="ts">
 import LogicFlow from '@logicflow/core'
@@ -230,6 +230,13 @@ defineExpose({
   position: absolute;
   bottom: 24px;
   left: 24px;
+  z-index: 2;
+}
+.workflow-search {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
 }
 .lf-drag-able {
