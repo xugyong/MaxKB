@@ -55,10 +55,10 @@
               <span class="font-medium ml-8 break-all" :title="item.name">{{ item.name }}</span>
             </div>
             <div v-if="item.type" class="status-tag" style="margin-left: auto">
-              <el-tag class="warning-tag" v-if="isWorkFlow(item.type)">
+              <el-tag size="small" class="warning-tag" v-if="isWorkFlow(item.type)">
                 {{ $t('views.application.senior') }}
               </el-tag>
-              <el-tag class="blue-tag" v-else>
+              <el-tag size="small" class="blue-tag" v-else>
                 {{ $t('views.application.simple') }}
               </el-tag>
             </div>

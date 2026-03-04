@@ -727,7 +727,7 @@ onUnmounted(() => {
     }
     &:hover {
       border-radius: var(--app-border-radius-small);
-      background: var(--app-text-color-light-1);
+      background: rgba(var(--el-text-color-primary-rgb), 0.1);
     }
     &.is-active {
       &:hover {

@@ -1,7 +1,7 @@
 <template>
   <div @mousedown="mousedown" class="workflow-node-container p-16" style="overflow: visible">
     <div
-      class="step-container app-card p-16"
+      class="step-container white-bg border-r-8 p-16"
       :class="{ isSelected: props.nodeModel.isSelected, error: node_status !== 200 }"
       style="overflow: visible"
     >
@@ -443,8 +443,9 @@ onMounted(() => {
   .step-container {
     border: 2px solid #ffffff !important;
     box-sizing: border-box;
+    box-shadow: 0px 2px 4px 0px rgba(var(--el-text-color-primary-rgb), 0.12);
     &:hover {
-      box-shadow: 0px 6px 24px 0px rgba(31, 35, 41, 0.08);
+      box-shadow: 0px 6px 24px 0px rgba(var(--el-text-color-primary-rgb), 0.08);
     }
     &.isSelected {
       border: 2px solid var(--el-color-primary) !important;
@@ -453,14 +454,6 @@ onMounted(() => {
       border: 1px solid #f54a45 !important;
     }
   }
+}
 
-}
-:deep(.el-card) {
-  overflow: visible;
-}
-.app-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px 0px rgba(31, 35, 41, 0.12);
-}
 </style>

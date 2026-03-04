@@ -97,10 +97,10 @@
                         </el-text>
                       </template>
                       <template #tag>
-                        <el-tag v-if="isWorkFlow(item.type)" class="warning-tag">
+                        <el-tag v-if="isWorkFlow(item.type)" size="small" class="warning-tag">
                           {{ $t('views.application.senior') }}
                         </el-tag>
-                        <el-tag class="blue-tag" v-else>
+                        <el-tag size="small" class="blue-tag" v-else>
                           {{ $t('views.application.simple') }}
                         </el-tag>
                       </template>

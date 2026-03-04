@@ -187,6 +187,8 @@
             v-loading="loading"
             :row-key="(row: any) => row.id"
             :storeKey="storeKey"
+            :cell-class-name="cellClassName"
+            @cell-click="cellClickHandle"
           >
             <el-table-column
               type="selection"
@@ -208,7 +210,7 @@
             <el-table-column
               prop="status"
               :label="$t('views.document.fileStatus.label')"
-              width="130"
+              width="110"
             >
               <template #default="{ row }">
                 <StatusValue :status="row.status" :status-meta="row.status_meta"></StatusValue>
@@ -233,7 +235,7 @@
               sortable
             />
 
-            <el-table-column width="130">
+            <el-table-column width="110">
               <template #header>
                 <div>
                   <span>{{ $t('views.document.enableStatus.label') }}</span>
@@ -289,7 +291,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column width="160">
+            <el-table-column width="130" prop="tag">
               <template #header>
                 <div>
                   <span>{{ $t('views.document.tag.label') }}</span>
@@ -335,31 +337,27 @@
 
                   <template #reference>
                     <el-space :size="4">
+                      <el-tag v-if="row.tag_count" type="info" effect="plain" class="never">
+                        <div class="flex align-center color-text-primary">
+                          <AppIcon iconName="app-tag"></AppIcon>
+                          <span class="ml-4">{{ row.tag_count }}</span>
+                        </div>
+                      </el-tag>
                       <el-button
+                        class="button-new-tag"
                         size="small"
-                        style="padding: 1px 6px"
-                        @click.stop="openTagSettingDrawer(row)"
-                        :disabled="!permissionPrecise.doc_tag(id)"
-                      >
-                        <AppIcon iconName="app-tag"></AppIcon>
-                        <span>{{ row.tag_count || 0 }}</span>
-                      </el-button>
-                      <el-button
-                        size="small"
-                        plain
-                        style="padding: 1px 6px; border-style: dashed"
                         :disabled="!permissionPrecise.doc_tag(id)"
                         @click.stop="openAddTagDialog(row.id)"
                       >
-                        <el-icon class="color-secondary"><Plus /></el-icon>
-                        <span class="color-secondary">{{ $t('views.document.tag.key') }}</span>
+                        <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
+                        {{ $t('views.document.tag.key') }}
                       </el-button>
                     </el-space>
                   </template>
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column width="170">
+            <el-table-column width="140">
               <template #header>
                 <div>
                   <span>{{ $t('views.document.form.hit_handling_method.label') }}</span>
@@ -1084,10 +1082,10 @@ function refreshDocument(row: any) {
 }
 
 function rowClickHandle(row: any, column: any) {
-  if (column && column.type === 'selection') {
+  console.log(column)
+  if (column && (column.type === 'selection' || column.property === 'tag')) {
     return
   }
-
   router.push({
     path: `/paragraph/${id}/${row.id}`,
     query: { from: apiType.value, isShared: isShared.value ? 'true' : 'false' },
@@ -1295,8 +1293,10 @@ function editName(val: string, id: string) {
   }
 }
 
-function cellMouseEnter(row: any) {
-  currentMouseId.value = row.id
+function cellMouseEnter(row: any, column: any) {
+  if (column.property === 'name') {
+    currentMouseId.value = row.id
+  }
 }
 
 function cellMouseLeave() {
@@ -1369,6 +1369,18 @@ function openGenerateDialog(row?: any) {
   GenerateRelatedDialogRef.value.open(arr, 'document')
 }
 
+function cellClassName({ row, column }: any) {
+  if (column.property === 'tag') {
+    return 'table-hover-cell'
+  }
+  return ''
+}
+function cellClickHandle(row: any, column: any, cell: any, event: any) {
+  if (column.property === 'tag' && permissionPrecise.value.doc_tag(id)) {
+    event.stopPropagation()
+    openTagSettingDrawer(row)
+  }
+}
 const tagFilterValue = ref<string[]>([])
 const tagFilterDirty = ref(false)
 const tagFilterOptions = ref<any[]>([])
@@ -1485,7 +1497,7 @@ onBeforeUnmount(() => {
     box-sizing: border-box;
     background: #ffffff;
     z-index: 22;
-    box-shadow: 0px -2px 4px 0px rgba(31, 35, 41, 0.08);
+    box-shadow: 0px -2px 4px 0px rgba(var(--el-text-color-primary-rgb), 0.08);
   }
   .document-table {
     :deep(.el-table__row) {

@@ -30,7 +30,7 @@
       </el-text>
     </template>
     <template #tag>
-      <el-tag v-if="isShared || isSystemShare" type="info" class="info-tag">
+      <el-tag v-if="isShared || isSystemShare" size="small" type="info" class="info-tag">
         {{ t('views.shared.title') }}
       </el-tag>
     </template>

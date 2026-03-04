@@ -497,7 +497,7 @@ h5 {
 }
 
 .info-tag {
-  background: var(--app-text-color-light-1);
+  background: rgba(var(--el-text-color-primary-rgb), 0.1);
   color: var(--app-text-color-secondary);
   border: none;
 }
@@ -553,4 +553,8 @@ h5 {
 
 .arrow-icon {
   transition: 0.2s;
+}
+
+.table-hover-cell:hover {
+  background: rgba(var(--el-text-color-primary-rgb), 0.1) !important;
 }

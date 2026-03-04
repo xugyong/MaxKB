@@ -164,7 +164,7 @@
                     <span class="ellipsis-1" :title="item.name">
                       {{ item.name }}
                     </span>
-                    <el-tag v-if="item.version" class="ml-4" type="info" effect="plain">
+                    <el-tag v-if="item.version" class="ml-4" size="small" type="info" effect="plain">
                       {{ item.version }}
                     </el-tag>
                   </div>
@@ -175,7 +175,7 @@
                   </el-text>
                 </template>
                 <template #tag="{ hoverShow }">
-                  <el-tag v-if="isShared" type="info" class="info-tag">
+                  <el-tag v-if="isShared" size="small" type="info" class="info-tag">
                     {{ t('views.shared.title') }}
                   </el-tag>
                   <el-tooltip effect="dark" :content="$t('views.tool.updatedVersion')">

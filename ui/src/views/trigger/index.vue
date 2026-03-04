@@ -172,7 +172,7 @@
                 >
                   <template #reference>
                     <div class="flex">
-                      <el-tag
+                      <el-tag size="small"
                         class="info-tag mr-8 cursor"
                         v-if="
                           row.trigger_task.filter((item: any) => item.type === 'APPLICATION').length
@@ -183,7 +183,7 @@
                           row.trigger_task.filter((item: any) => item.type === 'APPLICATION').length
                         }}
                       </el-tag>
-                      <el-tag
+                      <el-tag size="small"
                         class="info-tag cursor"
                         v-if="row.trigger_task.filter((item: any) => item.type === 'TOOL').length"
                       >

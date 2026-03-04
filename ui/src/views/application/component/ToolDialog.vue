@@ -102,7 +102,7 @@
                           <span class="ellipsis-1" :title="item.name">
                             {{ item.name }}
                           </span>
-                          <el-tag v-if="item.version" class="ml-4" type="info" effect="plain">
+                          <el-tag v-if="item.version" size="small" class="ml-4" type="info" effect="plain">
                             {{ item.version }}
                           </el-tag>
                         </div>

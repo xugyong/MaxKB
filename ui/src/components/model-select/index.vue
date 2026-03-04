@@ -20,7 +20,7 @@
             ></span>
             <span>{{ item.name }}</span>
 
-            <el-tag v-if="item.type === 'share'" type="info" class="info-tag ml-8" style="margin-top: 7px;">
+            <el-tag v-if="item.type === 'share'" size="small" type="info" class="info-tag ml-8" style="margin-top: 7px;">
               {{ t('views.shared.title') }}
             </el-tag>
           </div>
