@@ -39,7 +39,14 @@
       @cell-mouse-leave="cellMouseLeave"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column :label="$t('views.document.tag.key')">
+      <el-table-column
+        prop="key"
+        :label="
+          multipleSelection.length === 0
+            ? $t('views.document.tag.key')
+            : `${$t('common.selected')} ${multipleSelection.length} ${$t('views.document.items')}`
+        "
+      >
         <template #default="{ row }">
           <div class="flex-between">
             {{ row.key }}
@@ -123,7 +130,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="app-table__pagination mt-16">
+    <div class="mt-16 flex justify-end">
       <el-pagination
         v-model:current-page="pageNum"
         v-model:page-size="pageSize"
@@ -190,10 +197,12 @@ const tags = ref<Array<any>>([])
 const currentMouseId = ref<number | null>(null)
 const pageNum = ref(1)
 const pageSize = ref(20)
-const tableMaxHeight = computed(() => `calc(100vh - 260px)`)
+const tableMaxHeight = computed(() => `calc(100vh - 200px)`)
 
-function cellMouseEnter(row: any) {
-  currentMouseId.value = row.id
+function cellMouseEnter(row: any, column: any) {
+  if (column && column.property === 'key') {
+    currentMouseId.value = row.id
+  }
 }
 
 function cellMouseLeave() {

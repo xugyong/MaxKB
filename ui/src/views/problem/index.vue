@@ -305,7 +305,7 @@ function editName(val: string, problemId: string) {
 }
 
 function cellMouseEnter(row: any, column: any) {
-  if (column.property === 'content') {
+  if (column && column.property === 'content') {
     currentMouseId.value = row.id
   }
 }

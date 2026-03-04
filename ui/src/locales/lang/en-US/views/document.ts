@@ -2,7 +2,7 @@ export default {
   uploadDocument: 'Upload Document',
   importDocument: 'Import Document',
   syncDocument: 'Sync Document',
-  items: 'Items',
+  items: '',
   migrateDocument: 'Migrate to',
   setting: {
     migration: 'Move',
@@ -109,7 +109,6 @@ export default {
     unrelate: 'Unlink',
     relatedDoc: 'Linked documents',
     unrelatedDoc: 'Unlinked documents',
-    tagLinkTitle: 'Tag: Tag Value',
     setting: 'Tag Settings',
     create: 'Create Tag',
     createValue: 'Create Tag Value',

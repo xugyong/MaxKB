@@ -114,7 +114,7 @@
             <el-table-column type="selection" width="55" :reserve-selection="true" />
             <el-table-column
               prop="name"
-              :label="$t('common.name')"
+              :label="multipleSelection.length === 0 ? $t('common.name') : `${$t('common.selected')} ${multipleSelection.length} ${$t('views.document.items') }`"
               show-overflow-tooltip
               width="220"
             >

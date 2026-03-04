@@ -105,7 +105,6 @@ export default {
     unrelate: '取消關聯',
     relatedDoc: '已關聯文檔',
     unrelatedDoc: '未關聯文檔',
-    tagLinkTitle: '標籤: 標籤值',
     addTag: '添加標籤',
     setting: '標籤設置',
     create: '創建標籤',

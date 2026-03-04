@@ -132,7 +132,6 @@
                   style="width: 120px"
                   @change="search_type_change"
                 >
-                  <el-option :label="$t('dynamicsForm.tag.label')" value="tag" />
                   <el-option :label="$t('common.name')" value="name" />
                 </el-select>
                 <el-input
@@ -140,14 +139,6 @@
                   v-model="search_form.name"
                   @change="refresh"
                   :placeholder="$t('common.searchBar.placeholder')"
-                  style="width: 220px"
-                  clearable
-                />
-                <el-input
-                  v-if="search_type === 'tag'"
-                  v-model="search_form.tag"
-                  @change="refresh"
-                  :placeholder="$t('views.document.tag.requiredMessage3')"
                   style="width: 220px"
                   clearable
                 />
@@ -209,7 +200,7 @@
             <el-table-column
               prop="status"
               :label="$t('views.document.fileStatus.label')"
-              width="110"
+              width="120"
             >
               <template #default="{ row }">
                 <StatusValue :status="row.status" :status-meta="row.status_meta"></StatusValue>
@@ -219,7 +210,7 @@
               prop="char_length"
               :label="$t('views.document.table.char_length')"
               align="right"
-              min-width="90"
+              min-width="120"
               sortable
             >
               <template #default="{ row }">
@@ -230,7 +221,7 @@
               prop="paragraph_count"
               :label="$t('views.document.table.paragraph')"
               align="right"
-              min-width="90"
+              min-width="120"
               sortable
             />
 
@@ -293,7 +284,8 @@
             <el-table-column width="130" prop="tag">
               <template #header>
                 <div>
-                  <span>{{ $t('views.document.tag.label') }}</span>
+                  <span>{{ $t('dynamicsForm.tag.label') }}</span>
+
                   <el-dropdown trigger="click" @visible-change="handleTagVisibleChange">
                     <el-button
                       style="margin-top: 1px"
@@ -325,38 +317,42 @@
               <template #default="{ row }">
                 <el-popover
                   trigger="hover"
-                  placement="bottom"
+                  placement="bottom-start"
                   :disabled="!row.tag_count"
-                  :width="160"
+                  :popper-style="{ width: 'auto', maxWidth: '300px' }"
                 >
-                  <div v-for="tag in row.tags" :key="tag.id" flex class="pt-4">
-                    <span class="mr-8 color-input-placeholder">{{ tag.key }}</span
-                    >{{ tag.value }}
+                  <div
+                    v-for="tag in row.tags"
+                    :key="tag.id"
+                    class="flex align-center lighter color-text-primary mt-4 mb-4"
+                  >
+                    <span class="color-secondary ellipsis-1" style="width: 40%" :title="tag.key">{{
+                      tag.key
+                    }}</span>
+                    <span class="ml-4 ellipsis-1" :title="tag.value"> {{ tag.value }}</span>
                   </div>
 
                   <template #reference>
-                    <el-space :size="4">
-                      <el-tag v-if="row.tag_count" type="info" effect="plain" class="never">
-                        <div class="flex align-center color-text-primary">
-                          <AppIcon iconName="app-tag"></AppIcon>
-                          <span class="ml-4">{{ row.tag_count }}</span>
-                        </div>
-                      </el-tag>
-                      <el-button
-                        class="button-new-tag"
-                        size="small"
-                        :disabled="!permissionPrecise.doc_tag(id)"
-                        @click.stop="openAddTagDialog(row.id)"
-                      >
-                        <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
-                        {{ $t('views.document.tag.key') }}
-                      </el-button>
-                    </el-space>
+                    <el-tag v-if="row.tag_count" type="info" effect="plain" class="never mr-4">
+                      <div class="flex align-center color-text-primary">
+                        <AppIcon iconName="app-tag"></AppIcon>
+                        <span class="ml-4">{{ row.tag_count }}</span>
+                      </div>
+                    </el-tag>
                   </template>
                 </el-popover>
+                <el-button
+                  class="button-new-tag"
+                  size="small"
+                  :disabled="!permissionPrecise.doc_tag(id)"
+                  @click.stop="openAddTagDialog(row.id)"
+                >
+                  <AppIcon iconName="app-add-outlined" class="mr-4"></AppIcon>
+                  {{ $t('views.document.tag.key') }}
+                </el-button>
               </template>
             </el-table-column>
-            <el-table-column width="140">
+            <el-table-column width="165">
               <template #header>
                 <div>
                   <span>{{ $t('views.document.form.hit_handling_method.label') }}</span>
@@ -1293,7 +1289,7 @@ function editName(val: string, id: string) {
 }
 
 function cellMouseEnter(row: any, column: any) {
-  if (column.property === 'name') {
+  if (column && column.property === 'name') {
     currentMouseId.value = row.id
   }
 }

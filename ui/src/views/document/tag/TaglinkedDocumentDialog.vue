@@ -1,7 +1,14 @@
 <template>
-  <el-dialog v-model="dialogVisible" :before-close="close" append-to-body destroy-on-close>
+  <el-dialog
+    v-model="dialogVisible"
+    width="1000"
+    align-center
+    :before-close="close"
+    append-to-body
+    destroy-on-close
+  >
     <template #header>
-      <h4>{{ $t('views.document.tag.tagLinkTitle') }}</h4>
+      <h4>{{ $t('views.document.tag.key') }}: {{ $t('views.document.tag.value') }}</h4>
     </template>
     <div>
       <el-tabs v-model="activeTab" @tab-change="handleTabChange">
@@ -30,14 +37,27 @@
       @changePage="getList"
       :data="tableData"
       :row-key="(row: any) => row.id"
-      class="mt-16 document-table"
+      class="mt-16"
       @selection-change="handleSelectionChange"
+      style="min-height: 400px"
       v-loading="loading"
     >
       <el-table-column type="selection" width="55" :reserve-selection="true" v-if="!isShared" />
-      <el-table-column prop="name" :label="$t('views.document.table.name')" min-width="280">
+      <el-table-column
+        prop="name"
+        :label="
+          multipleSelection.length === 0
+            ? $t('views.document.table.name')
+            : `${$t('common.selected')} ${multipleSelection.length} ${$t('views.document.items')}`
+        "
+        min-width="280"
+        show-overflow-tooltip
+      >
         <template #default="{ row }">
-          <span>{{ row.name }}</span>
+          <el-space :size="8">
+            <img :src="getImgUrl(row && row?.name)" alt="" width="24" />
+            <span class="ellipsis" style="max-width: 450px">{{ row.name }}</span>
+          </el-space>
         </template>
       </el-table-column>
       <el-table-column width="130">
@@ -145,6 +165,7 @@ import { loadSharedApi } from '@/utils/dynamics-api/shared-api.ts'
 import { cloneDeep } from 'lodash'
 import type { ElTable } from 'element-plus'
 import { datetimeFormat } from '@/utils/time'
+import { getImgUrl } from '@/utils/common'
 import { MsgSuccess } from '@/utils/message'
 import { t } from '@/locales'
 import type { TabPaneName } from 'element-plus'
@@ -191,7 +212,7 @@ function handleSearch() {
 
 const paginationConfig = ref({
   current_page: 1,
-  page_size: 10,
+  page_size: 20,
   total: 0,
 })
 const filterText = ref<string>('')
