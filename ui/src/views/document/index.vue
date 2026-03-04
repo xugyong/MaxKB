@@ -187,7 +187,6 @@
             v-loading="loading"
             :row-key="(row: any) => row.id"
             :storeKey="storeKey"
-            :cell-class-name="cellClassName"
             @cell-click="cellClickHandle"
           >
             <el-table-column
@@ -1369,12 +1368,6 @@ function openGenerateDialog(row?: any) {
   GenerateRelatedDialogRef.value.open(arr, 'document')
 }
 
-function cellClassName({ row, column }: any) {
-  if (column.property === 'tag') {
-    return 'table-hover-cell'
-  }
-  return ''
-}
 function cellClickHandle(row: any, column: any, cell: any, event: any) {
   if (column.property === 'tag' && permissionPrecise.value.doc_tag(id)) {
     event.stopPropagation()
