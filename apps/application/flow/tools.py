@@ -385,7 +385,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
             },
             checkpointer=checkpointer,  # Required!
         )
-        recursion_limit = int(CONFIG.get("LANGCHAIN_GRAPH_RECURSION_LIMIT", '25'))
+        recursion_limit = int(CONFIG.get("LANGCHAIN_GRAPH_RECURSION_LIMIT", '100'))
         response = agent.astream(
             {"messages": message_list},
             config={"recursion_limit": recursion_limit, "configurable": {"thread_id": str(uuid.uuid7())}},
