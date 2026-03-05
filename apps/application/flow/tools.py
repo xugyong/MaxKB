@@ -13,7 +13,6 @@ import os
 import queue
 import re
 import shutil
-import tempfile
 import threading
 import zipfile
 from functools import reduce
@@ -236,21 +235,14 @@ def to_stream_response_simple(stream_event):
     return r
 
 
-tool_message_json_template = """
-%s
-"""
-
 def generate_tool_message_complete(icon, name, input_content, output_content):
     """生成包含输入和输出的工具消息模版"""
     # 确保输入内容是字符串，如果不是则尝试转换为 JSON 字符串
     if not isinstance(input_content, str):
-        try:
-            input_content = json.dumps(input_content, ensure_ascii=False)
-        except Exception:
-            input_content = str(input_content)
+        input_content = json.dumps(input_content, ensure_ascii=False)
     # 格式化输出
     if not isinstance(output_content, str):
-       output_content = json.dumps(output_content, ensure_ascii=False)
+        output_content = json.dumps(output_content, ensure_ascii=False)
     content = {
         "icon": icon,
         "title": name,
