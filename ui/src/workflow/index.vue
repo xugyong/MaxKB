@@ -232,13 +232,6 @@ defineExpose({
   left: 24px;
   z-index: 2;
 }
-.workflow-search {
-  position: absolute;
-  top: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-}
 .lf-drag-able {
   cursor: pointer;
 }

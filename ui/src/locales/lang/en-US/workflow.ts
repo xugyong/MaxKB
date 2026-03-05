@@ -40,6 +40,7 @@ export default {
     copyError: 'Node already copied',
     paramErrorMessage: 'Parameter already exists: ',
     saveMessage: 'Current changes have not been saved. Save before exiting?',
+    searchPlaceholder: 'Please enter node name',
   },
   delete: {
     confirmTitle: 'Confirm to delete this node?',
