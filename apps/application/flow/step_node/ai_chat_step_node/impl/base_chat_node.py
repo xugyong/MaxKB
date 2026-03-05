@@ -12,10 +12,6 @@ import time
 from functools import reduce
 from typing import List, Dict
 
-from django.db.models import QuerySet
-from django.utils.translation import gettext as _
-from langchain_core.messages import BaseMessage, AIMessage, HumanMessage, SystemMessage
-
 from application.flow.i_step_node import NodeResult, INode
 from application.flow.step_node.ai_chat_step_node.i_chat_node import IChatNode
 from application.flow.tools import Reasoning, mcp_response_generator
@@ -23,6 +19,9 @@ from application.models import Application, ApplicationApiKey, ApplicationAccess
 from common.exception.app_exception import AppApiException
 from common.utils.rsa_util import rsa_long_decrypt
 from common.utils.tool_code import ToolExecutor
+from django.db.models import QuerySet
+from django.utils.translation import gettext as _
+from langchain_core.messages import BaseMessage, AIMessage, HumanMessage, SystemMessage
 from models_provider.models import Model
 from models_provider.tools import get_model_credential, get_model_instance_by_model_workspace_id
 from tools.models import Tool
@@ -189,7 +188,7 @@ class BaseChatNode(IChatNode):
         mcp_result = self._handle_mcp_request(
             mcp_source, mcp_servers, mcp_tool_id, mcp_tool_ids, tool_ids,
             application_ids, skill_tool_ids, mcp_output_enable,
-            chat_model, message_list, history_message, question
+            chat_model, message_list, history_message, question, chat_id
         )
         if mcp_result:
             return mcp_result
@@ -209,7 +208,7 @@ class BaseChatNode(IChatNode):
 
     def _handle_mcp_request(self, mcp_source, mcp_servers, mcp_tool_id, mcp_tool_ids, tool_ids,
                             application_ids, skill_tool_ids,
-                            mcp_output_enable, chat_model, message_list, history_message, question):
+                            mcp_output_enable, chat_model, message_list, history_message, question, chat_id):
 
         mcp_servers_config = {}
 
@@ -306,7 +305,7 @@ class BaseChatNode(IChatNode):
             source_id = application_id or knowledge_id
             source_type = 'APPLICATION' if application_id else 'KNOWLEDGE'
             r = mcp_response_generator(chat_model, message_list, json.dumps(mcp_servers_config), mcp_output_enable,
-                                       tool_init_params, source_id, source_type)
+                                       tool_init_params, source_id, source_type, chat_id)
             return NodeResult(
                 {'result': r, 'chat_model': chat_model, 'message_list': message_list,
                  'history_message': [{'content': message.content, 'role': message.type} for message in

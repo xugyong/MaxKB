@@ -525,12 +525,12 @@ async def save_tool_record(tool_id, tool_info, tool_result, source_id, source_ty
 
 
 def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_enable=True, tool_init_params={},
-                           source_id=None, source_type=None):
+                           source_id=None, source_type=None, chat_id=None):
     """使用全局事件循环，不创建新实例"""
     result_queue = queue.Queue()
     loop = get_global_loop()  # 使用共享循环
     # 创建临时文件夹
-    temp_dir = tempfile.mkdtemp(dir='/tmp')
+    temp_dir = os.path.join('/tmp', chat_id[:8])
     skills_dir = os.path.join(temp_dir, 'skills')
     os.makedirs(skills_dir, exist_ok=True)
 
