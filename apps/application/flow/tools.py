@@ -242,28 +242,22 @@ tool_message_json_template = """
 
 def generate_tool_message_complete(icon, name, input_content, output_content):
     """生成包含输入和输出的工具消息模版"""
-    # 格式化输入
-    if '```' not in input_content:
-        input_formatted = tool_message_json_template % input_content
-    else:
-        input_formatted = input_content
-
-    # 格式化输出
-    if '```' not in output_content:
+    # 确保输入内容是字符串，如果不是则尝试转换为 JSON 字符串
+    if not isinstance(input_content, str):
         try:
-            json.loads(output_content)
-            output_formatted = tool_message_json_template % output_content
-        except:
-            output_formatted = output_content
-    else:
-        output_formatted = output_content
+            input_content = json.dumps(input_content, ensure_ascii=False)
+        except Exception:
+            input_content = str(input_content)
+    # 格式化输出
+    if not isinstance(output_content, str):
+       output_content = json.dumps(output_content, ensure_ascii=False)
     content = {
         "icon": icon,
         "title": name,
         "type": "simple-tool-calls",
         "content": {
-            "input": input_formatted,
-            "output": output_formatted
+            "input": input_content,
+            "output": output_content
         }
     }
     return f'<tool_calls_render>{json.dumps(content)}</tool_calls_render>'
@@ -379,11 +373,11 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
             skills=[skills_dir],
             tools=tools,
             interrupt_on={
-                "write_file": False,  # Default: approve, edit, reject
-                "read_file": False,  # No interrupts needed
-                "edit_file": False  # Default: approve, edit, reject
+                "write_file": False,
+                "read_file": False,
+                "edit_file": False
             },
-            checkpointer=checkpointer,  # Required!
+            checkpointer=checkpointer,
         )
         recursion_limit = int(CONFIG.get("LANGCHAIN_GRAPH_RECURSION_LIMIT", '100'))
         response = agent.astream(
@@ -392,71 +386,95 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
             stream_mode='messages'
         )
 
-        # 用于存储工具调用信息
         tool_calls_info = {}  # tool_id -> {'name': ..., 'input': ...}
         _tool_fragments = {}  # index -> {'id': ..., 'name': ..., 'arguments': ...}
 
         async for chunk in response:
             if isinstance(chunk[0], AIMessageChunk):
                 tool_calls = chunk[0].additional_kwargs.get('tool_calls', [])
+
                 for tool_call in tool_calls:
                     idx = tool_call.get('index')
                     if idx is None:
                         continue
-
                     entry = _tool_fragments.setdefault(idx, {'id': '', 'name': '', 'arguments': ''})
-
-                    # 更新 id
-                    if tool_call.get('id'):
-                        entry['id'] = tool_call.get('id')
-
-                    # 更新 name 和 arguments
+                    raw_id = tool_call.get('id')
+                    if raw_id and raw_id.strip():
+                        entry['id'] = raw_id.strip()
                     func = tool_call.get('function', {})
                     if isinstance(func, dict):
-                        if func.get('name'):
-                            entry['name'] = func.get('name')
+                        func_name = func.get('name')
+                        if func_name:
+                            entry['name'] = func_name
                         part_args = func.get('arguments', '')
                     else:
                         part_args = tool_call.get('arguments', '')
-
-                    # 统一为字符串
                     if not isinstance(part_args, str):
                         try:
                             part_args = json.dumps(part_args, ensure_ascii=False)
                         except Exception:
                             part_args = str(part_args)
-
                     entry['arguments'] += part_args
 
-                    # 尝试解析 JSON,判断是否完整
-                    if entry['id'] and entry['arguments']:
-                        try:
-                            parsed_args = json.loads(entry['arguments'])
-                            # 过滤掉 tool_init_params 中的参数
-                            if tool_init_params:
+                is_finish_chunk = chunk[0].response_metadata.get('finish_reason') == 'tool_calls'
+
+                if is_finish_chunk:
+                    # 在 finish chunk 时，将所有未完成的 fragment 标记完成并更新 tool_calls_info
+                    for idx, entry in _tool_fragments.items():
+                        if not entry.get('completed') and entry.get('id') and entry.get('arguments'):
+                            try:
+                                parsed_args = json.loads(entry['arguments'])
                                 filtered_args = {
                                     k: v for k, v in parsed_args.items()
                                     if k not in tool_init_params
+                                } if tool_init_params else parsed_args
+                                tool_calls_info[entry['id']] = {
+                                    'name': entry['name'],
+                                    'input': json.dumps(filtered_args, ensure_ascii=False)
                                 }
-                            else:
-                                filtered_args = parsed_args
+                                entry['completed'] = True
+                            except (json.JSONDecodeError, ValueError) as e:
+                                maxkb_logger.warning(
+                                    f"Failed to parse tool arguments at finish: {entry['arguments']}, error: {e}")
 
-                            # JSON 完整,保存到 tool_calls_info
-                            tool_calls_info[entry['id']] = {
-                                'name': entry['name'],
-                                'input': json.dumps(filtered_args, ensure_ascii=False)
-                            }
-                            # 从 fragments 中移除
-                            del _tool_fragments[idx]
-                        except (json.JSONDecodeError, ValueError):
-                            # JSON 不完整,继续等待
-                            pass
+                # 修复 tool_call_chunks 中的空 id
+                if chunk[0].tool_call_chunks:
+                    for tc_chunk in chunk[0].tool_call_chunks:
+                        idx = tc_chunk.get('index')
+                        if idx is not None:
+                            frag = _tool_fragments.get(idx)
+                            if frag and frag.get('id') and not tc_chunk.get('id'):
+                                tc_chunk['id'] = frag['id']
+
+                # 修复 additional_kwargs 中的 tool_calls，确保参数完整
+                if tool_calls:
+                    fixed_tool_calls = []
+                    for tool_call in tool_calls:
+                        idx = tool_call.get('index')
+                        frag = _tool_fragments.get(idx) if idx is not None else None
+                        tc = dict(tool_call)
+                        if frag and frag.get('id') and not tc.get('id'):
+                            tc['id'] = frag['id']
+                        if frag and isinstance(tc.get('function'), dict):
+                            tc['function'] = dict(tc['function'])
+                            if frag.get('completed'):
+                                # 用完整参数替换分片参数
+                                tc['function']['arguments'] = frag['arguments']
+                            else:
+                                # 未完成的分片，清空避免传递不合法 JSON
+                                tc['function']['arguments'] = ''
+                        fixed_tool_calls.append(tc)
+                    chunk[0].additional_kwargs['tool_calls'] = fixed_tool_calls
 
                 yield chunk[0]
 
             if mcp_output_enable and isinstance(chunk[0], ToolMessage):
-                # 直接使用 tool_call_id,不进行提取
                 tool_id = chunk[0].tool_call_id
+
+                # 跳过空 tool_call_id 的消息
+                if not tool_id or not tool_id.strip():
+                    maxkb_logger.warning(f"Skipping ToolMessage with empty tool_call_id")
+                    continue
 
                 if tool_id in tool_calls_info:
                     tool_info = tool_calls_info[tool_id]
@@ -470,7 +488,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         else:
                             tool_result = {}
                         text = tool_result.pop('text') if 'text' in tool_result else None
-                        text_result = json.loads(text)
+                        text_result = json.loads(text) if text else tool_result
                         if text:
                             tool_lib_id = text_result.pop('tool_id') if 'tool_id' in text_result else None
                         else:
@@ -488,7 +506,6 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                     )
                     chunk[0].content = content
                 else:
-                    # 如果找不到对应的工具信息,记录日志
                     maxkb_logger.warning(
                         f"Tool ID {tool_id} not found in tool_calls_info. Available IDs: {list(tool_calls_info.keys())}")
 
