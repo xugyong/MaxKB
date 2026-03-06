@@ -13,7 +13,7 @@ from langchain_core.outputs import ChatGenerationChunk
 from langchain_core.runnables import RunnableConfig, ensure_config
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langchain_openai.chat_models.base import _create_usage_metadata, _convert_delta_to_message_chunk
+from langchain_openai.chat_models.base import _create_usage_metadata
 
 from common.config.tokenizer_manage_config import TokenizerManage
 from common.utils.logger import maxkb_logger
@@ -21,66 +21,63 @@ from common.utils.logger import maxkb_logger
 def custom_get_token_ids(text: str):
     tokenizer = TokenizerManage.get_tokenizer()
     return tokenizer.encode(text)
-#
-#
-# def _convert_delta_to_message_chunk(
-#         _dict: Mapping[str, Any], default_class: type[BaseMessageChunk]
-# ) -> BaseMessageChunk:
-#     id_ = _dict.get("id")
-#     role = cast(str, _dict.get("role"))
-#     content = cast(str, _dict.get("content") or "")
-#     additional_kwargs: dict = {}
-#     if 'reasoning_content' in _dict:
-#         additional_kwargs['reasoning_content'] = _dict.get('reasoning_content')
-#     if _dict.get("function_call"):
-#         function_call = dict(_dict["function_call"])
-#         if "name" in function_call and function_call["name"] is None:
-#             function_call["name"] = ""
-#         additional_kwargs["function_call"] = function_call
-#     tool_call_chunks = []
-#     if raw_tool_calls := _dict.get("tool_calls"):
-#         additional_kwargs["tool_calls"] = raw_tool_calls
-#         try:
-#             tool_call_chunks = [
-#                 tool_call_chunk(
-#                     name=rtc["function"].get("name"),
-#                     args=rtc["function"].get("arguments"),
-#                     id=rtc.get("id"),
-#                     index=rtc["index"],
-#                 )
-#                 for rtc in raw_tool_calls
-#             ]
-#         except KeyError:
-#             pass
-#
-#     if role == "user" or default_class == HumanMessageChunk:
-#         return HumanMessageChunk(content=content, id=id_)
-#     elif role == "assistant" or default_class == AIMessageChunk:
-#         return AIMessageChunk(
-#             content=content,
-#             additional_kwargs=additional_kwargs,
-#             id=id_,
-#             tool_call_chunks=tool_call_chunks,  # type: ignore[arg-type]
-#         )
-#     elif role in ("system", "developer") or default_class == SystemMessageChunk:
-#         if role == "developer":
-#             additional_kwargs = {"__openai_role__": "developer"}
-#         else:
-#             additional_kwargs = {}
-#         return SystemMessageChunk(
-#             content=content, id=id_, additional_kwargs=additional_kwargs
-#         )
-#     elif role == "function" or default_class == FunctionMessageChunk:
-#         return FunctionMessageChunk(content=content, name=_dict["name"], id=id_)
-#     elif role == "tool" or default_class == ToolMessageChunk:
-#         return ToolMessageChunk(
-#             content=content, tool_call_id=_dict["tool_call_id"], id=id_
-#         )
-#     elif role or default_class == ChatMessageChunk:
-#         return ChatMessageChunk(content=content, role=role, id=id_)
-#     else:
-#         return default_class(content=content, id=id_)  # type: ignore
-#
+
+def _convert_delta_to_message_chunk(
+    _dict: Mapping[str, Any], default_class: type[BaseMessageChunk]
+) -> BaseMessageChunk:
+    """Convert to a LangChain message chunk."""
+    id_ = _dict.get("id")
+    role = cast(str, _dict.get("role"))
+    content = cast(str, _dict.get("content") or "")
+    additional_kwargs: dict = {}
+    if 'reasoning_content' in _dict:
+        additional_kwargs['reasoning_content'] = _dict.get('reasoning_content')
+    if _dict.get("function_call"):
+        function_call = dict(_dict["function_call"])
+        if "name" in function_call and function_call["name"] is None:
+            function_call["name"] = ""
+        additional_kwargs["function_call"] = function_call
+    tool_call_chunks = []
+    if raw_tool_calls := _dict.get("tool_calls"):
+        try:
+            tool_call_chunks = [
+                tool_call_chunk(
+                    name=rtc["function"].get("name"),
+                    args=rtc["function"].get("arguments"),
+                    id=rtc.get("id"),
+                    index=rtc["index"],
+                )
+                for rtc in raw_tool_calls
+            ]
+        except KeyError:
+            pass
+
+    if role == "user" or default_class == HumanMessageChunk:
+        return HumanMessageChunk(content=content, id=id_)
+    if role == "assistant" or default_class == AIMessageChunk:
+        return AIMessageChunk(
+            content=content,
+            additional_kwargs=additional_kwargs,
+            id=id_,
+            tool_call_chunks=tool_call_chunks,  # type: ignore[arg-type]
+        )
+    if role in ("system", "developer") or default_class == SystemMessageChunk:
+        if role == "developer":
+            additional_kwargs = {"__openai_role__": "developer"}
+        else:
+            additional_kwargs = {}
+        return SystemMessageChunk(
+            content=content, id=id_, additional_kwargs=additional_kwargs
+        )
+    if role == "function" or default_class == FunctionMessageChunk:
+        return FunctionMessageChunk(content=content, name=_dict["name"], id=id_)
+    if role == "tool" or default_class == ToolMessageChunk:
+        return ToolMessageChunk(
+            content=content, tool_call_id=_dict["tool_call_id"], id=id_
+        )
+    if role or default_class == ChatMessageChunk:
+        return ChatMessageChunk(content=content, role=role, id=id_)
+    return default_class(content=content, id=id_)  # type: ignore[call-arg]#
 
 class BaseChatOpenAI(ChatOpenAI):
     usage_metadata: dict = {}
@@ -131,58 +128,67 @@ class BaseChatOpenAI(ChatOpenAI):
                 self.usage_metadata = chunk.message.usage_metadata
             yield chunk
 
-    # def _convert_chunk_to_generation_chunk(
-    #         self,
-    #         chunk: dict,
-    #         default_chunk_class: type,
-    #         base_generation_info: Optional[dict],
-    # ) -> Optional[ChatGenerationChunk]:
-    #     if chunk.get("type") == "content.delta":  # from beta.chat.completions.stream
-    #         return None
-    #     token_usage = chunk.get("usage")
-    #     choices = (
-    #             chunk.get("choices", [])
-    #             # from beta.chat.completions.stream
-    #             or chunk.get("chunk", {}).get("choices", [])
-    #     )
-    #
-    #     usage_metadata: Optional[UsageMetadata] = (
-    #         _create_usage_metadata(token_usage) if token_usage and token_usage.get("prompt_tokens") else None
-    #     )
-    #     if len(choices) == 0:
-    #         # logprobs is implicitly None
-    #         generation_chunk = ChatGenerationChunk(
-    #             message=default_chunk_class(content="", usage_metadata=usage_metadata)
-    #         )
-    #         return generation_chunk
-    #
-    #     choice = choices[0]
-    #     if choice["delta"] is None:
-    #         return None
-    #
-    #     message_chunk = _convert_delta_to_message_chunk(
-    #         choice["delta"], default_chunk_class
-    #     )
-    #     generation_info = {**base_generation_info} if base_generation_info else {}
-    #
-    #     if finish_reason := choice.get("finish_reason"):
-    #         generation_info["finish_reason"] = finish_reason
-    #         if model_name := chunk.get("model"):
-    #             generation_info["model_name"] = model_name
-    #         if system_fingerprint := chunk.get("system_fingerprint"):
-    #             generation_info["system_fingerprint"] = system_fingerprint
-    #
-    #     logprobs = choice.get("logprobs")
-    #     if logprobs:
-    #         generation_info["logprobs"] = logprobs
-    #
-    #     if usage_metadata and isinstance(message_chunk, AIMessageChunk):
-    #         message_chunk.usage_metadata = usage_metadata
-    #
-    #     generation_chunk = ChatGenerationChunk(
-    #         message=message_chunk, generation_info=generation_info or None
-    #     )
-    #     return generation_chunk
+    def _convert_chunk_to_generation_chunk(
+            self,
+            chunk: dict,
+            default_chunk_class: type,
+            base_generation_info: dict | None,
+    ) -> ChatGenerationChunk | None:
+        if chunk.get("type") == "content.delta":  # From beta.chat.completions.stream
+            return None
+        token_usage = chunk.get("usage")
+        choices = (
+                chunk.get("choices", [])
+                # From beta.chat.completions.stream
+                or chunk.get("chunk", {}).get("choices", [])
+        )
+
+        usage_metadata: UsageMetadata | None = (
+            _create_usage_metadata(token_usage, chunk.get("service_tier"))
+            if token_usage
+            else None
+        )
+        if len(choices) == 0:
+            # logprobs is implicitly None
+            generation_chunk = ChatGenerationChunk(
+                message=default_chunk_class(content="", usage_metadata=usage_metadata),
+                generation_info=base_generation_info,
+            )
+            if self.output_version == "v1":
+                generation_chunk.message.content = []
+                generation_chunk.message.response_metadata["output_version"] = "v1"
+
+            return generation_chunk
+
+        choice = choices[0]
+        if choice["delta"] is None:
+            return None
+
+        message_chunk = _convert_delta_to_message_chunk(
+            choice["delta"], default_chunk_class
+        )
+        generation_info = {**base_generation_info} if base_generation_info else {}
+
+        if finish_reason := choice.get("finish_reason"):
+            generation_info["finish_reason"] = finish_reason
+            if model_name := chunk.get("model"):
+                generation_info["model_name"] = model_name
+            if system_fingerprint := chunk.get("system_fingerprint"):
+                generation_info["system_fingerprint"] = system_fingerprint
+            if service_tier := chunk.get("service_tier"):
+                generation_info["service_tier"] = service_tier
+
+        logprobs = choice.get("logprobs")
+        if logprobs:
+            generation_info["logprobs"] = logprobs
+
+        if usage_metadata and isinstance(message_chunk, AIMessageChunk):
+            message_chunk.usage_metadata = usage_metadata
+
+        message_chunk.response_metadata["model_provider"] = "openai"
+        return ChatGenerationChunk(
+            message=message_chunk, generation_info=generation_info or None
+        )
 
     def invoke(
             self,
