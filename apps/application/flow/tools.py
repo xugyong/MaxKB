@@ -587,7 +587,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         tool_info.get('icon', ''),
                         tool_info['name'],
                         tool_info['input'],
-                        tool_result
+                        tool_result + '\n\n'
                     )
                     chunk[0].content = content
                 else:

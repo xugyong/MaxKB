@@ -3,7 +3,7 @@
     <p class="mt-8 mb-8">{{ $t('common.param.inputParam') }}：</p>
     <span class="color-secondary">{{ content.content.input }}</span>
     <p class="mt-8 mb-8">{{ $t('common.param.outputParam') }}：</p>
-    <span class="color-secondary">{{ content.content.output }}</span>
+    <span class="color-secondary"><pre>{{ content.content.output }}</pre></span>
   </div>
 </template>
 <script setup lang="ts">
