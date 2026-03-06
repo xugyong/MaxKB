@@ -3,7 +3,7 @@
   <!-- 辅助工具栏 -->
   <Control class="workflow-control" v-if="lf" :lf="lf"></Control>
   <TeleportContainer :flow-id="flowId" />
-  <NodeSearch class="workflow-search" :lf="lf"></NodeSearch>
+  <NodeSearch :lf="lf"></NodeSearch>
 </template>
 <script setup lang="ts">
 import LogicFlow from '@logicflow/core'

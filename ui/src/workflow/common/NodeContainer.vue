@@ -21,7 +21,10 @@
               :size="24"
               :item="nodeModel?.properties.node_data"
             />
-            <h4 class="ellipsis-1 break-all">{{ nodeModel.properties.stepName }}</h4>
+            <h4
+              class="ellipsis-1 break-all"
+              v-html="highlightedStepName(nodeModel.properties.stepName)"
+            ></h4>
           </div>
 
           <div @mousemove.stop @mousedown.stop @keydown.stop @click.stop>
@@ -288,7 +291,7 @@ const mousedown = (event?: any) => {
   set(props.nodeModel, 'isHovered', !props.nodeModel.isSelected)
   props.nodeModel.graphModel.toFront(props.nodeModel.id)
 }
-const showicon = ref<number | null>(null)
+const showicon = ref<number | string | null>(null)
 const copyNode = () => {
   props.nodeModel.graphModel.clearSelectElements()
   const cloneNode = props.nodeModel.graphModel.cloneNode(props.nodeModel.id)
@@ -436,8 +439,13 @@ const closeNodeMenu = () => {
  * 检索选中时候触发
  * @param kw
  */
+
+const keyWord = ref('')
+const currentKeyWord = ref(false)
 const selectOn = (kw: string) => {
   props.nodeModel.setSelected(true)
+  keyWord.value = kw
+  currentKeyWord.value = false
   console.log('selectOn', kw)
 }
 /**
@@ -445,13 +453,36 @@ const selectOn = (kw: string) => {
  * @param kw
  */
 const focusOn = (kw: string) => {
+  currentKeyWord.value = true
   console.log('focusOn', kw)
 }
 /**
  * 清除时触发
  */
 const clearSelectOn = () => {
+  keyWord.value = ''
+  currentKeyWord.value = false
   console.log('onClearSearchSelect')
+}
+
+// 高亮选中关键字
+
+const highlightedStepName = (contentText: string) => {
+  let res = contentText
+  if (keyWord.value === '') {
+    return res
+  } else {
+    const wordsArray = contentText.split('')
+    for (let i = 0; i < wordsArray.length; i++) {
+      if (keyWord.value.includes(wordsArray[i])) {
+        wordsArray[i] = currentKeyWord.value
+          ? `<span style='background: #FF8800;'>${wordsArray[i]}</span>`
+          : `<span style='background: #FFC60A;'>${wordsArray[i]}</span>`
+      }
+    }
+    res = wordsArray.join('')
+    return res
+  }
 }
 onMounted(() => {
   set(props.nodeModel, 'openNodeMenu', (anchorData: any) => {

@@ -23,7 +23,7 @@
             <span class="lighter" v-if="selectedCount && selectedCount > 0">
               {{ currentIndex + 1 }}/{{ selectedCount }}
             </span>
-            <span class="lighter" v-else-if="searchText.length > 0"> 无结果 </span>
+            <span class="lighter color-secondary" style="width: 42px;" v-else-if="searchText.length > 0"> 无结果 </span>
             <el-divider direction="vertical" />
 
             <el-button text>
@@ -48,7 +48,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
-import { MsgSuccess, MsgWarning } from '@/utils/message'
 // Props定义
 interface Props {
   lf?: any
@@ -75,7 +74,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
 }
 
 const focusOn = (node: any) => {
-  console.log(node)
   props.lf?.graphModel.transformModel.focusOn(
     node.x,
     node.y,
