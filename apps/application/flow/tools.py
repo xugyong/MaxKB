@@ -354,7 +354,7 @@ async def _initialize_skills(mcp_servers, temp_dir):
 
 
 async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_enable=True, tool_init_params={},
-                              source_id=None, source_type=None, temp_dir=None):
+                              source_id=None, source_type=None, temp_dir=None, chat_id=None):
     try:
         checkpointer = MemorySaver()
         client, skills_dir = await _initialize_skills(mcp_servers, temp_dir)
@@ -374,7 +374,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
         recursion_limit = int(CONFIG.get("LANGCHAIN_GRAPH_RECURSION_LIMIT", '100'))
         response = agent.astream(
             {"messages": message_list},
-            config={"recursion_limit": recursion_limit, "configurable": {"thread_id": str(uuid.uuid7())}},
+            config={"recursion_limit": recursion_limit, "configurable": {"thread_id": chat_id}},
             stream_mode='messages'
         )
 
@@ -548,7 +548,7 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     async def _run():
         try:
             async_gen = _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_enable, tool_init_params,
-                                            source_id, source_type, temp_dir)
+                                            source_id, source_type, temp_dir, chat_id)
             async for chunk in async_gen:
                 result_queue.put(('data', chunk))
         except Exception as e:
