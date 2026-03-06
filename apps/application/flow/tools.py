@@ -443,9 +443,20 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         continue
                     entry = _tool_fragments.setdefault(
                         idx, {'id': '', 'name': '', 'arguments': ''})
+
+                    # Detect if this is a NEW tool call on the same index (fragment reuse)
                     raw_id = tc_chunk.get('id')
                     if raw_id and str(raw_id).strip():
-                        entry['id'] = str(raw_id).strip()
+                        new_id = str(raw_id).strip()
+                        # If fragment is completed and ID changes, it's a new tool call - reset fragment
+                        if entry.get('completed') and entry.get('id') and entry['id'] != new_id:
+                            maxkb_logger.debug(
+                                f"Resetting completed fragment {idx}: old ID {entry['id']} -> new ID {new_id}")
+                            entry.clear()
+                            entry.update(
+                                {'id': '', 'name': '', 'arguments': ''})
+                        entry['id'] = new_id
+
                     func_name = tc_chunk.get('name')
                     if func_name:
                         entry['name'] = func_name
@@ -457,7 +468,25 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         except Exception:
                             part_args = str(part_args) if part_args else ''
                     if part_args:
-                        entry['arguments'] += part_args
+                        # Smart merging: if both existing and new args are valid JSON objects,
+                        # merge them as dicts instead of concatenating strings
+                        if entry['arguments']:
+                            try:
+                                existing_obj = json.loads(entry['arguments'])
+                                new_obj = json.loads(part_args)
+                                if isinstance(existing_obj, dict) and isinstance(new_obj, dict):
+                                    # Merge the two objects
+                                    merged = {**existing_obj, **new_obj}
+                                    entry['arguments'] = json.dumps(
+                                        merged, ensure_ascii=False)
+                                else:
+                                    # Not both dicts, fall back to concatenation
+                                    entry['arguments'] += part_args
+                            except (json.JSONDecodeError, ValueError):
+                                # Not valid JSON, just concatenate (streaming fragments)
+                                entry['arguments'] += part_args
+                        else:
+                            entry['arguments'] = part_args
 
                 # ----------------------------------------------------------------
                 # 2. 兼容 additional_kwargs['tool_calls'] 方式（旧格式/非流式情况）
@@ -470,9 +499,20 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         continue
                     entry = _tool_fragments.setdefault(
                         idx, {'id': '', 'name': '', 'arguments': ''})
+
+                    # Detect if this is a NEW tool call on the same index (fragment reuse)
                     raw_id = tool_call.get('id')
                     if raw_id and str(raw_id).strip():
-                        entry['id'] = str(raw_id).strip()
+                        new_id = str(raw_id).strip()
+                        # If fragment is completed and ID changes, it's a new tool call - reset fragment
+                        if entry.get('completed') and entry.get('id') and entry['id'] != new_id:
+                            maxkb_logger.debug(
+                                f"Resetting completed fragment {idx}: old ID {entry['id']} -> new ID {new_id}")
+                            entry.clear()
+                            entry.update(
+                                {'id': '', 'name': '', 'arguments': ''})
+                        entry['id'] = new_id
+
                     func = tool_call.get('function', {})
                     if isinstance(func, dict):
                         func_name = func.get('name')
@@ -488,7 +528,25 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                         except Exception:
                             part_args = str(part_args) if part_args else ''
                     if part_args:
-                        entry['arguments'] += part_args
+                        # Smart merging: if both existing and new args are valid JSON objects,
+                        # merge them as dicts instead of concatenating strings
+                        if entry['arguments']:
+                            try:
+                                existing_obj = json.loads(entry['arguments'])
+                                new_obj = json.loads(part_args)
+                                if isinstance(existing_obj, dict) and isinstance(new_obj, dict):
+                                    # Merge the two objects
+                                    merged = {**existing_obj, **new_obj}
+                                    entry['arguments'] = json.dumps(
+                                        merged, ensure_ascii=False)
+                                else:
+                                    # Not both dicts, fall back to concatenation
+                                    entry['arguments'] += part_args
+                            except (json.JSONDecodeError, ValueError):
+                                # Not valid JSON, just concatenate (streaming fragments)
+                                entry['arguments'] += part_args
+                        else:
+                            entry['arguments'] = part_args
 
                 # ----------------------------------------------------------------
                 # 3. 检测工具调用结束，更新 tool_calls_info
@@ -501,7 +559,22 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
 
                 if is_finish_chunk:
                     # 在 finish chunk 时，将所有未完成的 fragment 标记完成并更新 tool_calls_info
+                    maxkb_logger.debug(
+                        f"Processing finish chunk. Tool fragments: {_tool_fragments}")
                     for idx, entry in _tool_fragments.items():
+                        if entry.get('completed'):
+                            maxkb_logger.debug(
+                                f"Skipping fragment {idx}: already completed")
+                            continue
+                        if not entry.get('id'):
+                            maxkb_logger.warning(
+                                f"Skipping fragment {idx}: missing id. Fragment: {entry}")
+                            continue
+                        if not entry.get('arguments'):
+                            maxkb_logger.warning(
+                                f"Skipping fragment {idx}: missing arguments. Fragment: {entry}")
+                            continue
+
                         if not entry.get('completed') and entry.get('id') and entry.get('arguments'):
                             try:
                                 parsed_args = json.loads(entry['arguments'])
@@ -514,9 +587,20 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                                     'input': json.dumps(filtered_args, ensure_ascii=False)
                                 }
                                 entry['completed'] = True
+                                maxkb_logger.debug(
+                                    f"Added tool call {entry['id']} to tool_calls_info")
                             except (json.JSONDecodeError, ValueError) as e:
+                                # JSON parsing failed, but still add to tool_calls_info with raw arguments
+                                # to prevent "Tool ID not found" errors when ToolMessage arrives
                                 maxkb_logger.warning(
-                                    f"Failed to parse tool arguments at finish: {entry['arguments']}, error: {e}")
+                                    f"Failed to parse tool arguments at finish for tool {entry.get('id', 'unknown')}: "
+                                    f"{entry['arguments']}, error: {e}. Using raw arguments.")
+                                tool_calls_info[entry['id']] = {
+                                    'name': entry['name'],
+                                    # Use raw arguments
+                                    'input': entry['arguments']
+                                }
+                                entry['completed'] = True
 
                 # ----------------------------------------------------------------
                 # 4. 修复 tool_call_chunks 中的空 id（回填已知 id）
@@ -592,7 +676,10 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                     chunk[0].content = content
                 else:
                     maxkb_logger.warning(
-                        f"Tool ID {tool_id} not found in tool_calls_info. Available IDs: {list(tool_calls_info.keys())}")
+                        f"Tool ID {tool_id} not found in tool_calls_info. "
+                        f"Available IDs: {list(tool_calls_info.keys())}. "
+                        f"Tool fragments at this point: {_tool_fragments}"
+                    )
 
                 yield chunk[0]
 
