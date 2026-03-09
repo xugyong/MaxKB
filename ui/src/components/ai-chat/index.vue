@@ -40,7 +40,7 @@
           <el-checkbox-group v-model="multipleSelectionChat" @change="handleCheckedChatChange">
             <template v-for="(item, index) in chatList" :key="index">
               <div class="flex-between w-full">
-                <el-checkbox :value="item.record_id" v-if="selection" />
+                <el-checkbox :value="item.record_id" v-if="selection"/>
                 <div
                   class="w-full border-r-8"
                   :class="selection ? 'is-selected p-12 mt-8 mb-8 cursor' : 'mt-24'"
@@ -59,7 +59,7 @@
                 </div>
               </div>
               <div class="flex align-center w-full">
-                <el-checkbox :value="item.record_id" v-if="selection" />
+                <el-checkbox :value="item.record_id" v-if="selection"/>
                 <div
                   class="w-full border-r-8"
                   :class="selection ? 'is-selected p-12 cursor' : ''"
@@ -97,12 +97,15 @@
       <div style="position: relative">
         <!-- 置底按钮 -->
         <el-button v-if="isBottom" circle class="back-bottom-button" @click="setScrollBottom">
-          <el-icon><ArrowDownBold /></el-icon>
+          <el-icon>
+            <ArrowDownBold/>
+          </el-icon>
         </el-button>
         <div class="mul-operation border-t w-full" v-if="selection === true">
           <div class="flex-between chat-width">
             <el-checkbox v-model="checkAll" @change="handleCheckAllChange">
-              {{ $t('common.allCheck') }}</el-checkbox
+              {{ $t('common.allCheck') }}
+            </el-checkbox
             >
             <div>
               <el-button @click="cancelCheckHandle">
@@ -163,16 +166,16 @@ import {
   provide,
   onBeforeMount,
 } from 'vue'
-import { useRoute } from 'vue-router'
+import {useRoute} from 'vue-router'
 import applicationApi from '@/api/application/application'
 import chatAPI from '@/api/chat/chat'
 import SystemResourceManagementApplicationAPI from '@/api/system-resource-management/application.ts'
 import syetrmResourceManagementChatLogApi from '@/api/system-resource-management/chat-log'
 import chatLogApi from '@/api/application/chat-log'
-import { ChatManagement, type chatType } from '@/api/type/application'
-import { randomId } from '@/utils/common'
+import {ChatManagement, type chatType} from '@/api/type/application'
+import {randomId} from '@/utils/common'
 import useStore from '@/stores'
-import { debounce } from 'lodash'
+import {debounce} from 'lodash'
 import AnswerContent from '@/components/ai-chat/component/answer-content/index.vue'
 import QuestionContent from '@/components/ai-chat/component/question-content/index.vue'
 import TransitionContent from '@/components/ai-chat/component/transition-content/index.vue'
@@ -180,22 +183,23 @@ import ChatInputOperate from '@/components/ai-chat/component/chat-input-operate/
 import PrologueContent from '@/components/ai-chat/component/prologue-content/index.vue'
 import UserForm from '@/components/ai-chat/component/user-form/index.vue'
 import Control from '@/components/ai-chat/component/control/index.vue'
-import type { CheckboxValueType } from 'element-plus'
-import { t } from '@/locales'
+import type {CheckboxValueType} from 'element-plus'
+import {t} from '@/locales'
 import bus from '@/bus'
-import { throttle } from 'lodash-es'
-import { copyClick } from '@/utils/clipboard'
+import {throttle} from 'lodash-es'
+import {copyClick} from '@/utils/clipboard'
+
 provide('upload', (file: any, loading?: Ref<boolean>) => {
   return props.type === 'debug-ai-chat'
     ? applicationApi.postUploadFile(file, 'TEMPORARY_120_MINUTE', 'TEMPORARY_120_MINUTE', loading)
     : chatAPI.postUploadFile(file, chartOpenId.value, 'CHAT', loading)
 })
 const transcribing = ref<boolean>(false)
-defineOptions({ name: 'AiChat' })
+defineOptions({name: 'AiChat'})
 const route = useRoute()
 const {
-  params: { accessToken, id },
-  query: { mode },
+  params: {accessToken, id},
+  query: {mode},
 } = route as any
 const props = withDefaults(
   defineProps<{
@@ -223,7 +227,7 @@ const emit = defineEmits([
   'openParagraphDocument',
   'update:selection',
 ])
-const { application, common, chatUser } = useStore()
+const {application, common, chatUser} = useStore()
 const isMobile = computed(() => {
   return common.isMobile() || mode === 'embed' || mode === 'mobile'
 })
@@ -283,7 +287,7 @@ watch(
       }
     }
   },
-  { deep: true, immediate: true },
+  {deep: true, immediate: true},
 )
 
 watch(
@@ -291,7 +295,7 @@ watch(
   () => {
     chartOpenId.value = ''
   },
-  { deep: true },
+  {deep: true},
 )
 
 watch(
@@ -359,6 +363,7 @@ function toggleSelect(id: number) {
     multipleSelectionChat.value.splice(index, 1)
   }
 }
+
 function cancelCheckHandle() {
   checkAll.value = false
   multipleSelectionChat.value = []
@@ -378,6 +383,7 @@ function UserFormConfirm() {
   firsUserInput.value = false
   showUserInput.value = false
 }
+
 function UserFormCancel() {
   // 恢复初始数据
   form_data.value = JSON.parse(JSON.stringify(initialFormData.value))
@@ -503,6 +509,7 @@ const getChatRecordDetailsAPI = (row: any) => {
   }
   return Promise.reject('404')
 }
+
 /**
  * 获取对话详情
  * @param row
@@ -517,6 +524,7 @@ function getSourceDetail(row: any) {
     })
   })
 }
+
 /**
  * 对话
  */
@@ -538,7 +546,7 @@ const getWrite = (chat: any, reader: any, stream: boolean) => {
   const write_stream = async () => {
     try {
       while (true) {
-        const { done, value } = await reader.read()
+        const {done, value} = await reader.read()
 
         if (done) {
           ChatManagement.close(chat.id)
@@ -546,7 +554,7 @@ const getWrite = (chat: any, reader: any, stream: boolean) => {
         }
 
         const decoder = new TextDecoder('utf-8')
-        let str = decoder.decode(value, { stream: true })
+        let str = decoder.decode(value, {stream: true})
 
         tempResult += str
         const split = tempResult.match(/data:.*?}\n\n/g)
@@ -579,7 +587,7 @@ const getWrite = (chat: any, reader: any, stream: boolean) => {
   const write_json = async () => {
     try {
       while (true) {
-        const { done, value } = await reader.read()
+        const {done, value} = await reader.read()
 
         if (done) {
           const result_block = JSON.parse(tempResult)
@@ -613,6 +621,7 @@ const errorWrite = (chat: any, message?: string) => {
   ChatManagement.updateStatus(chat.id, 500)
   ChatManagement.close(chat.id)
 }
+
 // 保存上传文件列表
 
 function chatMessage(chat?: any, problem?: string, re_chat?: boolean, other_params_data?: any) {
@@ -750,7 +759,7 @@ const handleScrollTop = ($event: any) => {
   }
   isBottom.value =
     scrollTop.value + scrollDiv.value.wrapRef.offsetHeight < dialogScrollbar.value!.scrollHeight
-  emit('scroll', { ...$event, dialogScrollbar: dialogScrollbar.value, scrollDiv: scrollDiv.value })
+  emit('scroll', {...$event, dialogScrollbar: dialogScrollbar.value, scrollDiv: scrollDiv.value})
 }
 /**
  * 处理跟随滚动条
@@ -759,8 +768,13 @@ const handleScroll = () => {
   if (props.type !== 'log' && scrollDiv.value) {
     // 内部高度小于外部高度 就需要出滚动条
     if (scrollDiv.value.wrapRef.offsetHeight < dialogScrollbar.value.scrollHeight) {
-      // 滚动到底部
-      scrollDiv.value.setScrollTop(dialogScrollbar.value.scrollHeight)
+      // 只有在用户已经在底部附近时才自动滚动到底部
+      const isNearBottom =
+        dialogScrollbar.value.scrollHeight - (scrollTop.value + scrollDiv.value.wrapRef.offsetHeight) <= 40
+      if (scorll.value || isNearBottom) {
+        // 滚动到底部
+        scrollDiv.value.setScrollTop(dialogScrollbar.value.scrollHeight)
+      }
     }
   }
 }
@@ -776,7 +790,7 @@ onBeforeMount(() => {
 })
 
 function parseTransform(transformStr: string) {
-  const result = { scale: 1, translateX: 0, translateY: 0, translateZ: 0 }
+  const result = {scale: 1, translateX: 0, translateY: 0, translateZ: 0}
 
   if (!transformStr || transformStr === 'none') return result
 
@@ -797,6 +811,7 @@ function parseTransform(transformStr: string) {
 
   return result
 }
+
 onMounted(() => {
   if (isUserInput.value && localStorage.getItem(`${accessToken}userForm`)) {
     const userFormData = JSON.parse(localStorage.getItem(`${accessToken}userForm`) || '{}')
@@ -810,7 +825,7 @@ onMounted(() => {
     // 2. 解析当前变换状态
     const currentTransform = target.style.transform
     const transformValues = parseTransform(currentTransform)
-    const { scale, translateX, translateY } = transformValues
+    const {scale, translateX, translateY} = transformValues
     // 确保scale是数值类型
     const currentScale = Array.isArray(scale) ? scale[0] : scale
 
@@ -844,7 +859,7 @@ onMounted(() => {
         }
       }
     },
-    { passive: false },
+    {passive: false},
   )
 
   window.sendMessage = sendMessage
@@ -879,7 +894,7 @@ watch(
       handleScroll() // 确保 DOM 更新后再滚动
     })
   },
-  { deep: true, immediate: true },
+  {deep: true, immediate: true},
 )
 
 defineExpose({
