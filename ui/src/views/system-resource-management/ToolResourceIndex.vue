@@ -373,7 +373,7 @@
                   <el-dropdown-item
                     text
                     @click.stop="openToolRecordDrawer(row)"
-                    v-if="permissionPrecise.record()"
+                    v-if="row.tool_type === 'CUSTOM' && permissionPrecise.record()"
                   >
                     <AppIcon iconName="app-schedule-report" class="color-secondary" />
                     {{ $t('common.ExecutionRecord.subTitle') }}
