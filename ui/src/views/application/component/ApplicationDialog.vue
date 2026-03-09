@@ -50,7 +50,7 @@
               <el-col :span="12" v-for="(item, index) in searchData" :key="index" class="mb-16">
                 <el-popover
                   placement="bottom-start"
-                  :width="350"
+                  :width="400"
                   popper-style="--el-popover-border-radius:8px;--el-popover-padding:16px 16px 0"
                   :persistent="false"
                 >
@@ -90,10 +90,16 @@
                         </el-avatar>
                       </template>
                       <template #subTitle>
-                        <el-text class="color-secondary lighter" size="small">
-                          <auto-tooltip :content="item.username">
-                            {{ $t('common.creator') }}: {{ i18n_name(item.nick_name) }}
-                          </auto-tooltip>
+                        <el-text class="color-secondary lighter flex align-center" size="small">
+                          <span
+                            :title="i18n_name(item.nick_name)"
+                            class="ellipsis"
+                            style="max-width: 90px"
+                          >
+                            {{ i18n_name(item.nick_name) }}
+                          </span>
+                          <span class="ml-4 mr-4"> {{ $t('common.createdIn') }}</span>
+                          <span> {{ dateFormat(item.create_time) }}</span>
                         </el-text>
                       </template>
                       <template #tag>

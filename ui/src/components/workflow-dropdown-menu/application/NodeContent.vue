@@ -31,7 +31,13 @@
             >
               <img :src="resetUrl(item?.icon, resetUrl('./favicon.ico'))" alt="" />
             </el-avatar>
-            <el-avatar v-else class="avatar-green" shape="square" :size="20">
+            <el-avatar
+              v-else
+              class="avatar-green"
+              shape="square"
+              :size="20"
+              style="--el-avatar-border-radius: 6px"
+            >
               <img src="@/assets/tool/icon_tool.svg" style="width: 58%" alt="" />
             </el-avatar>
             <span class="ml-8 ellipsis" :title="item.name">{{ item.name }}</span>
@@ -49,7 +55,13 @@
               >
                 <img :src="resetUrl(item?.icon, resetUrl('./favicon.ico'))" alt="" />
               </el-avatar>
-              <el-avatar v-else class="avatar-green" shape="square" :size="20">
+              <el-avatar
+                v-else
+                class="avatar-green"
+                shape="square"
+                :size="20"
+                style="--el-avatar-border-radius: 6px"
+              >
                 <img src="@/assets/tool/icon_tool.svg" style="width: 58%" alt="" />
               </el-avatar>
               <span class="font-medium ml-8 break-all" :title="item.name">{{ item.name }}</span>

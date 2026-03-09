@@ -164,14 +164,28 @@
                     <span class="ellipsis-1" :title="item.name">
                       {{ item.name }}
                     </span>
-                    <el-tag v-if="item.version" class="ml-4" size="small" type="info" effect="plain">
+                    <el-tag
+                      v-if="item.version"
+                      class="ml-4"
+                      size="small"
+                      type="info"
+                      effect="plain"
+                    >
                       {{ item.version }}
                     </el-tag>
                   </div>
                 </template>
                 <template #subTitle>
-                  <el-text class="color-secondary lighter" size="small">
-                    {{ $t('common.creator') }}: {{ i18n_name(item.nick_name) }}
+                  <el-text class="color-secondary lighter flex align-center" size="small">
+                    <span
+                      :title="i18n_name(item.nick_name)"
+                      class="ellipsis"
+                      style="max-width: 90px"
+                    >
+                      {{ i18n_name(item.nick_name) }}
+                    </span>
+                    <span class="ml-4 mr-4"> {{ $t('common.createdIn') }}</span>
+                    <span> {{ dateFormat(item.create_time) }}</span>
                   </el-text>
                 </template>
                 <template #tag="{ hoverShow }">
@@ -353,7 +367,11 @@
   <InitParamDrawer ref="InitParamDrawerRef" @refresh="refresh" />
   <ToolFormDrawer ref="ToolFormDrawerRef" @refresh="refresh" :title="ToolDrawertitle" />
   <McpToolFormDrawer ref="McpToolFormDrawerRef" @refresh="refresh" :title="McpToolDrawertitle" />
-  <SkillToolFormDrawer ref="SkillToolFormDrawerRef" @refresh="refresh" :title="SkillToolDrawertitle" />
+  <SkillToolFormDrawer
+    ref="SkillToolFormDrawerRef"
+    @refresh="refresh"
+    :title="SkillToolDrawertitle"
+  />
   <DataSourceToolFormDrawer
     ref="DataSourceToolFormDrawerRef"
     @refresh="refresh"
@@ -411,6 +429,7 @@ import ToolStoreApi from '@/api/tool/store.ts'
 import { resetUrl, i18n_name } from '@/utils/common'
 import { MsgSuccess, MsgConfirm, MsgError } from '@/utils/message'
 import { SourceTypeEnum } from '@/enums/common'
+import { dateFormat } from '@/utils/time'
 import { loadSharedApi } from '@/utils/dynamics-api/shared-api'
 import permissionMap from '@/permission'
 import useStore from '@/stores'
@@ -604,7 +623,9 @@ function openCreateMcpDialog(data?: any) {
   if (isShared.value) {
     return
   }
-  McpToolDrawertitle.value = data ? t('views.tool.mcp.editMcpTool') : t('views.tool.mcp.createMcpTool')
+  McpToolDrawertitle.value = data
+    ? t('views.tool.mcp.editMcpTool')
+    : t('views.tool.mcp.createMcpTool')
   if (data) {
     loadSharedApi({ type: 'tool', systemType: apiType.value })
       .getToolById(data?.id, loading)
@@ -637,7 +658,9 @@ function openCreateSkillDialog(data?: any) {
   if (isShared.value) {
     return
   }
-  SkillToolDrawertitle.value = data ? t('views.tool.skill.editSkillTool') : t('views.tool.skill.createSkillTool')
+  SkillToolDrawertitle.value = data
+    ? t('views.tool.skill.editSkillTool')
+    : t('views.tool.skill.createSkillTool')
   if (data) {
     loadSharedApi({ type: 'tool', systemType: apiType.value })
       .getToolById(data?.id, loading)

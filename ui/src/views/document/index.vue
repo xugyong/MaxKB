@@ -281,7 +281,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column width="130" prop="tag">
+            <el-table-column width="150" prop="tag">
               <template #header>
                 <div>
                   <span>{{ $t('dynamicsForm.tag.label') }}</span>
