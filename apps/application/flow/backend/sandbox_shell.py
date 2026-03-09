@@ -8,7 +8,7 @@ from maxkb.const import CONFIG
 
 _enable_sandbox = bool(CONFIG.get('SANDBOX', 0))
 _run_user = 'sandbox' if _enable_sandbox else getpass.getuser()
-_sandbox_python_sys_path = CONFIG.get_sandbox_python_package_paths().split(',')
+_sandbox_python_sys_path = CONFIG.get_sandbox_python_package_paths().replace(',', ':')
 
 
 class SandboxShellBackend(LocalShellBackend):
@@ -16,8 +16,15 @@ class SandboxShellBackend(LocalShellBackend):
         if 'env' not in kwargs and not kwargs.get('inherit_env', False):
             env = os.environ.copy()
             path = env.get('PATH', '/usr/bin:/bin')
-            if _sandbox_python_sys_path not in path.split(os.pathsep):
-                env['PATH'] = f"{_sandbox_python_sys_path}{os.pathsep}{path}"
+
+            # 将 sandbox 路径分解为列表，检查每个路径是否已存在
+            existing_paths = set(path.split(os.pathsep))
+            sandbox_paths = _sandbox_python_sys_path.split(os.pathsep) if _sandbox_python_sys_path else []
+            new_paths = [p for p in sandbox_paths if p and p not in existing_paths]
+
+            if new_paths:
+                env['PATH'] = f"{os.pathsep.join(new_paths)}{os.pathsep}{path}"
+
             kwargs['env'] = env
         super().__init__(root_dir=root_dir, **kwargs)
 
