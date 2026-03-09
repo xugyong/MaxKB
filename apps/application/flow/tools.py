@@ -578,11 +578,11 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
                                 f"Skipping fragment {idx}: already completed")
                             continue
                         if not entry.get('id'):
-                            maxkb_logger.warning(
+                            maxkb_logger.debug(
                                 f"Skipping fragment {idx}: missing id. Fragment: {entry}")
                             continue
                         if not entry.get('arguments'):
-                            maxkb_logger.warning(
+                            maxkb_logger.debug(
                                 f"Skipping fragment {idx}: missing arguments. Fragment: {entry}")
                             continue
 
