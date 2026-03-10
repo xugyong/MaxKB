@@ -408,7 +408,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
         tools = await client.get_tools()
         agent = create_deep_agent(
             model=chat_model,
-            backend=SandboxShellBackend(root_dir=temp_dir, virtual_mode=False),
+            backend=SandboxShellBackend(root_dir=temp_dir, virtual_mode=True),
             skills=[skills_dir],
             tools=tools,
             interrupt_on={
