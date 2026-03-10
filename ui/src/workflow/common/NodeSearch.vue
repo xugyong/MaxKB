@@ -46,9 +46,9 @@
       </div>
     </el-card>
     <!-- 开启搜索按钮 -->
-    <!-- <el-button v-else @click="openSearch()" circle class="workflow-search-button" size="large">
+    <el-button v-else @click="openSearch()" circle class="workflow-search-button" size="large">
       <el-icon :size="20"><Search /></el-icon>
-    </el-button> -->
+    </el-button>
   </div>
 </template>
 
