@@ -397,14 +397,14 @@ async def _initialize_skills(mcp_servers, temp_dir):
 
     client = MultiServerMCPClient(mcp_config)
 
-    return client, skills_dir
+    return client
 
 
 async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_enable=True, tool_init_params={},
                               source_id=None, source_type=None, temp_dir=None, chat_id=None):
     try:
         checkpointer = MemorySaver()
-        client, skills_dir = await _initialize_skills(mcp_servers, temp_dir)
+        client = await _initialize_skills(mcp_servers, temp_dir)
         tools = await client.get_tools()
         agent = create_deep_agent(
             model=chat_model,
@@ -743,7 +743,7 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     skills_dir = os.path.join(temp_dir, 'skills')
     os.makedirs(skills_dir, exist_ok=True)
 
-    print(f"Initializing skills in temporary directory: {skills_dir}")
+    # print(f"Initializing skills in temporary directory: {skills_dir}")
 
     async def _run():
         try:
