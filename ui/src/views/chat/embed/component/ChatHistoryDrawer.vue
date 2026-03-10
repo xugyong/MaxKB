@@ -23,6 +23,7 @@
         @delete-log="deleteChatLog"
         @refreshFieldTitle="refreshFieldTitle"
         @clear-chat="clearChat"
+        @clickShare="clickShareHandle"
       >
         <div class="user-info p-16 cursor">
           <el-avatar
@@ -90,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineModel } from 'vue'
+import { ref, computed } from 'vue'
 import useStore from '@/stores'
 import HistoryPanel from '@/views/chat/component/HistoryPanel.vue'
 import ResetPassword from '@/layout/layout-header/avatar/ResetPassword.vue'
@@ -109,10 +110,20 @@ const props = defineProps<{
   currentChatId: string
 }>()
 
-const emit = defineEmits(['newChat', 'clickLog', 'deleteLog', 'refreshFieldTitle', 'clearChat'])
+const emit = defineEmits([
+  'newChat',
+  'clickLog',
+  'deleteLog',
+  'refreshFieldTitle',
+  'clearChat',
+  'clickShare',
+])
 
 const { chatUser } = useStore()
 
+const clickShareHandle = () => {
+  emit('clickShare')
+}
 const clearChat = () => {
   emit('clearChat')
 }

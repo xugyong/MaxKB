@@ -43,14 +43,21 @@
             {{ applicationDetail?.name }}
           </h4>
         </div>
-        <el-button
-          text
-          @click="newChat"
-          class="mr-16"
-          :style="{ color: applicationDetail?.custom_theme?.header_font_color }"
-        >
-          <AppIcon iconName="app-create-chat" style="font-size: 20px"></AppIcon>
-        </el-button>
+        <div>
+          <el-button
+            text
+            @click="newChat"
+            class="mr-16"
+            :style="{ color: applicationDetail?.custom_theme?.header_font_color }"
+          >
+            <AppIcon iconName="app-create-chat" style="font-size: 20px"></AppIcon>
+          </el-button>
+          <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
+            <el-button text @click="clickShareHandle" :disabled="AiChatRef?.loading">
+              <AppIcon iconName="app-share"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </div>
       </div>
     </div>
     <div>

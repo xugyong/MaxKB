@@ -44,14 +44,20 @@
             {{ applicationDetail?.name }}
           </h4>
         </div>
-        <el-button
-          text
-          @click="newChat"
-          style="margin-right: 85px"
-          :style="{ color: applicationDetail?.custom_theme?.header_font_color }"
-        >
-          <AppIcon iconName="app-create-chat" style="font-size: 20px"></AppIcon>
-        </el-button>
+        <div style="margin-right: 85px">
+          <el-button
+            text
+            @click="newChat"
+            :style="{ color: applicationDetail?.custom_theme?.header_font_color }"
+          >
+            <AppIcon iconName="app-create-chat" style="font-size: 20px"></AppIcon>
+          </el-button>
+          <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
+            <el-button text @click="clickShareHandle" :disabled="AiChatRef?.loading">
+              <AppIcon iconName="app-share"></AppIcon>
+            </el-button>
+          </el-tooltip>
+        </div>
       </div>
     </div>
     <div>
@@ -67,6 +73,7 @@
           @refresh="refresh"
           @scroll="handleScroll"
           class="AiChat-embed"
+          v-model:selection="showSelection"
         >
         </AiChat>
       </div>
@@ -82,6 +89,7 @@
         @delete-log="deleteLog"
         @refreshFieldTitle="refreshFieldTitle"
         @clear-chat="clearChat"
+        @clickShare="clickShareHandle"
       />
     </div>
   </div>
@@ -127,6 +135,12 @@ const customStyle = computed(() => {
     color: applicationDetail.value?.custom_theme?.header_font_color,
   }
 })
+
+const showSelection = ref(false)
+const clickShareHandle = () => {
+  showSelection.value = true
+  show.value = false
+}
 
 function clearChat() {
   chatAPI.clearChat(left_loading).then(() => {
@@ -311,6 +325,4 @@ onMounted(() => {
   }
 }
 </style>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
