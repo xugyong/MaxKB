@@ -50,19 +50,38 @@ class GeminiTextToImage(MaxKBBaseModel, BaseTextToImage):
         from google import genai
         from google.genai import types
         from PIL import Image
-
-        client = genai.Client(api_key=self.api_key, http_options={"base_url": self.base_url}, **self.params)
-        response = client.models.generate_content(
-            model=self.model,
-            contents=[prompt],
-        )
         file_urls = []
-        for part in response.parts:
-            if part.text is not None:
-                print(part.text)
-            elif part.inline_data is not None:
-                image_bytes = part.inline_data.data
-                img_base64 = base64.b64encode(image_bytes).decode("utf-8")
-                file_urls.append(f'data:{part.inline_data.mime_type};base64,{img_base64}')
+        client = genai.Client(api_key=self.api_key, http_options={"base_url": self.base_url}, **self.params)
+        if self.model.startswith('imagen'):
+            config = types.GenerateImagesConfig(**self.params)
+
+            # 如果有 negative_prompt 就加入
+            if negative_prompt:
+                config.negative_prompt = negative_prompt
+            response = client.models.generate_images(
+                model=self.model,
+                prompt=prompt,
+                config=config
+            )
+            for generated_image in response.generated_images:
+                img_base64 = base64.b64encode(generated_image.image.image_bytes).decode("utf-8")
+                file_urls.append(f'data:{generated_image.image.mime_type};base64,{img_base64}')
+        else:
+            config = types.GenerateContentConfig(**self.params)
+            if negative_prompt:
+                config.negative_prompt = negative_prompt
+            response = client.models.generate_content(
+                model=self.model,
+                contents=[prompt],
+                config=config
+            )
+
+            for part in response.parts:
+                if part.text is not None:
+                    print(part.text)
+                elif part.inline_data is not None:
+                    image_bytes = part.inline_data.data
+                    img_base64 = base64.b64encode(image_bytes).decode("utf-8")
+                    file_urls.append(f'data:{part.inline_data.mime_type};base64,{img_base64}')
 
         return file_urls
