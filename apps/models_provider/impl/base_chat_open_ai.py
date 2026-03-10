@@ -1,30 +1,31 @@
 # coding=utf-8
 import base64
-import json
 from concurrent.futures import ThreadPoolExecutor
-from requests.exceptions import ConnectTimeout, ReadTimeout
 from typing import Dict, Optional, Any, Iterator, cast, Union, Sequence, Callable, Mapping
 
 from langchain_core.language_models import LanguageModelInput
 from langchain_core.messages import BaseMessage, get_buffer_string, BaseMessageChunk, HumanMessageChunk, AIMessageChunk, \
     SystemMessageChunk, FunctionMessageChunk, ChatMessageChunk
-from langchain_core.messages.ai import UsageMetadata, AIMessage
+from langchain_core.messages.ai import UsageMetadata
 from langchain_core.messages.tool import tool_call_chunk, ToolMessageChunk
 from langchain_core.outputs import ChatGenerationChunk
 from langchain_core.runnables import RunnableConfig, ensure_config
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from langchain_openai.chat_models.base import _create_usage_metadata
+from requests.exceptions import ReadTimeout
 
 from common.config.tokenizer_manage_config import TokenizerManage
 from common.utils.logger import maxkb_logger
+
 
 def custom_get_token_ids(text: str):
     tokenizer = TokenizerManage.get_tokenizer()
     return tokenizer.encode(text)
 
+
 def _convert_delta_to_message_chunk(
-    _dict: Mapping[str, Any], default_class: type[BaseMessageChunk]
+        _dict: Mapping[str, Any], default_class: type[BaseMessageChunk]
 ) -> BaseMessageChunk:
     """Convert to a LangChain message chunk."""
     id_ = _dict.get("id")
@@ -79,6 +80,7 @@ def _convert_delta_to_message_chunk(
     if role or default_class == ChatMessageChunk:
         return ChatMessageChunk(content=content, role=role, id=id_)
     return default_class(content=content, id=id_)  # type: ignore[call-arg]#
+
 
 class BaseChatOpenAI(ChatOpenAI):
     usage_metadata: dict = {}
@@ -219,63 +221,12 @@ class BaseChatOpenAI(ChatOpenAI):
             'token_usage'] if 'token_usage' in chat_result.response_metadata else chat_result.usage_metadata
         return chat_result
 
-    def _get_request_payload(
-            self,
-            input_: LanguageModelInput,
-            *,
-            stop: list[str] | None = None,
-            **kwargs: Any,
-    ) -> dict:
-        # Get original messages to preserve reasoning_content before base conversion
-        messages = self._convert_input(input_).to_messages()
-        # Store reasoning_content for AIMessages with tool_calls
-        # According to DeepSeek API docs, reasoning_content is REQUIRED when tool_calls
-        # are present during the tool invocation process (within same question/turn).
-        # See: https://api-docs.deepseek.com/guides/thinking_mode#tool-calls
-        reasoning_content_map = {}
-        for i, msg in enumerate(messages):
-            if (
-                    isinstance(msg, AIMessage)
-                    and (msg.tool_calls or msg.invalid_tool_calls)
-                    and (reasoning := msg.additional_kwargs.get("reasoning_content"))
-            ):
-                reasoning_content_map[i] = reasoning
-
-        payload = super()._get_request_payload(input_, stop=stop, **kwargs)
-
-        # Restore reasoning_content for assistant messages with tool_calls
-        # This is required by DeepSeek API - missing it causes 400 error
-        if "messages" in payload and reasoning_content_map:
-            for i, message in enumerate(payload["messages"]):
-                if (
-                        i in reasoning_content_map
-                        and message.get("role") == "assistant"
-                        and message.get("tool_calls")
-                ):
-                    message["reasoning_content"] = reasoning_content_map[i]
-
-        # Apply DeepSeek-specific message formatting
-        for message in payload["messages"]:
-            if message["role"] == "tool" and isinstance(message["content"], list):
-                message["content"] = json.dumps(message["content"])
-            elif message["role"] == "assistant" and isinstance(
-                    message["content"], list
-            ):
-                # DeepSeek API expects assistant content to be a string, not a list.
-                # Extract text blocks and join them, or use empty string if none exist.
-                text_parts = [
-                    block.get("text", "")
-                    for block in message["content"]
-                    if isinstance(block, dict) and block.get("type") == "text"
-                ]
-                message["content"] = "".join(text_parts) if text_parts else ""
-        return payload
-
     def upload_file_and_get_url(self, file_stream, file_name):
         """上传文件并获取文件URL"""
         base64_video = base64.b64encode(file_stream).decode("utf-8")
         video_format = get_video_format(file_name)
         return f'data:{video_format};base64,{base64_video}'
+
 
 def get_video_format(file_name):
     extension = file_name.split('.')[-1].lower()
