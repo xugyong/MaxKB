@@ -2,37 +2,22 @@
 from typing import Dict
 
 from django.utils.translation import gettext_lazy as _, gettext
-from langchain_core.messages import HumanMessage
 
 from common import forms
 from common.exception.app_exception import AppApiException
 from common.forms import BaseForm, TooltipLabel
-from common.utils.logger import maxkb_logger
 from models_provider.base_model_provider import BaseModelCredential, ValidCode
+from common.utils.logger import maxkb_logger
 
 
-class GeminiImageModelParams(BaseForm):
-    temperature = forms.SliderField(TooltipLabel(_('Temperature'),
-                                                 _('Higher values make the output more random, while lower values make it more focused and deterministic')),
-                                    required=True, default_value=0.7,
-                                    _min=0.1,
-                                    _max=1.0,
-                                    _step=0.01,
-                                    precision=2)
-
-    max_tokens = forms.SliderField(
-        TooltipLabel(_('Output the maximum Tokens'),
-                     _('Specify the maximum number of tokens that the model can generate')),
-        required=True, default_value=800,
-        _min=1,
-        _max=100000,
-        _step=1,
-        precision=0)
+class GeminiTTIModelParams(BaseForm):
+    pass
 
 
-class GeminiImageModelCredential(BaseForm, BaseModelCredential):
+class GeminiTextToImageModelCredential(BaseForm, BaseModelCredential):
+    base_url = forms.TextInputField('Base Url', required=True,
+                                    default_value='https://generativelanguage.googleapis.com')
     api_key = forms.PasswordInputField('API Key', required=True)
-    base_url = forms.TextInputField('Base URL', required=True, default_value='https://generativelanguage.googleapis.com')
 
     def is_valid(self, model_type: str, model_name, model_credential: Dict[str, object], model_params, provider,
                  raise_exception=False):
@@ -41,7 +26,7 @@ class GeminiImageModelCredential(BaseForm, BaseModelCredential):
             raise AppApiException(ValidCode.valid_error.value,
                                   gettext('{model_type} Model type is not supported').format(model_type=model_type))
 
-        for key in ['api_key', 'base_url']:
+        for key in ['base_url', 'api_key']:
             if key not in model_credential:
                 if raise_exception:
                     raise AppApiException(ValidCode.valid_error.value, gettext('{key}  is required').format(key=key))
@@ -49,9 +34,7 @@ class GeminiImageModelCredential(BaseForm, BaseModelCredential):
                     return False
         try:
             model = provider.get_model(model_type, model_name, model_credential, **model_params)
-            res = model.stream([HumanMessage(content=[{"type": "text", "text": gettext('Hello')}])])
-            for chunk in res:
-                maxkb_logger.info(chunk)
+            res = model.check_auth()
         except Exception as e:
             maxkb_logger.error(f'Exception: {e}', exc_info=True)
             if isinstance(e, AppApiException):
@@ -69,4 +52,4 @@ class GeminiImageModelCredential(BaseForm, BaseModelCredential):
         return {**model, 'api_key': super().encryption(model.get('api_key', ''))}
 
     def get_model_params_setting_form(self, model_name):
-        return GeminiImageModelParams()
+        return GeminiTTIModelParams()
