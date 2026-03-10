@@ -8,7 +8,8 @@
 """
 from typing import Dict, List
 
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
+
 
 from models_provider.base_model_provider import MaxKBBaseModel
 
