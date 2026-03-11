@@ -281,11 +281,11 @@ class BaseChatNode(IChatNode):
                 tool = QuerySet(Tool).filter(id=tool_id, is_active=True).first()
                 if tool is None or tool.is_active is False:
                     continue
+                init_params_default_value = {i["field"]: i.get('default_value') for i in tool.init_field_list}
                 if tool.init_params is not None:
-                    params = json.loads(rsa_long_decrypt(tool.init_params))
-                    tool_init_params = json.loads(rsa_long_decrypt(tool.init_params))
+                    params = init_params_default_value | json.loads(rsa_long_decrypt(tool.init_params))
                 else:
-                    params = {}
+                    params = init_params_default_value
 
                 skill_file_items.append({
                     'tool_id': str(tool.id),
