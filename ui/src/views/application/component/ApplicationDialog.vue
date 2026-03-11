@@ -53,6 +53,7 @@
                   :width="400"
                   popper-style="--el-popover-border-radius:8px;--el-popover-padding:16px 16px 0"
                   :persistent="false"
+                  :show-after="500"
                 >
                   <template #reference>
                     <CardCheckbox
