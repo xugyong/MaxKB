@@ -361,13 +361,15 @@ const handleCheckedChatChange = (value: CheckboxValueType[]) => {
 }
 
 function toggleSelect(id: number) {
-  const index = multipleSelectionChat.value.indexOf(id)
-  if (index === -1) {
-    multipleSelectionChat.value.push(id)
-  } else {
-    multipleSelectionChat.value.splice(index, 1)
+  if (props.selection) {
+    const index = multipleSelectionChat.value.indexOf(id)
+    if (index === -1) {
+      multipleSelectionChat.value.push(id)
+    } else {
+      multipleSelectionChat.value.splice(index, 1)
+    }
+    checkAll.value = multipleSelectionChat.value.length === chatList.value.length
   }
-  checkAll.value = multipleSelectionChat.value.length === chatList.value.length
 }
 
 function cancelCheckHandle() {
