@@ -22,7 +22,8 @@ class GeminiImage(MaxKBBaseModel, ChatGoogleGenerativeAI):
         optional_params = MaxKBBaseModel.filter_optional_params(model_kwargs)
         base_url = model_credential.get('base_url', "https://generativelanguage.googleapis.com")
         if base_url:
-            optional_params['http_options'] = {"base_url": base_url}
+            optional_params.setdefault("model_kwargs", {})
+            optional_params["model_kwargs"]["http_options"] = {"base_url": base_url}
         return GeminiImage(
             model=model_name,
             api_key=model_credential.get('api_key'),
