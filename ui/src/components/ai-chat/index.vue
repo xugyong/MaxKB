@@ -883,6 +883,7 @@ onMounted(() => {
   })
   bus.on('click:share', (id: string) => {
     multipleSelectionChat.value.push(id)
+    checkAll.value = multipleSelectionChat.value.length === chatList.value.length
     emit('update:selection', true)
   })
 })

@@ -102,26 +102,49 @@
                   <el-switch v-model="enable_exception" size="small" />
                 </div>
               </div>
-
-              <template v-for="(item, index) in nodeFields" :key="index">
-                <div
-                  class="flex-between border-r-6 p-8-12 mb-8 layout-bg lighter"
-                  @mouseenter="showicon = index"
-                  @mouseleave="showicon = null"
-                >
-                  <span class="break-all">{{ item.label }} {{ '{' + item.value + '}' }}</span>
-                  <el-tooltip
-                    effect="dark"
-                    :content="$t('workflow.setting.copyParam')"
-                    placement="top"
-                    v-if="showicon === index"
+              <div class="border-r-6 p-4-12 layout-bg lighter">
+                <template v-for="(item, index) in nodeFields" :key="index">
+                  <div
+                    class="flex-between mb-8 mt-8"
+                    @mouseenter="showicon = index"
+                    @mouseleave="showicon = null"
                   >
-                    <el-button link @click="copyClick(item.globeLabel)" style="padding: 0">
-                      <AppIcon iconName="app-copy"></AppIcon>
-                    </el-button>
-                  </el-tooltip>
-                </div>
-              </template>
+                    <span class="break-all">{{ item.label }} {{ '{' + item.value + '}' }}</span>
+                    <el-tooltip
+                      effect="dark"
+                      :content="$t('workflow.setting.copyParam')"
+                      placement="top"
+                      v-if="showicon === index"
+                    >
+                      <el-button link @click="copyClick(item.globeLabel)" style="padding: 0">
+                        <AppIcon iconName="app-copy"></AppIcon>
+                      </el-button>
+                    </el-tooltip>
+                  </div>
+                </template>
+              </div>
+
+              <div class="border-r-6 p-4-12 layout-bg lighter mt-8" v-if="enable_exception">
+                <template v-for="(item, index) in abnormalNodeFields" :key="index">
+                  <div
+                    class="flex-between mb-8 mt-8"
+                    @mouseenter="showicon = 'abnormal' + index"
+                    @mouseleave="showicon = null"
+                  >
+                    <span class="break-all">{{ item.label }} {{ '{' + item.value + '}' }}</span>
+                    <el-tooltip
+                      effect="dark"
+                      :content="$t('workflow.setting.copyParam')"
+                      placement="top"
+                      v-if="showicon === 'abnormal' + index"
+                    >
+                      <el-button link @click="copyClick(item.globeLabel)" style="padding: 0">
+                        <AppIcon iconName="app-copy"></AppIcon>
+                      </el-button>
+                    </el-tooltip>
+                  </div>
+                </template>
+              </div>
             </template>
           </div>
         </el-collapse-transition>
@@ -380,20 +403,20 @@ const nodeFields = computed(() => {
         globeValue: `{{context['${props.nodeModel.id}'].${field.value}}}`,
       }
     })
-    if (enable_exception.value) {
-      return [
-        ...fields,
-        {
-          label: t('workflow.abnormalInformation'),
-          value: 'exception_message',
-          globeLabel: `{{${props.nodeModel.properties.stepName}.exception_message}}`,
-          globeValue: `{{context['${props.nodeModel.id}'].exception_message}}`,
-        },
-      ]
-    }
     return fields
   }
   return []
+})
+
+const abnormalNodeFields = computed(() => {
+  return [
+    {
+      label: t('workflow.abnormalInformation'),
+      value: 'exception_message',
+      globeLabel: `{{${props.nodeModel.properties.stepName}.exception_message}}`,
+      globeValue: `{{context['${props.nodeModel.id}'].exception_message}}`,
+    },
+  ]
 })
 watch(enable_exception, () => {
   props.nodeModel.graphModel.eventCenter.emit(

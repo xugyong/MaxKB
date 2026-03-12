@@ -48,11 +48,17 @@
           <el-button
             text
             @click="newChat"
+            v-if="!showSelection"
             :style="{ color: applicationDetail?.custom_theme?.header_font_color }"
           >
             <AppIcon iconName="app-create-chat" style="font-size: 20px"></AppIcon>
           </el-button>
-          <el-tooltip effect="dark" :content="$t('chat.share')" placement="top">
+          <el-tooltip
+            v-if="!showSelection && currentChatId !== 'new'"
+            effect="dark"
+            :content="$t('chat.share')"
+            placement="top"
+          >
             <el-button text @click="clickShareHandle" :disabled="AiChatRef?.loading">
               <AppIcon iconName="app-share"></AppIcon>
             </el-button>
@@ -246,6 +252,7 @@ function getChatRecord() {
 
 const clickListHandle = (item: any) => {
   if (item.id !== currentChatId.value) {
+    showSelection.value = false
     paginationConfig.current_page = 1
     currentRecordList.value = []
     currentChatId.value = item.id
