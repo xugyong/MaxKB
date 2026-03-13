@@ -88,7 +88,7 @@
                           <el-dropdown-menu>
                             <el-dropdown-item
                               @click.stop="shareHandle()"
-                              :disabled="currentChatId !== row.id && chat_loading"
+                              :disabled="currentChatId !== row.id || chat_loading"
                             >
                               <AppIcon iconName="app-share" class="color-secondary"></AppIcon>
                               {{ $t('chat.share') }}

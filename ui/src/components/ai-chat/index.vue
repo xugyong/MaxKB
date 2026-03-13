@@ -36,6 +36,7 @@
             :application="applicationDetails"
             :available="available"
             :send-message="sendMessage"
+            v-if="!selection"
           ></PrologueContent>
           <el-checkbox-group v-model="multipleSelectionChat" @change="handleCheckedChatChange">
             <template v-for="(item, index) in chatList" :key="index">
