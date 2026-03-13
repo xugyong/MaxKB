@@ -627,6 +627,7 @@ function closeExecutionDetail() {
 
         .execution-details {
           padding: 16px;
+          word-break: break-all;
         }
       }
     }
