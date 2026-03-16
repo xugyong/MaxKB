@@ -7,7 +7,7 @@ from deepagents.backends.protocol import ExecuteResponse
 
 from maxkb.const import CONFIG
 
-_enable_sandbox = bool(CONFIG.get('SANDBOX', 0))
+_enable_sandbox = bool(init(CONFIG.get('SANDBOX', 0)))
 _run_user = 'sandbox' if _enable_sandbox else getpass.getuser()
 _sandbox_python_sys_path = CONFIG.get_sandbox_python_package_paths().replace(',', ':')
 
