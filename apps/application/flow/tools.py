@@ -739,7 +739,10 @@ def mcp_response_generator(chat_model, message_list, mcp_servers, mcp_output_ena
     result_queue = queue.Queue()
     loop = get_global_loop()  # 使用共享循环
     # 创建临时文件夹
-    temp_dir = os.path.join('/tmp', chat_id[:8])
+    if chat_id:
+        temp_dir = os.path.join('/tmp', chat_id[:8])
+    else:
+        temp_dir = os.path.join('/tmp', uuid.uuid7().hex[:8])
     skills_dir = os.path.join(temp_dir, 'skills')
     os.makedirs(skills_dir, exist_ok=True)
 
