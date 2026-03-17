@@ -7,6 +7,7 @@
     @desc:
 """
 import asyncio
+import base64
 import hashlib
 import json
 import os
@@ -43,7 +44,7 @@ from common.field.common import UploadedFileField
 from common.utils.common import get_file_content, restricted_loads, generate_uuid, _remove_empty_lines, \
     bytes_to_uploaded_file
 from common.utils.logger import maxkb_logger
-from knowledge.models import Knowledge, KnowledgeScope
+from knowledge.models import Knowledge, KnowledgeScope, File, FileSourceType
 from knowledge.serializers.knowledge import KnowledgeSerializer, KnowledgeModelSerializer
 from maxkb.conf import PROJECT_DIR
 from models_provider.models import Model
@@ -52,7 +53,7 @@ from system_manage.models import WorkspaceUserResourcePermission, AuthTargetType
 from system_manage.models.resource_mapping import ResourceMapping
 from system_manage.serializers.resource_mapping_serializers import ResourceMappingSerializer
 from system_manage.serializers.user_resource_permission import UserResourcePermissionSerializer
-from tools.models import Tool, ToolScope
+from tools.models import Tool, ToolScope, ToolType
 from tools.serializers.tool import ToolExportModelSerializer
 from trigger.models import TriggerTask, Trigger
 from users.models import User
@@ -637,7 +638,19 @@ class ApplicationSerializer(serializers.Serializer):
         @param tool: 工具
         @return:
         """
-
+        # 如果是技能类型的工具，需要将code保存为文件
+        code = tool.get('code')
+        if tool.get('tool_type') == ToolType.SKILL:
+            skill_file_id = uuid.uuid7()
+            skill_file = File(
+                id=skill_file_id,
+                file_name=f"{tool.get('name')}.zip",
+                source_type=FileSourceType.TOOL,
+                source_id=tool.get('id'),
+                meta={}
+            )
+            skill_file.save(base64.b64decode(code))
+            tool['code'] = skill_file_id
         return Tool(id=tool.get('id'),
                     user_id=user_id,
                     name=tool.get('name'),
@@ -820,9 +833,18 @@ class ApplicationOperateSerializer(serializers.Serializer):
             application = QuerySet(Application).filter(id=application_id).first()
             from application.flow.tools import get_tool_id_list
             tool_id_list = get_tool_id_list(application.work_flow)
-            tool_list = []
             if len(tool_id_list) > 0:
                 tool_list = QuerySet(Tool).filter(id__in=tool_id_list).exclude(scope=ToolScope.SHARED)
+            else:
+                tool_list = QuerySet(Tool).filter(
+                    id__in=application.tool_ids + application.mcp_tool_ids + application.skill_tool_ids
+                ).exclude(scope=ToolScope.SHARED)
+                # 如果是技能工具，则需要将code字段转换为文件内容的base64字符串
+                for tool in tool_list:
+                    if tool.tool_type == ToolType.SKILL:
+                        skill_file = QuerySet(File).filter(id=tool.code).first()
+                        if skill_file:
+                            tool.code = base64.b64encode(skill_file.get_bytes()).decode('utf-8')
             application_dict = ApplicationSerializerModel(application).data
 
             mk_instance = MKInstance(application_dict,
@@ -897,7 +919,7 @@ class ApplicationOperateSerializer(serializers.Serializer):
         work_flow_version.save()
         access_token = hashlib.md5(
             str(uuid.uuid7()).encode()).hexdigest()[
-                       8:24]
+            8:24]
         application_access_token = QuerySet(ApplicationAccessToken).filter(
             application_id=application.id).first()
         if application_access_token is None:
