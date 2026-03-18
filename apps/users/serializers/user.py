@@ -1050,11 +1050,6 @@ class SendEmailSerializer(serializers.Serializer):
 
     def is_valid(self, *, raise_exception=False):
         super().is_valid(raise_exception=raise_exception)
-        user_exists = QuerySet(User).filter(email=self.data.get('email')).exists()
-        if not user_exists and self.data.get('type') == 'reset_password':
-            raise ExceptionCodeConstants.SEND_EMAIL_ERROR.value.to_app_api_exception()
-        elif user_exists and self.data.get('type') == 'register':
-            raise ExceptionCodeConstants.SEND_EMAIL_ERROR.value.to_app_api_exception()
         code_cache_key = self.data.get('email') + ":" + self.data.get("type")
         code_cache_key_lock = code_cache_key + "_lock"
         ttl = cache.ttl(code_cache_key_lock, version=version)
