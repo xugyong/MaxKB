@@ -36,7 +36,6 @@ class EditApplicationKeySerializer(serializers.Serializer):
 class ApplicationKeySerializer(serializers.Serializer):
     workspace_id = serializers.CharField(required=False, allow_null=True, allow_blank=True, label=_("Workspace ID"))
     application_id = serializers.UUIDField(required=True, label=_('application id'))
-    user_id = serializers.CharField(required=False, allow_null=True, allow_blank=True, label=_("User ID"))
     order_by = serializers.CharField(required=False, label=_('order by'), allow_null=True, allow_blank=True)
 
     def is_valid(self, *, raise_exception=False):
@@ -55,7 +54,6 @@ class ApplicationKeySerializer(serializers.Serializer):
         secret_key = 'agent-' + hashlib.md5(str(uuid.uuid7()).encode()).hexdigest()
         application_api_key = ApplicationApiKey(id=uuid.uuid7(),
                                                 secret_key=secret_key,
-                                                user_id=self.data.get('user_id'),
                                                 application_id=application_id)
         application_api_key.save()
         return ApplicationKeySerializerModel(application_api_key).data
