@@ -41,7 +41,7 @@ export default {
     mcpConfig: 'MCP Service Config',
   },
   skill: {
-    title: 'Skill',
+    title: 'Capabilities',
     copySkillTool: 'Copy Skill',
     createSkillTool: 'Create Skill',
     editSkillTool: 'Edit Skill',

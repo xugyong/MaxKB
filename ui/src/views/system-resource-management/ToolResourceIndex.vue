@@ -93,7 +93,7 @@
               {{ $t('views.tool.dataSource.title') }}
             </span>
             <span v-else-if="scope.row.tool_type === 'SKILL'">
-              {{ $t('views.application.skill') }}
+              Skills
             </span>
             <span v-else> {{ $t('views.tool.title') }} </span>
           </template>
@@ -465,7 +465,7 @@ const type_options = ref<any[]>([
     value: 'CUSTOM',
   },
   {
-    label: t('views.application.skill'),
+    label: 'Skills',
     value: 'SKILL',
   },
 ])
@@ -635,8 +635,8 @@ function openCreateSkillToolDialog(data?: any) {
   }
 
   SkillToolDrawertitle.value = data
-    ? t('views.application.skill.editSkill')
-    : t('views.application.skill.createSkill')
+    ? t('views.tool.skill.editSkillTool')
+    : t('views.tool.skill.createSkillTool')
   if (data) {
     ToolResourceApi.getToolById(data?.id, loading).then((res: any) => {
       SkillToolFormDrawerRef.value.open(res.data)

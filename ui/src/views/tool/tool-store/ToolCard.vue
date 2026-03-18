@@ -30,7 +30,7 @@
         {{ $t('views.tool.dataSource.title') }}
       </el-tag>
       <el-tag size="small" type="info" v-else-if="props.tool?.label === 'skill'" class="info-tag">
-        {{ $t('views.tool.skill.title') }}
+        Skills
       </el-tag>
       <el-tag size="small" type="info" class="info-tag" v-else>
         {{ $t('views.tool.title') }}
