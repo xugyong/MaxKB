@@ -77,12 +77,16 @@ def hand_node(node, update_tool_map):
         node.get('properties', {}).get('node_data', {})['knowledge_id_list'] = []
     if node.get('type') == 'ai-chat-node':
         node_data = node.get('properties', {}).get('node_data', {})
+
         mcp_tool_ids = node_data.get('mcp_tool_ids') or []
-        node_data['mcp_tool_ids'] = [update_tool_map.get(tool_id,
-                                                         tool_id) for tool_id in mcp_tool_ids]
+        node_data['mcp_tool_ids'] = [update_tool_map.get(tool_id, tool_id) for tool_id in mcp_tool_ids]
+
+        skill_tool_ids = node_data.get('skill_tool_ids') or []
+        node_data['skill_tool_ids'] = [update_tool_map.get(tool_id, tool_id) for tool_id in skill_tool_ids]
+
         tool_ids = node_data.get('tool_ids') or []
-        node_data['tool_ids'] = [update_tool_map.get(tool_id,
-                                                     tool_id) for tool_id in tool_ids]
+        node_data['tool_ids'] = [update_tool_map.get(tool_id, tool_id) for tool_id in tool_ids]
+
     if node.get('type') == 'mcp-node':
         mcp_tool_id = (node.get('properties', {}).get('node_data', {}).get('mcp_tool_id') or '')
         node.get('properties', {}).get('node_data', {})['mcp_tool_id'] = update_tool_map.get(mcp_tool_id,
@@ -843,12 +847,12 @@ class ApplicationOperateSerializer(serializers.Serializer):
                 tool_list = QuerySet(Tool).filter(
                     id__in=application.tool_ids + application.mcp_tool_ids + application.skill_tool_ids
                 ).exclude(scope=ToolScope.SHARED)
-                # 如果是技能工具，则需要将code字段转换为文件内容的base64字符串
-                for tool in tool_list:
-                    if tool.tool_type == ToolType.SKILL:
-                        skill_file = QuerySet(File).filter(id=tool.code).first()
-                        if skill_file:
-                            tool.code = base64.b64encode(skill_file.get_bytes()).decode('utf-8')
+            # 如果是技能工具，则需要将code字段转换为文件内容的base64字符串
+            for tool in tool_list:
+                if tool.tool_type == ToolType.SKILL:
+                    skill_file = QuerySet(File).filter(id=tool.code).first()
+                    if skill_file:
+                        tool.code = base64.b64encode(skill_file.get_bytes()).decode('utf-8')
             application_dict = ApplicationSerializerModel(application).data
 
             mk_instance = MKInstance(application_dict,
