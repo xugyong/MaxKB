@@ -695,6 +695,10 @@ class ApplicationSerializer(serializers.Serializer):
                            file_clean_time=application.get('file_clean_time') or 180,
                            file_upload_enable=application.get('file_upload_enable'),
                            file_upload_setting=application.get('file_upload_setting'),
+                           tool_ids=application.get('tool_ids'),
+                           skill_tool_ids=application.get('skill_tool_ids'),
+                           mcp_tool_ids=application.get('mcp_tool_ids'),
+                           application_ids=application.get('application_ids'),
                            )
 
     class StoreApplication(serializers.Serializer):
