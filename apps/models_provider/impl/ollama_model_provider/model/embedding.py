@@ -44,6 +44,4 @@ class OllamaEmbedding(MaxKBBaseModel, OllamaEmbeddings):
         Returns:
             Embeddings for the text.
         """
-        instruction_pair = f"{text}"
-        embedding = self._embed([instruction_pair])[0]
-        return embedding
+        return self.embed_documents([text])[0]
