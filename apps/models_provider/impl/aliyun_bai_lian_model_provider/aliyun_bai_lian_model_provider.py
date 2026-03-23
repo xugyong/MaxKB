@@ -132,9 +132,6 @@ module_info_itv_list = [
               GenerationVideoModel),
 ]
 
-model_multimodal_info_list = [
-    ModelInfo('', '', ModelTypeConst.MULTIMODAL, aliyun_bai_lian_llm_model_credential, BaiLianChatModel),
-]
 model_info_manage = (
     ModelInfoManage.builder()
     .append_model_info_list(model_info_list)
