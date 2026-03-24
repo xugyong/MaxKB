@@ -511,6 +511,7 @@ long syscall(long number, ...) {
         case SYS_accept:
         case SYS_accept4:
         case SYS_sendto:
+        case SYS_sendmsg:
         case SYS_recvmsg:
         case SYS_getsockopt:
         case SYS_setsockopt:
