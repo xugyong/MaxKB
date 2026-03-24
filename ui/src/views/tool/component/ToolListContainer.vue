@@ -317,7 +317,7 @@
                             @click.stop="openTriggerDrawer(item)"
                             v-if="
                               ['workspace', 'systemManage'].includes(apiType) &&
-                              item.tool_type === 'CUSTOM' &&
+                              (item.tool_type === 'CUSTOM' || item.tool_type === 'WORKFLOW') &&
                               permissionPrecise.trigger_read(item.id)
                             "
                           >
@@ -338,7 +338,10 @@
                           <el-dropdown-item
                             text
                             @click.stop="openToolRecordDrawer(item)"
-                            v-if="item.tool_type === 'CUSTOM' && permissionPrecise.record(item.id)"
+                            v-if="
+                              (item.tool_type === 'CUSTOM' || item.tool_type === 'WORKFLOW') &&
+                              permissionPrecise.record(item.id)
+                            "
                           >
                             <AppIcon
                               iconName="app-schedule-report"
