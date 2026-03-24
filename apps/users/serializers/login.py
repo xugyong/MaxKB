@@ -7,7 +7,6 @@
     @desc:
 """
 import base64
-import datetime
 import json
 
 from captcha.image import ImageCaptcha
@@ -23,7 +22,7 @@ from common.constants.cache_version import Cache_Version
 from common.database_model_manage.database_model_manage import DatabaseModelManage
 from common.exception.app_exception import AppApiException
 from common.utils.common import password_encrypt, get_random_chars
-from common.utils.rsa_util import encrypt, decrypt
+from common.utils.rsa_util import decrypt
 from maxkb.const import CONFIG
 from users.models import User
 
@@ -48,26 +47,35 @@ class LoginResponse(serializers.Serializer):
 
 
 def record_login_fail(username: str, expire: int = 600):
-    """记录登录失败次数"""
+    """记录登录失败次数（原子）返回当前失败计数"""
     if not username:
-        return
+        return 0
     fail_key = system_get_key(f'system_{username}')
-    fail_count = cache.get(fail_key, version=system_version)
-    if fail_count is None:
+    try:
+        fail_count = cache.incr(fail_key, 1, version=system_version)
+    except ValueError:
+        # key 不存在，初始化并设置过期
         cache.set(fail_key, 1, timeout=expire, version=system_version)
-    else:
-        cache.incr(fail_key, 1, version=system_version)
+        fail_count = 1
+    return fail_count
 
 
 def record_login_fail_lock(username: str, expire: int = 10):
+    """
+    原来的实现使用 get() -> set()/incr() 非原子操作，会在高并发下产生竞态条件。
+    使用 cache.incr 保证原子递增，并在不存在时初始化计数器并返回当前值。
+    返回当前的失败计数（整数）。
+    """
     if not username:
-        return
+        return 0
     fail_key = system_get_key(f'system_{username}_lock_count')
-    fail_count = cache.get(fail_key, version=system_version)
-    if fail_count is None:
+    try:
+        fail_count = cache.incr(fail_key, 1, version=system_version)
+    except ValueError:
+        # key 不存在，初始化并设置过期（分钟转秒）
         cache.set(fail_key, 1, timeout=expire * 60, version=system_version)
-    else:
-        cache.incr(fail_key, 1, version=system_version)
+        fail_count = 1
+    return fail_count
 
 
 class LoginSerializer(serializers.Serializer):
@@ -190,34 +198,38 @@ class LoginSerializer(serializers.Serializer):
 
     @staticmethod
     def _handle_failed_login(username: str, is_license_valid: bool, failed_attempts: int, lock_time: int) -> None:
-        """处理登录失败"""
-        record_login_fail(username)
-        record_login_fail_lock(username, lock_time)
+        """处理登录失败
 
+        修复：使用原子递增（cache.incr）来获取最新的失败计数，然后基于该计数做出 >= 判断；
+        使用 cache.add 原子创建锁，避免多个并发线程都错过 remain==0 的情况导致永不加锁。
+        """
+        record_login_fail(username)
+        lock_fail_count = record_login_fail_lock(username, lock_time)
+
+        # 如果不是企业版或禁用锁定功能，直接返回（但计数已经记录）
         if not is_license_valid or failed_attempts <= 0:
             return
 
-        fail_count = cache.get(system_get_key(f'system_{username}_lock_count'), version=system_version) or 0
-        remain_attempts = failed_attempts - fail_count
-
-        if remain_attempts > 0:
+        # 计算剩余次数，并基于原子计数进行判断
+        if lock_fail_count < failed_attempts:
+            remain_attempts = failed_attempts - lock_fail_count
             raise AppApiException(
                 1005,
                 _("Login failed %s times, account will be locked, you have %s more chances !") % (
                     failed_attempts, remain_attempts
                 )
             )
-        elif remain_attempts == 0:
-            cache.set(
-                system_get_key(f'system_{username}_lock'),
-                1,
-                timeout=lock_time * 60,
-                version=system_version
-            )
-            raise AppApiException(
-                1005,
-                _("This account has been locked for %s minutes, please try again later") % lock_time
-            )
+
+        cache.add(
+            system_get_key(f'system_{username}_lock'),
+            1,
+            timeout=lock_time * 60,
+            version=system_version
+        )
+        raise AppApiException(
+            1005,
+            _("This account has been locked for %s minutes, please try again later") % lock_time
+        )
 
 
 class CaptchaResponse(serializers.Serializer):
