@@ -8,6 +8,7 @@
 """
 import base64
 import json
+import logging
 
 from captcha.image import ImageCaptcha
 from django.core import signing
@@ -25,6 +26,8 @@ from common.utils.common import password_encrypt, get_random_chars
 from common.utils.rsa_util import decrypt
 from maxkb.const import CONFIG
 from users.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class LoginRequest(serializers.Serializer):
@@ -62,9 +65,8 @@ def record_login_fail(username: str, expire: int = 600):
 
 def record_login_fail_lock(username: str, expire: int = 10):
     """
-    原来的实现使用 get() -> set()/incr() 非原子操作，会在高并发下产生竞态条件。
     使用 cache.incr 保证原子递增，并在不存在时初始化计数器并返回当前值。
-    返回当前的失败计数（整数）。
+    这里的计数器用于判断是否应当进入“锁定”分支，避免依赖非原子 get -> set 的组合。
     """
     if not username:
         return 0
@@ -101,8 +103,16 @@ class LoginSerializer(serializers.Serializer):
         encrypted_data = instance.get("encryptedData", "")
 
         if encrypted_data:
-            decrypted_data = json.loads(decrypt(encrypted_data))
-            instance.update(decrypted_data)
+            try:
+                decrypted_raw = decrypt(encrypted_data)
+                # decrypt 可能返回非 JSON 字符串，防护解析异常
+                decrypted_data = json.loads(decrypted_raw) if decrypted_raw else {}
+                if isinstance(decrypted_data, dict):
+                    instance.update(decrypted_data)
+            except Exception as e:
+                logger.exception("Failed to decrypt/parse encryptedData for user %s: %s", username, e)
+                raise AppApiException(500, _("Invalid encrypted data"))
+
         try:
             LoginRequest(data=instance).is_valid(raise_exception=True)
         except serializers.ValidationError:
@@ -136,7 +146,7 @@ class LoginSerializer(serializers.Serializer):
                 LoginSerializer._validate_captcha(username, captcha)
 
         # 验证用户凭据
-        user = QuerySet(User).filter(
+        user = User.objects.filter(
             username=username,
             password=password_encrypt(password)
         ).first()
@@ -200,17 +210,30 @@ class LoginSerializer(serializers.Serializer):
     def _handle_failed_login(username: str, is_license_valid: bool, failed_attempts: int, lock_time: int) -> None:
         """处理登录失败
 
-        修复：使用原子递增（cache.incr）来获取最新的失败计数，然后基于该计数做出 >= 判断；
-        使用 cache.add 原子创建锁，避免多个并发线程都错过 remain==0 的情况导致永不加锁。
+        修复要点：
+        - 使用 record_login_fail / record_login_fail_lock 两个原子 incr 来记录失败；
+        - 不再依赖精确等于 0 的比较来触发锁，而是基于原子计数 >= 阈值来决定进入锁定分支；
+        - 使用 cache.add 原子创建锁键，cache.add 保证只有第一个成功创建者可写入该键；
+          其他并发到达的请求若发现计数已到达阈值也应当返回“已锁定”响应，避免出现绕过。
         """
-        record_login_fail(username)
-        lock_fail_count = record_login_fail_lock(username, lock_time)
+        # 记录普通失败计数（供验证码触发使用）
+        try:
+            record_login_fail(username)
+        except Exception:
+            logger.exception("Failed to record login fail for user %s", username)
+
+        # 记录用于锁定判断的失败计数（按 lock_time 作为初始化过期分钟）
+        lock_fail_count = 0
+        try:
+            lock_fail_count = record_login_fail_lock(username, lock_time)
+        except Exception:
+            logger.exception("Failed to record lock fail count for user %s", username)
 
         # 如果不是企业版或禁用锁定功能，直接返回（但计数已经记录）
         if not is_license_valid or failed_attempts <= 0:
             return
 
-        # 计算剩余次数，并基于原子计数进行判断
+        # 当计数小于阈值，告知剩余尝试次数
         if lock_fail_count < failed_attempts:
             remain_attempts = failed_attempts - lock_fail_count
             raise AppApiException(
@@ -220,12 +243,22 @@ class LoginSerializer(serializers.Serializer):
                 )
             )
 
-        cache.add(
-            system_get_key(f'system_{username}_lock'),
-            1,
-            timeout=lock_time * 60,
-            version=system_version
-        )
+        # 当计数达到或超过阈值时，尝试原子创建锁键；无论 cache.add 返回 True/False，都返回已锁定响应，
+        # 因为若为 False 说明其他并发请求已将账户标记为锁定，行为应一致。
+        try:
+            locked = cache.add(
+                system_get_key(f'system_{username}_lock'),
+                1,
+                timeout=lock_time * 60,
+                version=system_version
+            )
+            if locked:
+                logger.info("Account %s locked by setting cache key", username)
+            else:
+                logger.info("Account %s lock key already present (another request set it)", username)
+        except Exception:
+            logger.exception("Failed to set lock key for user %s", username)
+
         raise AppApiException(
             1005,
             _("This account has been locked for %s minutes, please try again later") % lock_time
