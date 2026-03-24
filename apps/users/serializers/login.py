@@ -26,8 +26,7 @@ from common.utils.common import password_encrypt, get_random_chars
 from common.utils.rsa_util import decrypt
 from maxkb.const import CONFIG
 from users.models import User
-
-logger = logging.getLogger(__name__)
+from common.utils.logger import maxkb_logger
 
 
 class LoginRequest(serializers.Serializer):
@@ -110,7 +109,7 @@ class LoginSerializer(serializers.Serializer):
                 if isinstance(decrypted_data, dict):
                     instance.update(decrypted_data)
             except Exception as e:
-                logger.exception("Failed to decrypt/parse encryptedData for user %s: %s", username, e)
+                maxkb_logger.exception("Failed to decrypt/parse encryptedData for user %s: %s", username, e)
                 raise AppApiException(500, _("Invalid encrypted data"))
 
         try:
@@ -220,14 +219,14 @@ class LoginSerializer(serializers.Serializer):
         try:
             record_login_fail(username)
         except Exception:
-            logger.exception("Failed to record login fail for user %s", username)
+            maxkb_logger.exception("Failed to record login fail for user %s", username)
 
         # 记录用于锁定判断的失败计数（按 lock_time 作为初始化过期分钟）
         lock_fail_count = 0
         try:
             lock_fail_count = record_login_fail_lock(username, lock_time)
         except Exception:
-            logger.exception("Failed to record lock fail count for user %s", username)
+            maxkb_logger.exception("Failed to record lock fail count for user %s", username)
 
         # 如果不是企业版或禁用锁定功能，直接返回（但计数已经记录）
         if not is_license_valid or failed_attempts <= 0:
@@ -253,11 +252,11 @@ class LoginSerializer(serializers.Serializer):
                 version=system_version
             )
             if locked:
-                logger.info("Account %s locked by setting cache key", username)
+                maxkb_logger.info("Account %s locked by setting cache key", username)
             else:
-                logger.info("Account %s lock key already present (another request set it)", username)
+                maxkb_logger.info("Account %s lock key already present (another request set it)", username)
         except Exception:
-            logger.exception("Failed to set lock key for user %s", username)
+            maxkb_logger.exception("Failed to set lock key for user %s", username)
 
         raise AppApiException(
             1005,
