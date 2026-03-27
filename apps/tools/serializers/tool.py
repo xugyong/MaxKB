@@ -1134,13 +1134,14 @@ class ToolSerializer(serializers.Serializer):
             init_field_list = self.data.get('init_field_list')
             input_field_list = self.data.get('input_field_list')
 
+            init_params = list({i["field"]: i.get('default_value') for i in init_field_list}.keys())
+            input_params = list({field.get('name'): field.get('value') for field in input_field_list}.keys())
+
             message = messages[-1]['content']
             q = prompt.replace(
                 "{userInput}", message
             ).replace(
-                "{initFieldList}", json.dumps(init_field_list)
-            ).replace(
-                "{inputFieldList}", json.dumps(input_field_list)
+                "{params}", ','.join(init_params + input_params)
             )
 
             messages[-1]['content'] = q
