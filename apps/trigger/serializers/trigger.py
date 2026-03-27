@@ -24,7 +24,7 @@ from common.field.common import ObjectField
 from common.utils.common import get_file_content
 from knowledge.serializers.common import BatchSerializer
 from maxkb.conf import PROJECT_DIR
-from tools.models import Tool
+from tools.models import Tool, ToolWorkflow
 from trigger.models import TriggerTypeChoices, Trigger, TriggerTaskTypeChoices, TriggerTask, TaskRecord
 
 
@@ -605,8 +605,24 @@ class TriggerOperateSerializer(serializers.Serializer):
         tool_task_list = []
         if tool_ids:
             tools = Tool.objects.filter(workspace_id=workspace_id, id__in=tool_ids)
-            tool_task_list = ToolTriggerTaskSerializer(tools, many=True).data
-
+            workflows = ToolWorkflow.objects.filter(
+                tool_id__in=tools.filter(tool_type='WORKFLOW').values_list('id', flat=True),
+                is_publish=True
+            )
+            workflow_dict = {wf.tool_id: wf.work_flow for wf in workflows}
+            tool_task_list = []
+            for tool in tools:
+                tool_data = {
+                    'id': str(tool.id),
+                    'name': tool.name,
+                    'input_field_list': tool.input_field_list,
+                    'icon': tool.icon,
+                    'tool_type': tool.tool_type
+                }
+                # 如果是工作流类型，添加 work_flow 字段
+                if tool.tool_type == 'WORKFLOW':
+                    tool_data['work_flow'] = workflow_dict.get(tool.id)
+                tool_task_list.append(tool_data)
         return {
             **TriggerModelSerializer(trigger).data,
             'trigger_task': trigger_task_list,
