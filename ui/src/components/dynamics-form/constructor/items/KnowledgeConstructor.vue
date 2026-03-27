@@ -57,7 +57,7 @@
     <div class="w-full" v-if="formValue.knowledge_list?.length > 0">
       <Knowledge
         v-model="formValue.default_value"
-        :form-field="{ attrs: { knowledge_list: formValue.knowledge_list } } as any"
+        :form-field="formField"
       />
     </div>
   </el-form-item>
@@ -71,8 +71,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import AddKnowledgeDialog from '@/views/application/component/AddKnowledgeDialog.vue'
-import Knowledge from '../../items/Knowledge/Knowledge.vue'
-
+import Knowledge from '../../items/knowledge/Knowledge.vue'
+import type { FormField } from '../../type'
 const props = defineProps<{
   modelValue: any
 }>()
@@ -91,6 +91,10 @@ const formValue = computed({
   get: () => {
     return props.modelValue || { knowledge_list: [], default_value: [] }
   },
+})
+
+const formField = computed<FormField>(() => {
+  return { attrs: { knowledge_list: formValue.value.knowledge_list } } as any
 })
 
 const getData = () => {

@@ -130,4 +130,14 @@ export default {
       popover_default: 'Is Default',
     },
   },
+  ModelConstructor: {
+    optionalModel: {
+      label: 'Optional Model',
+      required: 'Please select optional models',
+    },
+    defaultModel: {
+      label: 'Default Model',
+      required: 'Please select a default model',
+    },
+  },
 }

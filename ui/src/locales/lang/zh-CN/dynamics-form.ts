@@ -129,4 +129,14 @@ export default {
       popover_default: '是否为默认值',
     },
   },
+  ModelConstructor: {
+    optionalModel: {
+      label: '可选模型',
+      required: '请选择可选模型',
+    },
+    defaultModel: {
+      label: '默认模型',
+      required: '请选择默认模型',
+    },
+  },
 }
