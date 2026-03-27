@@ -30,6 +30,7 @@ class BaseMcpNode(IMcpNode):
                 raise ValueError(f"Tool with ID {mcp_tool_id} is inactive.")
             servers = json.loads(tool.code)
             servers = self.handle_variables(servers)  # 处理servers中的变量
+            ToolExecutor().validate_mcp_transport(json.dumps(servers))
             params = json.loads(json.dumps(tool_params))
             params = self.handle_variables(params)
         else:
