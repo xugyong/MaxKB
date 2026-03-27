@@ -82,19 +82,24 @@ class ApplicationTaskParameterSerializer(serializers.Serializer):
 
 
 class ToolTaskParameterSerializer(serializers.Serializer):
+    user_input_field_list = serializers.JSONField(required=False)
 
-    def to_internal_value(self, data):
-        if not isinstance(data, dict):
-            raise serializers.ValidationError("must be a dict")
+    @staticmethod
+    def _validate_input_dict(value, field_name):
+        if not value:
+            return value
+        if not isinstance(value, dict):
+            raise serializers.ValidationError(_("%s must be a dict") % field_name)
 
-        validated = {}
-        for key, val in data.items():
+        for key, val in value.items():
             serializer = InputField(data=val)
             if not serializer.is_valid():
-                raise serializers.ValidationError({key: serializer.errors})
-            validated[key] = serializer.validated_data
+                raise serializers.ValidationError({f"{field_name}.{key}": serializer.errors})
+        return value
 
-        return validated
+    def validate_user_input_field_list(self, value):
+        return self._validate_input_dict(value, 'user_input_field_list')
+
 
 class TriggerValidationMixin:
 
@@ -160,7 +165,7 @@ class TriggerValidationMixin:
     def _validate_scheduled_setting(self, setting):
         schedule_type = setting.get('schedule_type')
 
-        valid_types = ['daily', 'weekly', 'monthly', 'interval','cron']
+        valid_types = ['daily', 'weekly', 'monthly', 'interval', 'cron']
         if schedule_type not in valid_types:
             raise serializers.ValidationError(
                 {'trigger_setting': _('schedule_type must be one of %s') % ', '.join(valid_types)
@@ -175,6 +180,7 @@ class TriggerValidationMixin:
             self._validate_interval(setting)
         elif schedule_type == 'cron':
             self._validate_cron(setting)
+
     def _validate_daily(self, setting):
         self._validate_required_field(setting, 'time', 'daily')
         self._validate_time_array(setting['time'])
@@ -213,6 +219,7 @@ class TriggerValidationMixin:
             raise serializers.ValidationError({
                 'trigger_setting': _('interval_unit must be one of %s') % ', '.join(valid_units)
             })
+
     @staticmethod
     def _validate_cron(setting):
         from apscheduler.triggers.cron import CronTrigger
