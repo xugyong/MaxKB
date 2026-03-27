@@ -131,13 +131,8 @@ export default {
     },
   },
   ModelConstructor: {
-    optionalModel: {
-      label: '可選模型',
-      required: '請選擇可選模型',
-    },
-    defaultModel: {
-      label: '默認模型',
-      required: '請選擇默認模型',
-    },
+    optionalModel: '選擇模型',
+    defaultModel: '預設模型',
+    modelPlaceholder: '請輸入模型名稱',
   },
 }

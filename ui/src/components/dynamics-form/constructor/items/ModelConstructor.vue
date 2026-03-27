@@ -20,13 +20,13 @@
   </el-form-item>
 
   <el-form-item
-    :label="$t('dynamicsForm.ModelConstructor.optionalModel.label')"
+    :label="$t('dynamicsForm.ModelConstructor.optionalModel')"
     required
     prop="provider_list"
     :rules="[
       {
         required: true,
-        message: $t('dynamicsForm.ModelConstructor.optionalModel.required'),
+        message: $t('dynamicsForm.ModelConstructor.modelPlaceholder'),
         type: 'array',
       },
     ]"
@@ -35,7 +35,7 @@
       <ModelSelect
         multiple
         v-model="selectedIds"
-        :placeholder="$t('dynamicsForm.ModelConstructor.optionalModel.required')"
+        :placeholder="$t('dynamicsForm.ModelConstructor.modelPlaceholder')"
         :options="groupedModelOptions"
         @change="handleProviderListChange"
         :model-type="formValue.model_type"
@@ -44,12 +44,12 @@
     </div>
   </el-form-item>
   <el-form-item
-    :label="$t('dynamicsForm.ModelConstructor.defaultModel.label')"
+    :label="$t('dynamicsForm.ModelConstructor.defaultModel')"
     required
     :rules="[
       {
         required: true,
-        message: $t('dynamicsForm.ModelConstructor.defaultModel.required'),
+        message: $t('dynamicsForm.ModelConstructor.modelPlaceholder'),
       },
     ]"
     v-if="formValue.provider_list && formValue.provider_list.length > 0"
@@ -58,7 +58,7 @@
       <el-select
         v-model="formValue.default_value"
         value-key="model_id"
-        :placeholder="$t('dynamicsForm.ModelConstructor.defaultModel.required')"
+        :placeholder="$t('dynamicsForm.ModelConstructor.modelPlaceholder')"
       >
         <el-option-group
           v-for="(modelList, providerName) in selectedModelsOptions"
@@ -249,13 +249,6 @@ function handleProviderListChange() {
   if (currentId && !ids.includes(currentId)) {
     formValue.value.default_value = {}
   }
-}
-
-function removeSelectedModel(modelId: string) {
-  formValue.value.provider_list = formValue.value.provider_list.filter(
-    (p: any) => p.model_id !== modelId,
-  )
-  handleProviderListChange()
 }
 
 const getData = () => {

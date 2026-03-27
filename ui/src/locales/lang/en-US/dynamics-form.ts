@@ -131,13 +131,13 @@ export default {
     },
   },
   ModelConstructor: {
-    optionalModel: {
-      label: 'Optional Model',
-      required: 'Please select optional models',
-    },
-    defaultModel: {
-      label: 'Default Model',
-      required: 'Please select a default model',
-    },
+    optionalModel: 'Optional Model',
+    defaultModel: 'Default Model',
+    modelPlaceholder: 'Please enter a model',
+  },
+  KnowledgeConstructor: {
+    optionalModel: 'Optional Model',
+    defaultModel: 'Default Model',
+    modelPlaceholder: 'Please enter a model',
   },
 }

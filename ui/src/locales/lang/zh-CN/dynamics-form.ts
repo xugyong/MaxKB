@@ -130,13 +130,13 @@ export default {
     },
   },
   ModelConstructor: {
-    optionalModel: {
-      label: '可选模型',
-      required: '请选择可选模型',
-    },
-    defaultModel: {
-      label: '默认模型',
-      required: '请选择默认模型',
-    },
+    optionalModel: '可选模型',
+    defaultModel: '默认模型',
+    modelPlaceholder: '请选择模型',
+  },
+  KnowledgeConstructor: {
+    optionalKnowledge: '可选知识库',
+    optionalKnowledgePlaceholder: '请选择可选知识库',
+    defaultKnowledge: '默认知识库',
   },
 }
