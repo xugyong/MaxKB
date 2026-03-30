@@ -13,6 +13,7 @@ export default {
     title: 'Python code will be displayed here',
   },
   toolWorkflow: {
+    title: 'Workflow',
     creatToolWorkflow: 'Create Workflow',
     toActiveTip: 'Unable to enable. Please publish the workflow first.',
     debugResult: 'Debug results',
