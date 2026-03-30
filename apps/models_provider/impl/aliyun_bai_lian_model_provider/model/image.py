@@ -28,7 +28,6 @@ class QwenVLChatModel(MaxKBBaseModel, BaseChatOpenAI):
             # stream_options={"include_usage": True},
             streaming=True,
             stream_usage=True,
-            extra_body={"enable_thinking": True},
         )
         return chat_tong_yi
 
