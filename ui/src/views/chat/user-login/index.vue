@@ -334,7 +334,7 @@ function redirectAuth(authType: string, needMessage: boolean = false) {
         url += `&state=${config.state}`
       }
     } else if (authType === 'OAuth2') {
-      url = `${config.authEndpoint}?client_id=${config.clientId}&response_type=code&redirect_uri=${redirectUrl}&state=${accessToken}`
+      url = `${config.authEndpoint}?client_id=${config.clientId}&response_type=code&redirect_uri=${redirectUrl}&state=${uuidv4()}_${accessToken}`
       if (config.scope) {
         url += `&scope=${config.scope}`
       }
