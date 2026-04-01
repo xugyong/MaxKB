@@ -1545,16 +1545,8 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .document {
   .mul-operation {
-    position: fixed;
-    margin-left: var(--sidebar-width);
-    bottom: 0;
     right: 24px;
     width: calc(100% - var(--sidebar-width) - 48px);
-    padding: 16px 24px;
-    box-sizing: border-box;
-    background: #ffffff;
-    z-index: 22;
-    box-shadow: 0px -2px 4px 0px rgba(var(--el-text-color-primary-rgb), 0.08);
   }
   .document-table {
     :deep(.el-table__row) {

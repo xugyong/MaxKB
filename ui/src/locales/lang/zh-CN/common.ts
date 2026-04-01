@@ -114,6 +114,7 @@ export default {
   username: '用户名',
   importCreate: '导入创建',
   detail: '详情',
+  total: '共',
   selected: '已选',
   notFound: {
     title: '404',

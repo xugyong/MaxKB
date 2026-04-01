@@ -38,7 +38,7 @@ export default {
   paramSetting: 'Parameter Settings',
   name: 'Name',
   creator: 'Creator',
-  createdIn:'created in',
+  createdIn: 'created in',
   author: 'Author',
   debug: 'Debug',
   required: 'Required',
@@ -113,6 +113,7 @@ export default {
   username: 'username',
   importCreate: 'Import Create',
   detail: 'Detail',
+  total: 'Total',
   selected: 'Selected',
   notFound: {
     title: '404',

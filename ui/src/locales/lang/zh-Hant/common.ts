@@ -113,6 +113,7 @@ export default {
   username: '用戶名',
   importCreate: '導入創建',
   detail: '详情',
+  total: '共',
   selected: '已選',
   notFound: {
     title: '404',
