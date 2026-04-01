@@ -14,6 +14,10 @@
   .el-input__inner {
     height: 28px !important;
   }
+  .el-select__input {
+    height: 22px !important;
+  }
+
   &__left {
     border-right: 1px solid var(--el-border-color);
     .el-select__wrapper {

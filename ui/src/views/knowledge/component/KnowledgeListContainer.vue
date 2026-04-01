@@ -9,7 +9,7 @@
           <el-select
             class="complex-search__left"
             v-model="search_type"
-            style="width: 120px"
+            style="width: 90px"
             @change="search_type_change"
           >
             <el-option :label="$t('common.creator')" value="create_user" />
@@ -21,7 +21,7 @@
             v-model="search_form.name"
             @change="searchHandle"
             :placeholder="$t('common.searchBar.placeholder')"
-            style="width: 220px"
+            style="width: 190px"
             clearable
           />
           <el-select
@@ -30,7 +30,7 @@
             @change="searchHandle"
             filterable
             clearable
-            style="width: 220px"
+            style="width: 190px"
           >
             <el-option v-for="u in user_options" :key="u.id" :value="u.id" :label="u.nick_name" />
           </el-select>
