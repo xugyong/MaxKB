@@ -33,7 +33,7 @@ from common.db.search import page_search, native_page_search, native_search
 from common.exception.app_exception import AppApiException
 from common.field.common import UploadedImageField
 from common.result import result
-from common.utils.common import get_file_content, generate_uuid
+from common.utils.common import get_file_content, generate_uuid, bytes_to_uploaded_file
 from common.utils.logger import maxkb_logger
 from common.utils.rsa_util import rsa_long_decrypt, rsa_long_encrypt
 from common.utils.tool_code import ToolExecutor
@@ -399,6 +399,25 @@ class ToolSerializer(serializers.Serializer):
                 # 校验代码是否包括禁止的关键字
                 if instance.get('tool_type') == ToolType.MCP:
                     ToolExecutor().validate_mcp_transport(instance.get('code', ''))
+
+            # 处理 work_flow_template
+            if instance.get('work_flow_template') is not None:
+                template_instance = instance.get('work_flow_template')
+                download_url = template_instance.get('downloadUrl')
+                # 查找匹配的版本名称
+                res = requests.get(download_url, timeout=5)
+                tool = ToolSerializer.Import(data={
+                    'file': bytes_to_uploaded_file(res.content, 'file.tool'),
+                    'user_id': self.data.get('user_id'),
+                    'workspace_id': self.data.get('workspace_id'),
+                    'folder_id': str(instance.get('folder_id', self.data.get('workspace_id'))),
+                }).import_()
+
+                try:
+                    requests.get(template_instance.get('downloadCallbackUrl'), timeout=5)
+                except Exception as e:
+                    maxkb_logger.error(f"callback appstore tool download error: {e}")
+                return tool
 
             tool_id = uuid.uuid7()
             Tool(
@@ -860,7 +879,9 @@ class ToolSerializer(serializers.Serializer):
                 'auth_target_type': AuthTargetType.TOOL.value
             }).auth_resource(str(tool_id))
 
-            return True
+            return ToolSerializer.Operate(data={
+                'id': tool_id, 'workspace_id': self.data.get('workspace_id')
+            }).one()
 
     class IconOperate(serializers.Serializer):
         id = serializers.UUIDField(required=True, label=_("function ID"))
