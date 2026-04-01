@@ -411,7 +411,7 @@ class ToolSerializer(serializers.Serializer):
                     'user_id': self.data.get('user_id'),
                     'workspace_id': self.data.get('workspace_id'),
                     'folder_id': str(instance.get('folder_id', self.data.get('workspace_id'))),
-                }).import_()
+                }).import_(name=instance.get('name'))
 
                 try:
                     requests.get(template_instance.get('downloadCallbackUrl'), timeout=5)
@@ -827,7 +827,7 @@ class ToolSerializer(serializers.Serializer):
                 }).auth_resource_batch([t.id for t in tool_model_list])
 
         @transaction.atomic
-        def import_(self, scope=ToolScope.WORKSPACE):
+        def import_(self, scope=ToolScope.WORKSPACE, name=None):
             self.is_valid()
 
             user_id = self.data.get('user_id')
@@ -856,7 +856,7 @@ class ToolSerializer(serializers.Serializer):
                 code = skill_file_id
             tool_model = Tool(
                 id=tool_id,
-                name=tool.get('name'),
+                name=name or tool.get('name'),
                 desc=tool.get('desc'),
                 code=code,
                 user_id=user_id,
