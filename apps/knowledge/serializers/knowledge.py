@@ -44,6 +44,7 @@ from knowledge.task.embedding import embedding_by_knowledge, delete_embedding_by
 from knowledge.task.generate import generate_related_by_knowledge_id
 from knowledge.task.sync import sync_web_knowledge, sync_replace_web_knowledge
 from maxkb.conf import PROJECT_DIR
+from maxkb.const import CONFIG
 from models_provider.models import Model
 from system_manage.models import WorkspaceUserResourcePermission, AuthTargetType
 from system_manage.models.resource_mapping import ResourceMapping
@@ -761,7 +762,8 @@ class KnowledgeSerializer(serializers.Serializer):
             self.is_valid(raise_exception=True)
             # 下载zip文件
             try:
-                res = requests.get('https://apps-assets.fit2cloud.com/stable/maxkb.json.zip', timeout=5)
+                appstore_url = CONFIG.get('APPSTORE_URL', 'https://apps-assets.fit2cloud.com/stable/maxkb.json.zip')
+                res = requests.get(appstore_url, timeout=5)
                 res.raise_for_status()
                 # 创建临时文件保存zip
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
