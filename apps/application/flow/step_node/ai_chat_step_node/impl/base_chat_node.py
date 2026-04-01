@@ -277,6 +277,8 @@ class BaseChatNode(IChatNode):
             if reference_data and isinstance(reference_data, dict):
                 model_id = reference_data.get('model_id', model_id)
                 model_params_setting = reference_data.get('model_params_setting')
+        if model_id is None or model_id == '':
+            raise Exception(_('Model is not allowed to be empty'))
 
         if model_params_setting is None and model_id:
             model_params_setting = get_default_model_params_setting(model_id)

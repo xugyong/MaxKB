@@ -148,6 +148,11 @@ class BaseVideoUnderstandNode(IVideoUnderstandNode):
                 model_id = reference_data.get('model_id', model_id)
                 model_params_setting = reference_data.get('model_params_setting')
 
+        from django.utils.translation import gettext_lazy as _
+
+        if model_id is None or model_id == '':
+            raise Exception(_('Model is not allowed to be empty'))
+
         workspace_id = self.workflow_manage.get_body().get('workspace_id')
         if model_setting is None:
             model_setting = {'reasoning_content_enable': False, 'reasoning_content_end': '</think>',

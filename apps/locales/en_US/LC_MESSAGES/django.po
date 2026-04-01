@@ -9188,3 +9188,6 @@ msgstr "Batch delete tools"
 msgid "Batch move tools"
 msgstr "Batch move tools"
 
+msgid "Model is not allowed to be empty"
+msgstr ""
+

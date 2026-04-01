@@ -9308,3 +9308,6 @@ msgstr "批量刪除工具"
 msgid "Batch move tools"
 msgstr "批量移動工具"
 
+msgid "Model is not allowed to be empty"
+msgstr "模型不能为空"
+
