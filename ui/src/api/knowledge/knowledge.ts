@@ -80,7 +80,7 @@ const putKnowledge: (
  * 删除知识库
  * @param 参数 knowledge_id
  */
-const delKnowledge: (knowledge_id: String, loading?: Ref<boolean>) => Promise<Result<boolean>> = (
+const delKnowledge: (knowledge_id: string, loading?: Ref<boolean>) => Promise<Result<boolean>> = (
   knowledge_id,
   loading,
 ) => {
@@ -496,10 +496,10 @@ const postTransformWorkflow: (
 
 /**
  * 导出知识库
- * @param knowledge_name 
- * @param knowledge_id 
- * @param loading 
- * @returns 
+ * @param knowledge_name
+ * @param knowledge_id
+ * @param loading
+ * @returns
  */
 const exportKnowledgeBundle: (
   knowledge_name: string,
@@ -514,9 +514,9 @@ const exportKnowledgeBundle: (
 
 /**
  * 导入知识库
- * @param data 
- * @param loading 
- * @returns 
+ * @param data
+ * @param loading
+ * @returns
  */
 const importKnowledgeBundle: (
   data: any,
@@ -525,7 +525,33 @@ const importKnowledgeBundle: (
   return post(`${prefix.value}/import_knowledge`, data, undefined, loading)
 }
 
-
+/**
+ * 批量删除知识库
+ * @param 参数
+ * {
+  "id_list": [String]
+}
+ */
+const delMulKnowledge: (data: any, loading?: Ref<boolean>) => Promise<Result<boolean>> = (
+  data,
+  loading,
+) => {
+  return put(`${prefix.value}/batch_delete`, { id_list: data }, undefined, loading)
+}
+/**
+ * 批量删除知识库
+ * @param 参数
+ * {
+  "id_list": [String]
+  "folder_id": string
+}
+ */
+const putMulMoveKnowledge: (data: any, loading?: Ref<boolean>) => Promise<Result<boolean>> = (
+  data,
+  loading,
+) => {
+  return put(`${prefix.value}/batch_move`, data, undefined, loading)
+}
 
 
 export default {
@@ -568,5 +594,7 @@ export default {
   importKnowledgeWorkflow,
   postTransformWorkflow,
   exportKnowledgeBundle,
-  importKnowledgeBundle
+  importKnowledgeBundle,
+  delMulKnowledge,
+  putMulMoveKnowledge,
 }

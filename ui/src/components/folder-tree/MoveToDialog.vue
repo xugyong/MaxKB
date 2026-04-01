@@ -112,18 +112,26 @@ const submitHandle = async () => {
           dialogVisible.value = false
         })
     } else if (props.source === SourceTypeEnum.KNOWLEDGE) {
-      if (detail.value.type === 2) {
-        KnowledgeApi.putLarkKnowledge(detail.value.id, obj, loading).then(() => {
+      if (isBatch.value) {
+        ToolApi.putMulMoveTool(obj, loading).then(() => {
           MsgSuccess(t('common.saveSuccess'))
-          emit('refresh', detail.value)
+          emit('refresh')
           dialogVisible.value = false
         })
       } else {
-        KnowledgeApi.putKnowledge(detail.value.id, obj, loading).then(() => {
-          MsgSuccess(t('common.saveSuccess'))
-          emit('refresh', detail.value)
-          dialogVisible.value = false
-        })
+        if (detail.value.type === 2) {
+          KnowledgeApi.putLarkKnowledge(detail.value.id, obj, loading).then(() => {
+            MsgSuccess(t('common.saveSuccess'))
+            emit('refresh', detail.value)
+            dialogVisible.value = false
+          })
+        } else {
+          KnowledgeApi.putKnowledge(detail.value.id, obj, loading).then(() => {
+            MsgSuccess(t('common.saveSuccess'))
+            emit('refresh', detail.value)
+            dialogVisible.value = false
+          })
+        }
       }
     } else if (props.source === SourceTypeEnum.TOOL) {
       if (isBatch.value) {
@@ -140,11 +148,19 @@ const submitHandle = async () => {
         })
       }
     } else if (props.source === SourceTypeEnum.APPLICATION) {
-      ApplicationApi.moveApplication(detail.value.id, obj.folder_id, loading).then((res) => {
-        MsgSuccess(t('common.saveSuccess'))
-        emit('refresh', detail.value)
-        dialogVisible.value = false
-      })
+      if (isBatch.value) {
+        ApplicationApi.putMulMoveApplication(obj, loading).then(() => {
+          MsgSuccess(t('common.saveSuccess'))
+          emit('refresh')
+          dialogVisible.value = false
+        })
+      } else {
+        ApplicationApi.moveApplication(detail.value.id, obj.folder_id, loading).then((res) => {
+          MsgSuccess(t('common.saveSuccess'))
+          emit('refresh', detail.value)
+          dialogVisible.value = false
+        })
+      }
     }
   } else {
     MsgError(t('components.folder.requiredMessage'))

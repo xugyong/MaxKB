@@ -303,7 +303,7 @@ const getMcpTools: (
 
 /**
  * 批量删除工具
- * @param 参数 knowledge_id,
+ * @param 参数
  * {
   "id_list": [String]
 }
@@ -316,7 +316,7 @@ const delMulTool: (data: any, loading?: Ref<boolean>) => Promise<Result<boolean>
 }
 /**
  * 批量删除工具
- * @param 参数 knowledge_id,
+ * @param 参数
  * {
   "id_list": [String]
   "folder_id": string

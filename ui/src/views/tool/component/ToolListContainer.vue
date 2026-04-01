@@ -655,7 +655,7 @@ function deleteMulTool() {
   )
     .then(() => {
       loadSharedApi({ type: 'tool', systemType: apiType.value })
-        .delMulTool(multipleSelection.value, changeStateloading)
+        .delMulTool(multipleSelection.value, loading)
         .then(() => {
           batchSelectedHandle(false)
           paginationConfig.current_page = 1
