@@ -676,8 +676,6 @@ function openEditDialog(data?: any) {
       multipleSelection.value.splice(index, 1)
     }
     checkAll.value = multipleSelection.value.length === tool.toolList.length
-    isIndeterminate.value =
-      multipleSelection.value.length > 0 && multipleSelection.value.length < tool.toolList.length
     return
   }
   // 有template_id的不允许编辑，是模板转换来的
