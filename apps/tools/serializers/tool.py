@@ -38,7 +38,7 @@ from common.utils.logger import maxkb_logger
 from common.utils.rsa_util import rsa_long_decrypt, rsa_long_encrypt
 from common.utils.tool_code import ToolExecutor
 from knowledge.models import File, FileSourceType, Knowledge
-from maxkb.const import PROJECT_DIR
+from maxkb.const import PROJECT_DIR, CONFIG
 from models_provider.models import Model
 from system_manage.models import AuthTargetType, WorkspaceUserResourcePermission
 from system_manage.models.resource_mapping import ResourceMapping
