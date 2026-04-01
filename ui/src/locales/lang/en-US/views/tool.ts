@@ -65,6 +65,7 @@ export default {
   },
   delete: {
     confirmTitle: 'Confirm deletion of tool:',
+    confirmTitle2: 'tools?',
     confirmMessage:
       'Deleting this tool will cause errors in agent that reference it when they are queried. Please proceed with caution.',
     resourceCountMessage:

@@ -617,9 +617,7 @@ const isBatch = ref(false)
 const multipleSelection = ref<any[]>([])
 const checkAll = ref(false)
 const isIndeterminate = computed(() => {
-  return (
-    multipleSelection.value.length > 0 && multipleSelection.value.length < tool.toolList.length
-  )
+  return multipleSelection.value.length > 0 && multipleSelection.value.length < tool.toolList.length
 })
 function batchSelectedHandle(bool: boolean) {
   isBatch.value = bool
@@ -648,7 +646,7 @@ const checkboxChange = (data?: any) => {
 
 function deleteMulTool() {
   MsgConfirm(
-    `${t('views.document.delete.confirmTitle1')} ${multipleSelection.value.length} ${t('views.document.delete.confirmTitle2')}`,
+    `${t('views.document.delete.confirmTitle1')} ${multipleSelection.value.length} ${t('views.tool.delete.confirmTitle2')}`,
     t('views.paragraph.delete.confirmMessage'),
     {
       confirmButtonText: t('common.confirm'),
@@ -659,6 +657,7 @@ function deleteMulTool() {
       loadSharedApi({ type: 'tool', systemType: apiType.value })
         .delMulTool(multipleSelection.value, changeStateloading)
         .then(() => {
+          batchSelectedHandle(false)
           paginationConfig.current_page = 1
           tool.setToolList([])
           getList()
@@ -762,6 +761,7 @@ function refreshToolList(row: any) {
       tool.setToolList(list)
     }
   } else {
+    batchSelectedHandle(false)
     paginationConfig.current_page = 1
     tool.setToolList([])
     getList()

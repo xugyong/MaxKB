@@ -312,7 +312,7 @@ const delMulTool: (data: any, loading?: Ref<boolean>) => Promise<Result<boolean>
   data,
   loading,
 ) => {
-  return put(`${prefix.value}/tool/batch_delete`, { id_list: data }, undefined, loading)
+  return put(`${prefix.value}/batch_delete`, { id_list: data }, undefined, loading)
 }
 /**
  * 批量删除工具
@@ -326,7 +326,7 @@ const putMulMoveTool: (data: any, loading?: Ref<boolean>) => Promise<Result<bool
   data,
   loading,
 ) => {
-  return put(`${prefix.value}/tool/batch_move`, data, undefined, loading)
+  return put(`${prefix.value}/batch_move`, data, undefined, loading)
 }
 export default {
   getToolList,
