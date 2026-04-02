@@ -861,6 +861,7 @@ const openCreateWorkflowDialog = (data?: any) => {
     loadSharedApi({ type: 'tool', systemType: apiType.value })
       .getToolById(data?.id, loading)
       .then((res: any) => {
+        toWorkflow( res.data)
         workflowFormDialogRef.value?.open(res.data)
       })
   } else {
