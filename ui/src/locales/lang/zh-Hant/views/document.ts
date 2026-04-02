@@ -171,9 +171,8 @@ export default {
       placeholder: '直接返回分段内容',
       requiredMessage: '请输入相似度',
     },
-    allow_download: {
-      label: '允許在知識庫來源下載',
-    },
+    allow_download: '允許在知識來源中下載',
+    allow_preview: '允許在知識來源中預覽',
   },
   hitHandlingMethod: {
     optimization: '模型優化',
