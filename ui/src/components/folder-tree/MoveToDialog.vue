@@ -118,7 +118,7 @@ const submitHandle = async () => {
         })
     } else if (props.source === SourceTypeEnum.KNOWLEDGE) {
       if (isBatch.value) {
-        ToolApi.putMulMoveTool(obj, loading).then(() => {
+        KnowledgeApi.putMulMoveKnowledge(obj, loading).then(() => {
           MsgSuccess(t('common.saveSuccess'))
           emit('refresh')
           dialogVisible.value = false

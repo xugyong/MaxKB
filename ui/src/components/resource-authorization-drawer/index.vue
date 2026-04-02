@@ -104,7 +104,7 @@
         width="160"
       >
         <template #default="{ row }">
-          <TagGroup class="cursor" :tags="row.role_name" />
+          <TagGroup class="cursor" :tags="row.role_name" v-if="row.role_name" />
         </template>
       </el-table-column>
       <el-table-column :label="$t('common.operation')" align="left" width="340">
