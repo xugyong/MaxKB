@@ -68,7 +68,7 @@ export default {
   },
   disabled: {
     confirmTitle: '是否禁用工具：',
-    confirmMessage: '禁用后，引用了该工具的智能体提问时会报错 ，请谨慎操作。',
+    confirmMessage: '禁用后，引用了该工具的资源执行会报错 ，请谨慎操作。',
   },
   tip: {
     saveMessage: '当前的更改尚未保存，确认退出吗?',

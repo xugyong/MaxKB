@@ -70,7 +70,7 @@ export default {
   },
   disabled: {
     confirmTitle: '是否停用工具：',
-    confirmMessage: '停用後，引用該工具的智能體在查詢時會報錯，請謹慎操作。',
+    confirmMessage: '停用後，引用該工具的資源執行會報錯，請謹慎操作。',
   },
   form: {
     toolName: {

@@ -74,7 +74,7 @@ export default {
   disabled: {
     confirmTitle: 'Confirm disable tool:',
     confirmMessage:
-      'Disabling this tool will cause errors in agent that reference it when they are queried. Please proceed with caution.',
+      'Disabling this tool will cause errors in resources that reference it when they are executed. Please proceed with caution.',
   },
 
   form: {
