@@ -61,7 +61,10 @@
               <el-option :label="$t('common.status.unpublished')" value="unpublished" />
             </el-select>
           </div>
-          <span class="ml-8" v-if="permissionPrecise.batchDelete() || permissionPrecise.batchMove()">
+          <span
+            class="ml-8"
+            v-if="permissionPrecise.batchDelete() || permissionPrecise.batchMove()"
+          >
             <el-button @click="batchSelectedHandle(true)" v-if="isBatch === false">
               <AppIcon iconName="app-batch-delete" class="mr-4" />
               {{ $t('views.paragraph.setting.batchSelected') }}
@@ -250,7 +253,7 @@
                         <el-divider direction="vertical" />
                         <el-dropdown trigger="click">
                           <el-button text @click.stop>
-                            <AppIcon iconName="app-more"></AppIcon>
+                            <AppIcon iconName="app-more" class="color-secondary"></AppIcon>
                           </el-button>
                           <template #dropdown>
                             <el-dropdown-menu>
@@ -343,7 +346,11 @@
           {{ $t('common.moveTo') }}
         </el-button>
 
-        <el-button :disabled="multipleSelection.length === 0" @click="deleteMulApplication" v-if="permissionPrecise.batchDelete()">
+        <el-button
+          :disabled="multipleSelection.length === 0"
+          @click="deleteMulApplication"
+          v-if="permissionPrecise.batchDelete()"
+        >
           {{ $t('common.delete') }}
         </el-button>
         <span class="color-secondary ml-24 mr-16">

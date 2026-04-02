@@ -265,7 +265,7 @@
                       <el-divider direction="vertical" />
                       <el-dropdown trigger="click">
                         <el-button text @click.stop>
-                          <AppIcon iconName="app-more"></AppIcon>
+                          <AppIcon iconName="app-more" class="color-secondary"></AppIcon>
                         </el-button>
                         <template #dropdown>
                           <el-dropdown-menu>

@@ -35,7 +35,10 @@
             <el-option v-for="u in user_options" :key="u.id" :value="u.id" :label="u.nick_name" />
           </el-select>
         </div>
-        <span class="ml-8" v-if="!isShared && (permissionPrecise.batchMove() || permissionPrecise.batchDelete())">
+        <span
+          class="ml-8"
+          v-if="!isShared && (permissionPrecise.batchMove() || permissionPrecise.batchDelete())"
+        >
           <el-button @click="batchSelectedHandle(true)" v-if="isBatch === false">
             <AppIcon iconName="app-batch-delete" class="mr-4" />
             {{ $t('views.paragraph.setting.batchSelected') }}
@@ -240,7 +243,7 @@
                     <div @click.stop v-if="!isShared">
                       <el-dropdown trigger="click">
                         <el-button text @click.stop v-if="MoreFilledPermission(item)">
-                          <AppIcon iconName="app-more"></AppIcon>
+                          <AppIcon iconName="app-more" class="color-secondary"></AppIcon>
                         </el-button>
                         <template #dropdown>
                           <el-dropdown-menu>
