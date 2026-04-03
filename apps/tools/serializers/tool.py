@@ -71,6 +71,9 @@ def hand_node(node, update_tool_map):
         tool_ids = node_data.get('tool_ids') or []
         node_data['tool_ids'] = [update_tool_map.get(tool_id,
                                                      tool_id) for tool_id in tool_ids]
+        skill_tool_ids = node_data.get('skill_tool_ids') or []
+        node_data['skill_tool_ids'] = [update_tool_map.get(tool_id,
+                                                     tool_id) for tool_id in skill_tool_ids]
     if node.get('type') == 'mcp-node':
         mcp_tool_id = (node.get('properties', {}).get('node_data', {}).get('mcp_tool_id') or '')
         node.get('properties', {}).get('node_data', {})['mcp_tool_id'] = update_tool_map.get(mcp_tool_id,
@@ -695,6 +698,12 @@ class ToolSerializer(serializers.Serializer):
                             self.get_child_tool_list(work_flow_tool_dict.get(tool.id).work_flow, response)
                         else:
                             response.append(ToolExportModelSerializer(tool).data)
+                skill_tools = [tool for tool in tool_list if tool.tool_type == ToolType.SKILL]
+                for tool in skill_tools:
+                    skill_file = QuerySet(File).filter(id=tool.code).first()
+                    if skill_file:
+                        tool.code = base64.b64encode(skill_file.get_bytes()).decode('utf-8')
+                        response.append(ToolExportModelSerializer(tool).data)
             else:
                 for tool in tool_list:
                     response.append(ToolExportModelSerializer(tool).data)
@@ -759,6 +768,19 @@ class ToolSerializer(serializers.Serializer):
 
         @staticmethod
         def to_tool(tool, workspace_id, user_id, folder_id):
+            # 如果是技能类型的工具，需要将code保存为文件
+            code = tool.get('code')
+            if tool.get('tool_type') == ToolType.SKILL:
+                skill_file_id = uuid.uuid7()
+                skill_file = File(
+                    id=skill_file_id,
+                    file_name=f"{tool.get('name')}.zip",
+                    source_type=FileSourceType.TOOL,
+                    source_id=tool.get('id'),
+                    meta={}
+                )
+                skill_file.save(base64.b64decode(code))
+                tool['code'] = skill_file_id
             return Tool(id=tool.get('id'),
                         user_id=user_id,
                         name=tool.get('name'),
@@ -831,7 +853,7 @@ class ToolSerializer(serializers.Serializer):
             workflow_tool_model_list = [{'tool_id': t.get('id'), 'workflow': self.to_tool_workflow(
                 t.get('work_flow'),
                 update_tool_map,
-            )} for t in tool_list if tool.get('tool_type') == ToolType.WORKFLOW]
+            )} for t in tool_list if t.get('tool_type') == ToolType.WORKFLOW]
 
             existing_records = QuerySet(ToolWorkflow).filter(
                 tool_id__in=[wt.get('tool_id') for wt in workflow_tool_model_list],
