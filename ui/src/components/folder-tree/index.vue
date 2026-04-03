@@ -580,6 +580,7 @@ function rebalanceAndInsert(
 }
 
 onBeforeRouteLeave((to, from) => {
+  if (from?.name === 'ToolWorkflow') return
   folder.setCurrentFolder({})
 })
 

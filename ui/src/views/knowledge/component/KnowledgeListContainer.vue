@@ -537,8 +537,14 @@ function batchSelectedHandle(bool: boolean) {
 }
 
 const handleCheckAllChange = (val: CheckboxValueType) => {
-  multipleSelection.value = val ? knowledge.knowledgeList.map((v) => v.id) : []
-  checkAll.value = val as boolean
+  let bool
+  if (isIndeterminate.value) {
+    bool = true
+  } else {
+    bool = val as boolean
+  }
+  multipleSelection.value = bool ? knowledge.knowledgeList.map((v) => v.id) : []
+  checkAll.value = bool as boolean
 }
 const handleCheckedChatChange = (value: CheckboxValueType[]) => {
   const checkedCount = value.length
@@ -767,6 +773,7 @@ watch(
   () => folder.currentFolder,
   (newValue) => {
     if (newValue && newValue.id && !isSystemShare.value) {
+      batchSelectedHandle(false)
       paginationConfig.current_page = 1
       knowledge.setKnowledgeList([])
       getList()
@@ -789,10 +796,6 @@ function getList() {
       paginationConfig.total = res.data?.total
       knowledge.setKnowledgeList([...knowledge.knowledgeList, ...res.data.records])
     })
-}
-
-function clickFolder(item: any) {
-  folder.setCurrentFolder(item)
 }
 
 function searchHandle() {

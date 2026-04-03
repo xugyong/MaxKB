@@ -192,13 +192,8 @@
               {{ $t('common.total') }} {{ paginationConfig.total }}
               {{ $t('views.document.items') }}
             </span>
-            <el-button
-              link
-              type="primary"
-              v-if="multipleSelection.length > 0"
-              @click="multipleSelection = []"
-            >
-              {{ $t('common.clear') }}
+            <el-button link type="primary" @click="batchSelectedHandle(false)">
+              {{ $t('views.paragraph.setting.cancelSelected') }}
             </el-button>
           </div>
         </div>
@@ -303,8 +298,14 @@ const isIndeterminate = computed(() => {
   )
 })
 const handleCheckAllChange = (val: CheckboxValueType) => {
-  multipleSelection.value = val ? paragraphDetail.value.map((v) => v.id) : []
-  checkAll.value = val as boolean
+  let bool
+  if(isIndeterminate.value) {
+    bool = true
+  } else {
+    bool = val as boolean
+  }
+  multipleSelection.value = bool ? paragraphDetail.value.map((v) => v.id) : []
+  checkAll.value = bool as boolean
 }
 
 function toggleSelect(id: number) {
@@ -374,6 +375,7 @@ function deleteMulParagraph() {
 
 function batchSelectedHandle(bool: boolean) {
   isBatch.value = bool
+  checkAll.value = false
   multipleSelection.value = []
 }
 

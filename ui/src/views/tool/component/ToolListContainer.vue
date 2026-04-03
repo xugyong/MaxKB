@@ -635,8 +635,14 @@ function batchSelectedHandle(bool: boolean) {
 }
 
 const handleCheckAllChange = (val: CheckboxValueType) => {
-  multipleSelection.value = val ? tool.toolList.map((v) => v.id) : []
-  checkAll.value = val as boolean
+  let bool
+  if (isIndeterminate.value) {
+    bool = true
+  } else {
+    bool = val as boolean
+  }
+  multipleSelection.value = bool ? tool.toolList.map((v) => v.id) : []
+  checkAll.value = bool as boolean
 }
 const handleCheckedChatChange = (value: CheckboxValueType[]) => {
   const checkedCount = value.length
@@ -1221,6 +1227,7 @@ watch(
   () => folder.currentFolder,
   (newValue) => {
     if (newValue && newValue.id) {
+      batchSelectedHandle(false)
       paginationConfig.current_page = 1
       tool.setToolList([])
       getList()
