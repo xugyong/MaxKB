@@ -197,7 +197,6 @@ const submitHandle = async () => {
           .postTool({ ...workflowForm.value, folder_id: folder.currentFolder?.id, code: 'None' })
           .then((res: any) => {
             MsgSuccess(t('common.createSuccess'))
-            emit('refresh', res.data)
             return user.profile().then(() => {
               const folderId = res.data.scope === 'SHARED' ? 'shared' : res.data.folder_id
               router.push({
