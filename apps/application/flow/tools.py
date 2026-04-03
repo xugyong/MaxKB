@@ -31,7 +31,7 @@ from asgiref.sync import sync_to_async
 from deepagents import create_deep_agent
 from django.db.models import QuerySet
 from django.http import StreamingHttpResponse
-from langchain_core.messages import BaseMessageChunk, BaseMessage, ToolMessage, AIMessageChunk
+from langchain_core.messages import BaseMessageChunk, BaseMessage, ToolMessage, AIMessageChunk, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -410,11 +410,45 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
         if extra_tools:
             for tool in extra_tools:
                 tools.append(tool)
+
+        # ---------------------------------------------------------------------------
+        # Fix: vLLM (and Qwen chat templates) reject conversations that contain more
+        # than one SystemMessage, or a SystemMessage that is not the very first
+        # message.  create_deep_agent always prepends its own BASE_AGENT_PROMPT as a
+        # SystemMessage before calling the model (factory.py line ~1319).  If
+        # message_list already contains a SystemMessage (built in base_chat_node.py
+        # via generate_message_list), the API receives two system messages and raises
+        # "System message must be at the beginning."
+        #
+        # Solution: strip the user-supplied SystemMessage out of message_list and
+        # pass its text as the system_prompt argument of create_deep_agent.
+        # deepagents will then merge it with BASE_AGENT_PROMPT into a single
+        # combined system message, so the model only ever sees one.
+        # ---------------------------------------------------------------------------
+        user_system_prompt = None
+        filtered_message_list = []
+        for msg in message_list:
+            if isinstance(msg, SystemMessage):
+                # Normalise content to plain string regardless of whether the
+                # message was built with a str or a list of content blocks.
+                if isinstance(msg.content, str):
+                    user_system_prompt = msg.content
+                elif isinstance(msg.content, list):
+                    user_system_prompt = ''.join(
+                        item.get('text', '') if isinstance(item, dict) else str(item)
+                        for item in msg.content
+                    )
+                else:
+                    user_system_prompt = str(msg.content)
+            else:
+                filtered_message_list.append(msg)
+
         agent = create_deep_agent(
             model=chat_model,
             backend=SandboxShellBackend(root_dir=temp_dir, virtual_mode=True),
             skills=['/skills'],
             tools=tools,
+            system_prompt=user_system_prompt,
             interrupt_on={
                 "write_file": False,
                 "read_file": False,
@@ -425,7 +459,7 @@ async def _yield_mcp_response(chat_model, message_list, mcp_servers, mcp_output_
         recursion_limit = int(CONFIG.get(
             "LANGCHAIN_GRAPH_RECURSION_LIMIT", '100'))
         response = agent.astream(
-            {"messages": message_list},
+            {"messages": filtered_message_list},
             config={"recursion_limit": recursion_limit,
                     "configurable": {"thread_id": chat_id}},
             stream_mode='messages'
