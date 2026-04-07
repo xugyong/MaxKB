@@ -325,29 +325,33 @@
                               {{ $t('common.setting') }}
                             </el-dropdown-item>
                             <el-dropdown-item
+                              divided
                               @click.stop="exportKnowledge(item)"
                               v-if="permissionPrecise.export(item.id)"
                             >
                               <AppIcon iconName="app-export" class="color-secondary"></AppIcon
-                              >{{ $t('views.document.setting.export') }} Excel
+                              >{{ $t('views.document.setting.exportDocument') }} Excel
                             </el-dropdown-item>
                             <el-dropdown-item
                               @click.stop="exportZipKnowledge(item)"
                               v-if="permissionPrecise.export(item.id)"
                             >
                               <AppIcon iconName="app-export" class="color-secondary"></AppIcon
-                              >{{ $t('views.document.setting.export') }} ZIP</el-dropdown-item
+                              >{{
+                                $t('views.document.setting.exportDocument')
+                              }}
+                              ZIP</el-dropdown-item
                             >
                             <el-dropdown-item
                               @click.stop="exportKnowledgeBundle(item)"
                               v-if="permissionPrecise.export(item.id)"
                             >
-                              <AppIcon iconName="app-export" class="color-secondary"></AppIcon
-                              >{{ $t('views.document.setting.export') }}
-                              {{ $t('views.knowledge.title') }}
+                              <AppIcon iconName="app-export" class="color-secondary"></AppIcon>
+                              {{ $t('views.document.setting.exportKnowledge') }}
                             </el-dropdown-item>
 
                             <el-dropdown-item
+                              divided
                               type="danger"
                               @click.stop="deleteKnowledge(item)"
                               v-if="permissionPrecise.delete(item.id)"
