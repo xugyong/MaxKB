@@ -185,13 +185,10 @@
               {{ $t('common.delete') }}
             </el-button>
             <span class="color-secondary ml-24 mr-16">
-              {{ $t('common.selected') }} {{ multipleSelection.length }}
+              {{ $t('common.selected') }} {{ multipleSelection.length }}/{{ paginationConfig.total }}
               {{ $t('views.document.items') }}
             </span>
-            <span class="color-secondary mr-16">
-              {{ $t('common.total') }} {{ paginationConfig.total }}
-              {{ $t('views.document.items') }}
-            </span>
+
             <el-button link type="primary" @click="batchSelectedHandle(false)">
               {{ $t('views.paragraph.setting.cancelSelected') }}
             </el-button>

@@ -8,7 +8,7 @@
         clearable
       />
       <el-dropdown trigger="click" :teleported="false" @command="switchSortMethod">
-        <el-button class="ml-4">
+        <el-button class="ml-8" style="width: 32px;">
           <AppIcon :iconName="sortIconName"></AppIcon>
         </el-button>
         <template #dropdown>
