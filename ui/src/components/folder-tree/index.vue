@@ -178,7 +178,7 @@ import { TreeToFlatten } from '@/utils/array'
 import { MsgConfirm, MsgError, MsgSuccess } from '@/utils/message'
 import permissionMap from '@/permission'
 import bus from '@/bus'
-import { v } from "vue-router/dist/router-CWoNjPRp";
+
 const { folder, user } = useStore()
 
 defineOptions({ name: 'FolderTree' })
