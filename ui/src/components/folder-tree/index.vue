@@ -178,6 +178,7 @@ import { TreeToFlatten } from '@/utils/array'
 import { MsgConfirm, MsgError, MsgSuccess } from '@/utils/message'
 import permissionMap from '@/permission'
 import bus from '@/bus'
+import { v } from "vue-router/dist/router-CWoNjPRp";
 const { folder, user } = useStore()
 
 defineOptions({ name: 'FolderTree' })
@@ -621,7 +622,11 @@ const title = ref('')
 const loading = ref(false)
 
 watch(filterText, (val) => {
-  treeRef.value!.filter(val)
+  let v = val
+  if (val) {
+    v = val.trim()
+  }
+  treeRef.value!.filter(v)
 })
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
