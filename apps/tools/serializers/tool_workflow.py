@@ -42,6 +42,7 @@ from common.utils.logger import maxkb_logger
 from common.utils.tool_code import ToolExecutor
 from knowledge.models import KnowledgeWorkflow, Knowledge, KnowledgeScope
 from knowledge.serializers.knowledge import KnowledgeModelSerializer, KnowledgeSerializer
+from maxkb.const import CONFIG
 from system_manage.models import AuthTargetType
 from system_manage.models.resource_mapping import ResourceMapping
 from system_manage.serializers.user_resource_permission import UserResourcePermissionSerializer
@@ -380,7 +381,8 @@ class StoreToolWorkflow(serializers.Serializer):
         self.is_valid(raise_exception=True)
         # 下载zip文件
         try:
-            res = requests.get('https://apps-assets.fit2cloud.com/stable/maxkb.json.zip', timeout=5)
+            appstore_url = CONFIG.get('APPSTORE_URL', 'https://apps-assets.fit2cloud.com/stable/maxkb.json.zip')
+            res = requests.get(appstore_url, timeout=5)
             res.raise_for_status()
             # 创建临时文件保存zip
             with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
