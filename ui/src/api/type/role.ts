@@ -69,7 +69,6 @@ interface FormItemModel {
     multiple?: boolean
     clearableFunction?: (e: any) => boolean
     remoteMethod?: (query: string, element: any) => Promise<{ label: string, value: string }[]>
-    remoteSearchDebounce?: number
   }
 }
 

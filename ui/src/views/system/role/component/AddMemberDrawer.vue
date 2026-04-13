@@ -23,12 +23,10 @@
 
 <script setup lang="ts">
 import {onBeforeMount, ref} from 'vue'
-import type {CreateMemberParamsItem, FormItemModel} from '@/api/type/role'
+import type {CreateMemberParamsItem, FormItemModel, RoleItem} from '@/api/type/role'
 import UserApi from '@/api/user/user'
-import WorkspaceApi from '@/api/workspace/workspace'
 import MemberFormContent from './MemberFormContent.vue'
 import {t} from '@/locales'
-import type {RoleItem} from '@/api/type/role'
 import {MsgSuccess} from '@/utils/message'
 import {RoleTypeEnum} from '@/enums/system'
 import {loadPermissionApi} from '@/utils/dynamics-api/permission-api'
@@ -64,8 +62,7 @@ async function getUserFormItem() {
     }
 
     // 初始加载
-    const initialOptions = await fetchUserOptions()
-    userOptions.value = initialOptions
+    userOptions.value = await fetchUserOptions()
 
     userFormItem.value = [
       {
@@ -80,7 +77,6 @@ async function getUserFormItem() {
         selectProps: {
           options: userOptions.value,
           placeholder: `${t('common.selectPlaceholder')}${t('views.role.member.title')}`,
-          remoteSearchDebounce: 300,
           remoteMethod: async (query: string, element: any) => {
             // 关键：直接更新 selectProps.options
             const newOptions = await fetchUserOptions(query)

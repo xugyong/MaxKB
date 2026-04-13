@@ -108,8 +108,7 @@ async function handleRemoteSearch(query: string, element: any, model: FormItemMo
   loadingStates[key] = true
 
   try {
-    const debounceTime = model.selectProps.remoteSearchDebounce || 300
-    await new Promise(resolve => setTimeout(resolve, debounceTime))
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     element[`_${model.path}_options`] = await model.selectProps.remoteMethod(query, element)
   } catch (error) {
