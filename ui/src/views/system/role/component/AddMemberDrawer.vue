@@ -51,10 +51,15 @@ const memberFormContentLoading = ref(false)
 const formItemModel = ref<FormItemModel[]>([])
 const userFormItem = ref<FormItemModel[]>([])
 const workspaceFormItem = ref<FormItemModel[]>([])
+const userOptions = ref<Array<{ label: string; value: string }>>([])
 
 async function getUserFormItem() {
   try {
-    const res = await UserApi.getUserList(memberFormContentLoading)
+    const res = await UserApi.getUserList({}, memberFormContentLoading)
+    userOptions.value = res.data?.map((item) => ({
+      label: item.nick_name,
+      value: item.id,
+    })) || []
     userFormItem.value = [
       {
         path: 'user_ids',
@@ -66,12 +71,19 @@ async function getUserFormItem() {
           },
         ],
         selectProps: {
-          options:
-            res.data?.map((item) => ({
+          options: userOptions.value,
+          placeholder: `${t('common.selectPlaceholder')}${t('views.role.member.title')}`,
+          remoteSearchDebounce: 300,
+          remoteMethod: async (query: string, element: any) => {
+            if (!query) {
+              return userOptions.value
+            }
+            const res = await UserApi.getUserList({nick_name: query}, memberFormContentLoading)
+            return res.data?.map((item) => ({
               label: item.nick_name,
               value: item.id,
-            })) || [],
-          placeholder: `${t('common.selectPlaceholder')}${t('views.role.member.title')}`,
+            })) || []
+          }
         },
       },
     ]
