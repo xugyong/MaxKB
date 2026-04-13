@@ -55,11 +55,18 @@ const userOptions = ref<Array<{ label: string; value: string }>>([])
 
 async function getUserFormItem() {
   try {
-    const res = await UserApi.getUserList({}, memberFormContentLoading)
-    userOptions.value = res.data?.map((item) => ({
-      label: item.nick_name,
-      value: item.id,
-    })) || []
+    const fetchUserOptions = async (query?: string) => {
+      const res = await UserApi.getUserList(query ? {nick_name: query} : {}, memberFormContentLoading)
+      return res.data?.map((item) => ({
+        label: item.nick_name,
+        value: item.id,
+      })) || []
+    }
+
+    // 初始加载
+    const initialOptions = await fetchUserOptions()
+    userOptions.value = initialOptions
+
     userFormItem.value = [
       {
         path: 'user_ids',
@@ -75,14 +82,16 @@ async function getUserFormItem() {
           placeholder: `${t('common.selectPlaceholder')}${t('views.role.member.title')}`,
           remoteSearchDebounce: 300,
           remoteMethod: async (query: string, element: any) => {
-            if (!query) {
-              return userOptions.value
+            // 关键：直接更新 selectProps.options
+            const newOptions = await fetchUserOptions(query)
+            // 更新当前项的 options
+            const currentItem = userFormItem.value.find(
+              item => item.path === 'user_ids'
+            )
+            if (currentItem?.selectProps) {
+              currentItem.selectProps.options = newOptions
             }
-            const res = await UserApi.getUserList({nick_name: query}, memberFormContentLoading)
-            return res.data?.map((item) => ({
-              label: item.nick_name,
-              value: item.id,
-            })) || []
+            return newOptions
           }
         },
       },
@@ -92,9 +101,22 @@ async function getUserFormItem() {
   }
 }
 
+// 同样修改 workspace
 async function getWorkspaceFormItem() {
   try {
-    const res = await loadPermissionApi('workspace').getWorkspaceList(memberFormContentLoading)
+    const fetchWorkspaceOptions = async (query?: string) => {
+      const res = await loadPermissionApi('workspace').getWorkspaceList(
+        query ? {name: query} : {},
+        memberFormContentLoading
+      )
+      return res.data?.map((item: any) => ({
+        label: item.name,
+        value: item.id,
+      })) || []
+    }
+
+    const initialOptions = await fetchWorkspaceOptions()
+
     workspaceFormItem.value = [
       {
         path: 'workspace_ids',
@@ -106,12 +128,18 @@ async function getWorkspaceFormItem() {
           },
         ],
         selectProps: {
-          options:
-            res.data?.map((item: any) => ({
-              label: item.name,
-              value: item.id,
-            })) || [],
+          options: initialOptions,
           placeholder: `${t('common.selectPlaceholder')}${t('views.role.member.workspace')}`,
+          remoteMethod: async (query: string, element: any) => {
+            const newOptions = await fetchWorkspaceOptions(query)
+            const currentItem = workspaceFormItem.value.find(
+              item => item.path === 'workspace_ids'
+            )
+            if (currentItem?.selectProps) {
+              currentItem.selectProps.options = newOptions
+            }
+            return newOptions
+          }
         },
       },
     ]
