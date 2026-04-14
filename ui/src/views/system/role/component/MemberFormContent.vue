@@ -22,7 +22,7 @@
             "
             filterable
             remote
-            :remote-method="(query) => handleRemoteSearch(query, element, model)"
+            :remote-method="(query: any) => handleRemoteSearch(query, element, model)"
             :loading="loadingStates[`${index}-${model.path}`]"
             multiple
             :reserve-keyword="false"
