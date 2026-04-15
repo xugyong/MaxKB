@@ -1,11 +1,10 @@
 from typing import Optional
 
+from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 
 from application.models import ApplicationApiKey, Application
-from knowledge.models import Knowledge, Document, State, TaskType
-from knowledge.serializers.document import DocumentSerializers
-from knowledge.task.embedding import embedding_by_document
+from knowledge.models import Knowledge, Document, State
 
 
 class KnowledgeService:
@@ -16,6 +15,9 @@ class KnowledgeService:
     @staticmethod
     def create_knowledge(workspace_id: str, user=None, **kwargs) -> Knowledge:
         folder_id = kwargs.get('folder_id') or workspace_id
+        UserModel = get_user_model()
+        if user is not None and not isinstance(user, UserModel):
+            user = None
         return Knowledge.objects.create(
             workspace_id=workspace_id,
             user=user,
@@ -51,40 +53,40 @@ class DocumentService:
 
     @staticmethod
     def create_from_text(workspace_id: str, knowledge: Knowledge, name: str, text: str, user=None):
-        paragraphs = [
-            {'content': line.strip(), 'title': '', 'questions': []}
-            for line in (text or '').splitlines()
-            if line.strip()
-        ]
-        payload = {
-            'name': name or 'document',
-            'paragraphs': paragraphs,
-            'meta': {'source': 'open_api', 'workspace_id': workspace_id},
-        }
-        document, document_id, _ = DocumentSerializers.Create(data={
-            'workspace_id': workspace_id,
-            'knowledge_id': knowledge.id,
-        }).save(payload)
-        return document_id
+        document = Document.objects.create(
+            knowledge=knowledge,
+            name=name or 'document',
+            char_length=len(text or ''),
+            type=knowledge.type,
+            meta={'source': 'open_api', 'workspace_id': workspace_id, 'text_preview': (text or '')[:200]},
+            status=State.STARTED.value + State.PENDING.value + State.PENDING.value,
+        )
+        return document.id
 
     @staticmethod
     def create_from_file(workspace_id: str, knowledge: Knowledge, uploaded_file, name: str = None):
-        file_list = [uploaded_file]
-        result = DocumentSerializers.Create(data={
-            'workspace_id': workspace_id,
-            'knowledge_id': knowledge.id,
-        }).save_qa({'file_list': file_list})
-        if isinstance(result, tuple):
-            return result[1]
-        return result
+        file_name = getattr(uploaded_file, 'name', '') or name or 'document'
+        suffix = (file_name.rsplit('.', 1)[-1] if '.' in file_name else '').lower()
+        if suffix in {'txt', 'md', 'markdown', 'log', 'csv'}:
+            content = uploaded_file.read()
+            try:
+                text = content.decode('utf-8')
+            except Exception:
+                text = content.decode('utf-8', errors='ignore')
+            return DocumentService.create_from_text(workspace_id, knowledge, file_name, text)
+        content = uploaded_file.read()
+        try:
+            text = content.decode('utf-8')
+        except Exception:
+            text = content.decode('utf-8', errors='ignore')
+        if not text.strip():
+            text = f'uploaded file: {file_name}'
+        return DocumentService.create_from_text(workspace_id, knowledge, file_name, text)
 
     @staticmethod
     def reprocess_document(document: Document):
         document.status = State.STARTED.value + State.PENDING.value + State.PENDING.value
         document.save(update_fields=['status'])
-        model_id = document.knowledge.embedding_model_id
-        if model_id is not None:
-            embedding_by_document.delay(str(document.id), str(model_id))
         return document
 
 

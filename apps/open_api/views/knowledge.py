@@ -1,14 +1,12 @@
-from rest_framework import status
-
-from common.auth.authenticate import AnonymousAuthentication, TokenAuth
 from knowledge.models import Knowledge
+from open_api.auth import OpenApiAnonymousAuthentication, OpenApiKeyAuthentication
 from open_api.serializers import KnowledgeCreateSerializer, KnowledgeUpdateSerializer
 from open_api.services import KnowledgeService
 from .base import OpenAPIView
 
 
 class KnowledgeListView(OpenAPIView):
-    authentication_classes = [TokenAuth, AnonymousAuthentication]
+    authentication_classes = [OpenApiKeyAuthentication, OpenApiAnonymousAuthentication]
 
     def get(self, request, workspace_id, *args, **kwargs):
         items = KnowledgeService.list_knowledge(workspace_id)
@@ -41,7 +39,7 @@ class KnowledgeListView(OpenAPIView):
 
 
 class KnowledgeDetailView(OpenAPIView):
-    authentication_classes = [TokenAuth, AnonymousAuthentication]
+    authentication_classes = [OpenApiKeyAuthentication, OpenApiAnonymousAuthentication]
 
     def get(self, request, workspace_id, knowledge_id, *args, **kwargs):
         knowledge = KnowledgeService.get_knowledge(workspace_id, knowledge_id)

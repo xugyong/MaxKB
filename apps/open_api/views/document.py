@@ -1,6 +1,6 @@
 from open_api.serializers import DocumentUploadSerializer
 from open_api.services import KnowledgeService, DocumentService
-from knowledge.models import Document, State
+from knowledge.models import Document
 from .base import OpenAPIView
 
 
@@ -48,7 +48,7 @@ class DocumentListView(OpenAPIView):
                 'workspace_id': workspace_id,
                 'knowledge_id': knowledge_id,
                 'document_id': str(document_id),
-                'status': 'ready',
+                'status': 'processing',
                 'status_meta': {'state_time': {}},
             }, message='document uploaded')
         if uploaded is not None:
@@ -57,7 +57,7 @@ class DocumentListView(OpenAPIView):
                 'workspace_id': workspace_id,
                 'knowledge_id': knowledge_id,
                 'document_id': str(document_id),
-                'status': State.PENDING.value * 3,
+                'status': 'processing',
                 'status_meta': {'state_time': {}},
             }, message='document uploaded')
         document = Document.objects.create(
