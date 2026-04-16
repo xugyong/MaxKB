@@ -57,7 +57,11 @@ COPY --from=stage-build /opt/maxkb-app /opt/maxkb-app
 COPY --from=stage-build /opt/py3 /opt/py3
 COPY installer/nginx.conf /etc/nginx/conf.d/default.conf
 COPY installer/start-with-nginx.sh /usr/bin/start-with-nginx.sh
-RUN chmod +x /usr/bin/start-with-nginx.sh
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    chmod +x /usr/bin/start-with-nginx.sh && \
+    chmod 755 /opt/maxkb-app /opt/maxkb-app/ui /opt/maxkb-app/ui/dist && \
+    find /opt/maxkb-app/ui/dist -type d -exec chmod 755 {} \; && \
+    find /opt/maxkb-app/ui/dist -type f -exec chmod 644 {} \;
 
 EXPOSE 80 8080
 VOLUME /opt/maxkb
