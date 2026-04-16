@@ -47,11 +47,19 @@ ENV MAXKB_VERSION="${DOCKER_IMAGE_TAG} (build at ${BUILD_AT}, commit: ${GITHUB_C
     MAXKB_LOCAL_MODEL_PROTOCOL=http \
     PIP_TARGET=/opt/maxkb/python-packages
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends nginx && \
+    apt-get clean all && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /opt/maxkb-app
 COPY --from=stage-build /opt/maxkb-app /opt/maxkb-app
 COPY --from=stage-build /opt/py3 /opt/py3
+COPY installer/nginx.conf /etc/nginx/conf.d/default.conf
+COPY installer/start-with-nginx.sh /usr/bin/start-with-nginx.sh
+RUN chmod +x /usr/bin/start-with-nginx.sh
 
-EXPOSE 8080
+EXPOSE 80 8080
 VOLUME /opt/maxkb
 ENTRYPOINT ["bash", "-c"]
-CMD [ "/usr/bin/start-all.sh" ]
+CMD [ "/usr/bin/start-with-nginx.sh" ]
