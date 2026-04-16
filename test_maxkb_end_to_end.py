@@ -23,12 +23,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-BASE_URL = "http://localhost:8080".rstrip("/")
-API_KEY = "agent-997a2543fe8fe36f8935db8947a0ddea".strip()
+BASE_URL = "http://192.168.0.16:8090".rstrip("/")
+API_KEY = "agent-638d5efc589010543edbc5429270b724".strip()
 WORKSPACE_ID = "default".strip()
-APPLICATION_ID = "019d9006-f7c4-7ee0-b061-c5ab0fbaf625".strip()
+APPLICATION_ID = "019d94e1-476c-72b1-8ed5-24952d361afe".strip()
 KNOWLEDGE_NAME = f"E2E KB {int(time.time())}"
-CHAT_QUESTION = "请根据知识库内容回答：这个系统怎么对接 Go 后台？"
+CHAT_QUESTION = "请根据知识库内容回答：这个系统怎么对接 Go 后台？请引用知识库中的原文要点，并给出来源。"
+VALIDATION_QUESTION = "请根据知识库文档回答：MaxKB 第三方接入的推荐架构是什么？"
 UPLOAD_FORMATS = [f.strip() for f in "txt,md,csv,pdf,docx,xlsx,json,zip".split(",") if f.strip()]
 EMBEDDING_MODEL_ID = "42f63a3d-427e-11ef-b3ec-a8a1595801ab"
 
@@ -91,6 +92,68 @@ def assert_ok(resp: ApiResponse, label: str):
         raise ApiError(f"{label} returned non-json body: {resp.body}")
     if resp.body.get("code") != 0:
         raise ApiError(f"{label} failed: {pretty(resp.body)}")
+
+
+def extract_sources(data: Any) -> list:
+    if not isinstance(data, dict):
+        return []
+    sources = data.get("sources")
+    if isinstance(sources, list):
+        return sources
+    return []
+
+
+def extract_usage(data: Any) -> dict:
+    if not isinstance(data, dict):
+        return {}
+    usage = data.get("usage")
+    return usage if isinstance(usage, dict) else {}
+
+
+def validate_chat_response(resp: ApiResponse, label: str) -> None:
+    assert_ok(resp, label)
+    data = resp.body.get("data")
+    if not isinstance(data, dict):
+        raise ApiError(f"{label} data missing: {pretty(resp.body)}")
+
+    answer = (data.get("answer") or "").strip()
+    if not answer:
+        raise ApiError(f"{label} answer is empty: {pretty(resp.body)}")
+
+    sources = extract_sources(data)
+    if not sources:
+        raise ApiError(f"{label} sources are empty: {pretty(resp.body)}")
+
+    usage = extract_usage(data)
+    if not usage:
+        raise ApiError(f"{label} usage is missing: {pretty(resp.body)}")
+
+    total_tokens = usage.get("total_tokens")
+    if not isinstance(total_tokens, int):
+        raise ApiError(f"{label} total_tokens is invalid: {pretty(resp.body)}")
+    if total_tokens <= 0:
+        raise ApiError(f"{label} total_tokens must be > 0: {pretty(resp.body)}")
+
+    message_tokens = usage.get("message_tokens")
+    answer_tokens = usage.get("answer_tokens")
+    if not isinstance(message_tokens, int) or not isinstance(answer_tokens, int):
+        raise ApiError(f"{label} token stats invalid: {pretty(resp.body)}")
+    if message_tokens < 0 or answer_tokens < 0:
+        raise ApiError(f"{label} token stats must be non-negative: {pretty(resp.body)}")
+
+
+def get_data(resp: ApiResponse) -> Dict[str, Any]:
+    if isinstance(resp.body, dict) and isinstance(resp.body.get("data"), dict):
+        return resp.body["data"]
+    return {}
+
+
+def pick_first_str(obj: Dict[str, Any], keys: Tuple[str, ...]) -> str:
+    for key in keys:
+        val = obj.get(key)
+        if isinstance(val, str) and val:
+            return val
+    return ""
 
 
 def create_temp_file(ext: str) -> Path:
@@ -181,6 +244,7 @@ def main() -> int:
     health = http_request("GET", "/api/open/v1/health")
     print("[health]")
     print(pretty(health.body))
+    assert_ok(health, "health")
     print()
 
     # 2) Create knowledge base
@@ -189,7 +253,10 @@ def main() -> int:
     print(pretty(kb_create.body))
     print()
     assert_ok(kb_create, "create knowledge")
-    kb_id = kb_create.body["data"]["knowledge_id"]
+    kb_data = get_data(kb_create)
+    kb_id = pick_first_str(kb_data, ("knowledge_id", "id", "uuid"))
+    if not kb_id:
+        raise ApiError(f"create knowledge did not return knowledge id: {pretty(kb_create.body)}")
 
     # 3) List knowledge base
     kb_list = http_request("GET", f"/api/open/v1/workspaces/{WORKSPACE_ID}/knowledgebases", token=API_KEY)
@@ -210,7 +277,9 @@ def main() -> int:
     print("[upload text]")
     print(pretty(text_doc.body))
     print()
-    results.append(("text", "ok" if text_doc.body.get("code") == 0 else "failed"))
+    assert_ok(text_doc, "upload text")
+    text_doc_id = pick_first_str(get_data(text_doc), ("document_id", "id", "uuid"))
+    results.append(("text", "ok" if text_doc_id else "failed"))
 
     # 6) Upload file formats
     for ext in UPLOAD_FORMATS:
@@ -219,7 +288,8 @@ def main() -> int:
         print(f"[upload {ext}]")
         print(pretty(resp.body))
         print()
-        status = "ok" if isinstance(resp.body, dict) and resp.body.get("code") == 0 else "failed"
+        assert_ok(resp, f"upload {ext}")
+        status = "ok" if pick_first_str(get_data(resp), ("document_id", "id", "uuid")) else "failed"
         results.append((ext, status))
 
     # 7) Document list
@@ -244,10 +314,72 @@ def main() -> int:
     print(pretty(chat.body))
     print()
     assert_ok(chat, "chat completion")
+    chat_data = get_data(chat)
+    session_id = pick_first_str(chat_data, ("session_id", "chat_id"))
+    message_id = pick_first_str(chat_data, ("message_id", "id"))
+    answer = chat_data.get("answer")
+    sources = chat_data.get("sources")
+    usage = chat_data.get("usage")
+    print("[chat summary]")
+    print(f"session_id={session_id}")
+    print(f"message_id={message_id}")
+    print(f"answer={answer}")
+    print(f"sources={pretty(sources)}")
+    print(f"usage={pretty(usage)}")
+    if not session_id or not message_id or not answer:
+        raise ApiError(f"chat completion missing required fields: {pretty(chat.body)}")
+
+    # 9) Session history / list
+    session_list = http_request("GET", f"/api/open/v1/chat/sessions?application_id={APPLICATION_ID}", token=API_KEY)
+    print("[session list]")
+    print(pretty(session_list.body))
+    print()
+    if session_list.status != 200 or not isinstance(session_list.body, dict):
+        raise ApiError(f"session list failed: {pretty(session_list.body)}")
+    if session_list.body.get("code") != 0:
+        raise ApiError(f"session list api error: {pretty(session_list.body)}")
+
+    session_detail = http_request("GET", f"/api/open/v1/chat/sessions/{session_id}", token=API_KEY)
+    print("[session detail]")
+    print(pretty(session_detail.body))
+    print()
+    if session_detail.status != 200 or not isinstance(session_detail.body, dict):
+        raise ApiError(f"session detail failed: {pretty(session_detail.body)}")
+    if session_detail.body.get("code") != 0:
+        raise ApiError(f"session detail api error: {pretty(session_detail.body)}")
+
+    session_messages = http_request("GET", f"/api/open/v1/chat/sessions/{session_id}/messages", token=API_KEY)
+    print("[session messages]")
+    print(pretty(session_messages.body))
+    print()
+    if session_messages.status != 200 or not isinstance(session_messages.body, dict):
+        raise ApiError(f"session messages failed: {pretty(session_messages.body)}")
+    if session_messages.body.get("code") != 0:
+        raise ApiError(f"session messages api error: {pretty(session_messages.body)}")
+
+    # 10) Failure scenario / error mapping
+    bad_chat = http_request(
+        "POST",
+        "/api/open/v1/chat/completions",
+        {"application_id": "invalid-application-id", "stream": False, "re_chat": False, "messages": [{"role": "user", "content": "test"}]},
+        token=API_KEY,
+    )
+    print("[bad chat]")
+    print(pretty(bad_chat.body))
+    print()
+    if not isinstance(bad_chat.body, dict):
+        raise ApiError(f"bad chat returned non-json body: {bad_chat.body}")
+    bad_code = bad_chat.body.get("code")
+    bad_message = bad_chat.body.get("message")
+    print(f"bad_chat_code={bad_code}")
+    print(f"bad_chat_message={bad_message}")
+    if bad_code == 0:
+        raise ApiError(f"expected bad chat to fail but got success: {pretty(bad_chat.body)}")
 
     print("[summary]")
     print(f"knowledge_id={kb_id}")
-    print(f"chat_session_id={chat.body['data'].get('session_id')}")
+    print(f"chat_session_id={session_id}")
+    print(f"chat_message_id={message_id}")
     print("file upload results:")
     for name, status in results:
         print(f"  - {name}: {status}")

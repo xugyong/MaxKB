@@ -2,6 +2,7 @@ import uuid_utils.compat as uuid
 
 from application.models import Chat, ChatRecord, ChatUserType
 from chat.serializers.chat import OpenAIChatSerializer, OpenChatSerializers
+from common.exception.app_exception import AppApiException
 from open_api.serializers import OpenChatCompletionSerializer
 from .base import OpenAPIView
 
@@ -62,8 +63,10 @@ class ChatCompletionView(OpenAPIView):
             answer_text = chat_record.answer_text
         elif isinstance(result, dict):
             answer_text = result.get('answer') or result.get('content') or result.get('text') or ''
-        if not answer_text:
-            answer_text = 'chat completed'
+
+        if not (answer_text or '').strip():
+            raise AppApiException(502, 'chat completion failed: empty answer from upstream')
+
         sources = []
         def _truncate(value, limit=240):
             text = '' if value is None else str(value)
@@ -97,18 +100,21 @@ class ChatCompletionView(OpenAPIView):
             raw_sources = result.get('sources') or []
             for src in raw_sources:
                 _push_source(src)
+        if not sources:
+            raise AppApiException(502, 'chat completion failed: empty sources from upstream')
+
         if isinstance(result, dict):
             result_usage = result.get('usage') or {}
         else:
             result_usage = {}
         usage_message_tokens = result_usage.get('message_tokens')
         if usage_message_tokens is None:
-            usage_message_tokens = getattr(chat_record, 'message_tokens', 0) if chat_record is not None else 0
+            usage_message_tokens = getattr(chat_record, 'message_tokens', None) if chat_record is not None else None
         usage_answer_tokens = result_usage.get('answer_tokens')
         if usage_answer_tokens is None:
-            usage_answer_tokens = getattr(chat_record, 'answer_tokens', 0) if chat_record is not None else 0
+            usage_answer_tokens = getattr(chat_record, 'answer_tokens', None) if chat_record is not None else None
         usage_total_tokens = result_usage.get('total_tokens')
-        if usage_total_tokens is None:
+        if usage_total_tokens is None and usage_message_tokens is not None and usage_answer_tokens is not None:
             usage_total_tokens = usage_message_tokens + usage_answer_tokens
         usage_extra = result_usage.get('extra') if isinstance(result_usage, dict) else None
         if usage_extra is None:
@@ -117,8 +123,12 @@ class ChatCompletionView(OpenAPIView):
                 'prompt_tokens': result_usage.get('prompt_tokens') if isinstance(result_usage, dict) else None,
                 'completion_tokens': result_usage.get('completion_tokens') if isinstance(result_usage, dict) else None,
             }
+        if usage_message_tokens is None or usage_answer_tokens is None or usage_total_tokens is None:
+            raise AppApiException(502, 'chat completion failed: invalid usage statistics from upstream')
+        if usage_total_tokens <= 0:
+            raise AppApiException(502, 'chat completion failed: usage total_tokens must be greater than 0')
         status = 'ok' if chat_record is not None or answer_text else 'pending'
-        finish_reason = (result.get('finish_reason') if isinstance(result, dict) else None) or ('stop' if answer_text else 'unknown')
+        finish_reason = (result.get('finish_reason') if isinstance(result, dict) else None) or 'stop'
 
         return self.success({
             'session_id': session_id,
