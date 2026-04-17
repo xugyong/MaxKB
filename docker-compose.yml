@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: maxkb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Password123@postgres
+      POSTGRES_DB: maxkb
+    ports:
+      - "5432:5432"
+    volumes:
+      - maxkb-postgres-data:/var/lib/postgresql/data
+      - ./installer/postgres-init:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: maxkb-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "Password123@redis"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - maxkb-redis-data:/data
+
+  maxkb:
+    build:
+      context: .
+      dockerfile: installer/Dockerfile
+    container_name: maxkb
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      MAXKB_DB_HOST: postgres
+      MAXKB_DB_PORT: 5432
+      MAXKB_DB_NAME: maxkb
+      MAXKB_DB_USER: root
+      MAXKB_DB_PASSWORD: Password123@postgres
+      MAXKB_REDIS_HOST: redis
+      MAXKB_REDIS_PORT: 6379
+      MAXKB_REDIS_DB: 0
+      MAXKB_REDIS_PASSWORD: Password123@redis
+      MAXKB_LOCAL_MODEL_HOST: 127.0.0.1
+      MAXKB_LOCAL_MODEL_PORT: 11636
+      MAXKB_LOCAL_MODEL_PROTOCOL: http
+    ports:
+      - "8090:80"
+      - "8080:8080"
+    volumes:
+      - maxkb-data:/opt/maxkb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  maxkb-postgres-data:
+  maxkb-redis-data:
+  maxkb-data:
