@@ -7,6 +7,8 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'maxkb.settings')
+    if os.environ.get('MINI_PROGRAM_LIGHTWEIGHT') == '1':
+        os.environ.setdefault('ROOT_URLCONF', 'maxkb.urls.lightweight')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

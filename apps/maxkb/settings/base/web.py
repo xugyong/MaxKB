@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'chat',
     'oss',
     'trigger',
-    'open_api',
     'django_apscheduler',
 ]
 
@@ -194,6 +193,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 edition = 'CE'
+
+MINI_PROGRAM_ACCESS_TOKEN = os.environ.get('MINI_PROGRAM_ACCESS_TOKEN', 'mini-program-dev-token')
+MINI_PROGRAM_TOKEN_MAX_AGE_SECONDS = int(os.environ.get('MINI_PROGRAM_TOKEN_MAX_AGE_SECONDS', 7 * 24 * 3600))
 
 if os.environ.get('MAXKB_REDIS_SENTINEL_SENTINELS') is not None:
     DJANGO_REDIS_CONNECTION_FACTORY = "django_redis.pool.SentinelConnectionFactory"

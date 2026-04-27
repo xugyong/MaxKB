@@ -9,5 +9,11 @@
 from .base import *
 from .logging import *
 from .auth import *
-from .lib import *
-from .mem import *
+
+from common.utils.logger import maxkb_logger
+
+import os
+
+if os.environ.get('MINI_PROGRAM_LIGHTWEIGHT') != '1':
+    from .lib import *
+    from .mem import *

@@ -22,6 +22,8 @@ from django.urls import path, re_path, include
 from django.views import static
 from rest_framework import status
 
+import os
+
 from chat.urls import urlpatterns as chat_urlpatterns
 from common.init.init_doc import init_doc
 from common.result import Result

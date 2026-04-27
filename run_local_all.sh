@@ -30,7 +30,7 @@ compose() {
 show_help() {
   cat <<'EOF'
 Usage:
-  ./run_local_all.sh up        # start all services without rebuilding
+  ./run_local_all.sh up        # start postgres, redis, and maxkb containers
   ./run_local_all.sh down      # stop and remove containers
   ./run_local_all.sh logs      # follow logs
   ./run_local_all.sh ps        # show service status
@@ -39,7 +39,8 @@ Usage:
 
 Ports:
   Admin UI: http://127.0.0.1:8090/admin/
-  Open API: http://127.0.0.1:8090/api/open/v1/health
+  Frontend chat: http://127.0.0.1:8090/chat/
+  Backend health: http://127.0.0.1:8090/api/open/v1/health
 EOF
 }
 
@@ -57,6 +58,8 @@ up() {
   echo "  Backend chat API:    http://127.0.0.1:8090/chat/api/"
   echo "  Backend tool API:    http://127.0.0.1:8090/tool/api/"
   echo "  Direct backend port: http://127.0.0.1:8080/"
+  echo ""
+  echo "For source-code debugging, use ./run_local_dev.sh run after postgres/redis are up."
 }
 
 down() {

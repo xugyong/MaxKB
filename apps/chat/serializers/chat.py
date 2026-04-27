@@ -29,7 +29,7 @@ from application.flow.i_step_node import WorkFlowPostHandler
 from application.flow.tools import to_stream_response_simple
 from application.flow.workflow_manage import WorkflowManage
 from application.models import Application, ApplicationTypeChoices, \
-    ChatUserType, ApplicationChatUserStats, ApplicationAccessToken, ChatRecord, Chat, ApplicationVersion
+    ChatUserType, ApplicationChatUserStats, ApplicationAccessToken, ChatRecord, Chat, ApplicationVersion, ApplicationKnowledgeMapping
 from application.serializers.application import ApplicationOperateSerializer
 from application.serializers.common import ChatInfo
 from common.database_model_manage.database_model_manage import DatabaseModelManage
@@ -317,6 +317,8 @@ class ChatSerializers(serializers.Serializer):
 
             application_access_token = QuerySet(ApplicationAccessToken).filter(
                 application_id=self.data.get('application_id')).first()
+            if application_access_token is None:
+                return
             if application_access_token.access_num <= access_client.intraday_access_num:
                 raise AppChatNumOutOfBoundsFailed(1002, _("The number of visits exceeds today's visits"))
 
@@ -500,6 +502,9 @@ class ChatSerializers(serializers.Serializer):
                              QuerySet(ResourceMapping).filter(source_id=str(application.id),
                                                               source_type='APPLICATION',
                                                               target_type='KNOWLEDGE')]
+        if not knowledge_id_list:
+            knowledge_id_list = [str(row.knowledge_id) for row in
+                                 QuerySet(ApplicationKnowledgeMapping).filter(application_id=application.id).select_related('knowledge')]
 
         # 需要排除的文档
         exclude_document_id_list = [str(document.id) for document in

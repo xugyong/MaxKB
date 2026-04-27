@@ -82,7 +82,7 @@ def start_services():
         logging.info('Cancel ...')
         time.sleep(2)
     except Exception as exc:
-        logging.error("Start service error {}: {}".format(services, exc))
+        logging.error("Start service error {}: {}".format(services, exc), exc_info=True)
         time.sleep(2)
 
 
