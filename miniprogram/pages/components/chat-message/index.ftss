@@ -1,0 +1,99 @@
+.chat-message-row {
+  display: flex;
+  margin-bottom: 20rpx;
+  align-items: flex-end;
+}
+
+.chat-message-row.left {
+  justify-content: flex-start;
+}
+
+.chat-message-row.right {
+  justify-content: flex-end;
+}
+
+.chat-message-item {
+  max-width: 76%;
+  padding: 20rpx 22rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 35, 41, 0.05);
+  position: relative;
+}
+
+.chat-message-item.user {
+  background: #3370ff;
+  color: #fff;
+  border-radius: 20rpx 20rpx 4rpx 20rpx;
+}
+
+.chat-message-item.assistant {
+  background: #fff;
+  border-radius: 20rpx 20rpx 20rpx 4rpx;
+}
+
+.chat-message-item.thinking {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  max-width: 76%;
+}
+
+.chat-message-item.user .chat-message-content,
+.chat-message-item.user .chat-message-meta,
+.chat-message-item.user .chat-message-action {
+  color: #fff;
+}
+
+.chat-message-content {
+  font-size: 28rpx;
+  color: #1f2329;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message-thinking-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  color: #8f959e;
+  padding-top: 6rpx;
+}
+
+.chat-message-thinking-text {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+}
+
+.chat-message-thinking-dots {
+  display: inline-flex;
+  gap: 4rpx;
+}
+
+.chat-message-thinking-dot {
+  font-size: 30rpx;
+  line-height: 1;
+  color: #8f959e;
+  opacity: 0.25;
+  display: inline-block;
+  animation: thinkingDotPulse 1s infinite ease-in-out;
+}
+
+.chat-message-thinking-dot.dot-2 {
+  animation-delay: 0.16s;
+}
+
+.chat-message-thinking-dot.dot-3 {
+  animation-delay: 0.32s;
+}
+
+@keyframes thinkingDotPulse {
+  0%, 100% {
+    transform: translateY(0) scale(0.92);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(-4rpx) scale(1.08);
+    opacity: 0.95;
+  }
+}

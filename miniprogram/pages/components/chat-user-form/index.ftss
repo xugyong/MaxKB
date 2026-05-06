@@ -1,0 +1,66 @@
+.chat-user-form-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.chat-user-form-panel {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  transform: translateX(-50%);
+  width: 86%;
+  max-height: 72%;
+  padding: 28rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-user-form-header,
+.chat-user-form-item,
+.chat-user-form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chat-user-form-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.chat-user-form-body {
+  flex: 1;
+  margin-top: 24rpx;
+}
+
+.chat-user-form-item {
+  flex-direction: column;
+  margin-bottom: 24rpx;
+}
+
+.chat-user-form-label {
+  font-size: 24rpx;
+  color: #1f2329;
+  margin-bottom: 10rpx;
+}
+
+.chat-user-form-input {
+  height: 76rpx;
+  padding: 0 20rpx;
+  border-radius: 16rpx;
+  background: #f5f7fb;
+}
+
+.chat-user-form-actions {
+  margin-top: 20rpx;
+}
+
+.chat-user-form-btn.primary {
+  width: 100%;
+  background: #3370ff;
+  color: #fff;
+}

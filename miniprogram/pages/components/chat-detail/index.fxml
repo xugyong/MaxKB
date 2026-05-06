@@ -1,0 +1,14 @@
+<view class="chat-detail-mask" bindtap="close">
+  <view class="chat-detail-panel" catchtap="noop">
+    <view class="chat-detail-header">
+      <text>{{title}}</text>
+      <text bindtap="close">关闭</text>
+    </view>
+    <block wx:for="{{list}}" wx:key="label">
+      <view class="chat-detail-item">
+        <text>{{item.label}}</text>
+        <text>{{item.value}}</text>
+      </view>
+    </block>
+  </view>
+</view>

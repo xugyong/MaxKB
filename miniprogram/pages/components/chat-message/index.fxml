@@ -1,0 +1,13 @@
+<view class="chat-message-row {{item.role === 'user' ? 'right' : 'left'}} {{item.status === 'writing' && !item.content ? 'thinking' : ''}}">
+  <view class="chat-message-item {{item.role === 'user' ? 'user' : 'assistant'}} {{item.status === 'writing' && !item.content ? 'thinking' : ''}}">
+    <view wx:if="{{item.status === 'writing' && !item.content}}" class="chat-message-thinking-inline">
+      <text class="chat-message-thinking-text">思考中</text>
+      <view class="chat-message-thinking-dots">
+        <text class="chat-message-thinking-dot dot-1">•</text>
+        <text class="chat-message-thinking-dot dot-2">•</text>
+        <text class="chat-message-thinking-dot dot-3">•</text>
+      </view>
+    </view>
+    <view wx:else class="chat-message-content">{{item.content}}</view>
+  </view>
+</view>

@@ -1,0 +1,27 @@
+<view class="chat-user-form-mask" bindtap="close">
+  <view class="chat-user-form-panel" catchtap="noop">
+    <view class="chat-user-form-header">
+      <text class="chat-user-form-title">请先补充业务信息</text>
+      <text class="chat-user-form-close" bindtap="close">关闭</text>
+    </view>
+
+    <scroll-view class="chat-user-form-body" scroll-y="true">
+      <block wx:for="{{config}}" wx:key="field_key">
+        <view class="chat-user-form-item">
+          <text class="chat-user-form-label">{{item.label}}</text>
+          <input
+            class="chat-user-form-input"
+            placeholder="{{item.placeholder || '请输入'}}"
+            value="{{value[item.field_key]}}"
+            data-key="{{item.field_key}}"
+            bindinput="change"
+          />
+        </view>
+      </block>
+    </scroll-view>
+
+    <view class="chat-user-form-actions">
+      <button class="chat-user-form-btn primary" bindtap="confirm">确认</button>
+    </view>
+  </view>
+</view>

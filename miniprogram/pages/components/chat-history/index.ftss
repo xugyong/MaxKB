@@ -1,0 +1,247 @@
+.chat-history-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transition: opacity 0.24s ease;
+  pointer-events: none;
+}
+
+.chat-history-mask.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chat-history-panel {
+  width: 72%;
+  height: 100%;
+  background: #f7f9fc;
+  padding: 28rpx 24rpx 24rpx;
+  box-sizing: border-box;
+  box-shadow: 12rpx 0 40rpx rgba(31, 35, 41, 0.12);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+  pointer-events: auto;
+}
+
+.chat-history-panel.is-visible {
+  transform: translateX(0);
+}
+
+.chat-history-panel.is-visible {
+  transform: translateX(0);
+}
+
+.chat-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid rgba(31, 35, 41, 0.06);
+}
+
+.chat-history-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.chat-history-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1f2329;
+}
+
+.chat-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.chat-history-icon-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 18rpx rgba(31, 35, 41, 0.08);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-history-icon-btn:active {
+  background: #eef3ff;
+  transform: scale(0.96);
+  box-shadow: 0 4rpx 12rpx rgba(31, 35, 41, 0.06);
+}
+
+.chat-history-icon {
+  font-size: 32rpx;
+  line-height: 1;
+  color: #3370ff;
+  font-weight: 700;
+}
+
+.chat-history-list {
+  height: calc(100% - 92rpx);
+  margin-top: 18rpx;
+}
+
+.chat-history-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14rpx;
+  padding: 18rpx 16rpx;
+  margin-bottom: 12rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(31, 35, 41, 0.05);
+}
+
+.chat-history-item:active {
+  background: #f0f5ff;
+}
+
+.chat-history-item-main {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-history-item-bullet {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #3370ff;
+  flex: none;
+}
+
+.chat-history-item-title {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1f2329;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-history-item-more {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex: none;
+  color: #8f959e;
+  background: transparent;
+}
+
+.chat-history-item-more:active {
+  background: #edf2ff;
+  color: #3370ff;
+}
+
+.chat-history-item-more-icon {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.chat-history-item-menu {
+  position: absolute;
+  right: 12rpx;
+  top: 72rpx;
+  z-index: 2;
+  min-width: 180rpx;
+  padding: 8rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 16rpx 40rpx rgba(31, 35, 41, 0.12);
+}
+
+.chat-history-item-menu-item {
+  padding: 14rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #1f2329;
+}
+
+.chat-history-item-menu-item:active {
+  background: #f5f7fb;
+}
+
+.chat-history-item-menu-item.danger {
+  color: #d92d20;
+}
+
+.chat-history-rename-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-history-rename-panel {
+  width: 82%;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+  box-shadow: 0 20rpx 60rpx rgba(31, 35, 41, 0.18);
+}
+
+.chat-history-rename-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2329;
+}
+
+.chat-history-rename-input {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 20rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  border-radius: 18rpx;
+  background: #f5f7fb;
+  font-size: 28rpx;
+}
+
+.chat-history-rename-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.chat-history-rename-btn {
+  min-width: 120rpx;
+  height: 64rpx;
+  padding: 0 20rpx;
+  border-radius: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+}
+
+.chat-history-rename-btn.cancel {
+  background: #f5f7fb;
+  color: #1f2329;
+}
+
+.chat-history-rename-btn.primary {
+  background: #3370ff;
+  color: #fff;
+}

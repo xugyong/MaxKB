@@ -1,0 +1,36 @@
+<view class="chat-page">
+  <view class="chat-body">
+    <view class="chat-background" wx:if="{{appInfo.backgroundImage}}">
+      <image class="chat-background-image" src="{{appInfo.backgroundImage}}" mode="aspectFill"></image>
+    </view>
+
+    <chat-history wx:if="{{historyVisible || historyAnimationVisible}}" visible="{{historyVisible}}" list="{{historyList}}" bindclose="toggleHistory" bindselect="switchChat" bindcreate="newChat" bindrename="renameChat" bindremove="removeChat"></chat-history>
+
+    <view class="chat-main">
+      <scroll-view class="chat-message-list" scroll-y="true" scroll-with-animation="true" scroll-into-view="{{currentItem}}" lower-threshold="120" bindscroll="onMessageListScroll" bindscrolltolower="scrollToBottom">
+        <view class="chat-empty" wx:if="{{!messageList.length}}">
+          <view class="chat-prologue chat-prologue-fallback">
+            <text class="chat-empty-title">开始一个新的对话</text>
+            <text class="chat-empty-subtitle">这里会展示消息列表、流式回答、来源和详情入口</text>
+          </view>
+        </view>
+
+        <block wx:for="{{renderMessageList}}" wx:key="id">
+          <chat-message item="{{item}}" binddetail="openMessageDetail"></chat-message>
+        </block>
+
+        <view id="{{scrollBottomId}}" class="chat-scroll-bottom"></view>
+      </scroll-view>
+
+      <view class="chat-float-actions"></view>
+
+      <chat-batch-bar wx:if="{{selectingMode}}" bindclose="exitSelectMode"></chat-batch-bar>
+      <chat-user-form wx:if="{{userFormVisible}}" config="{{userFormConfig}}" value="{{userFormData}}" bindchange="updateUserFormField" bindconfirm="confirmUserForm" bindclose="toggleUserForm"></chat-user-form>
+    </view>
+  </view>
+  <view class="chat-footer" style="bottom: {{footerBottom}}px;margin-bottom: {{safeAreaBottom}}px">
+    <chat-input value="{{inputValue}}" loading="{{isSending}}" bindchange="onInputChange" bindsend="onSend" bindfocus="onInputFocus" bindblur="onInputBlur" bindkeyboardheightchange="onKeyboardHeightChange" bindopenmenu="toggleHistory"></chat-input>
+  </view>
+
+  <chat-detail wx:if="{{detailVisible}}" title="{{detailTitle}}" type="{{detailType}}" list="{{detailList}}" bindclose="hideDetail"></chat-detail>
+</view>

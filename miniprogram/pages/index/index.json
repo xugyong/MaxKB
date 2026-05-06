@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "chat-history": "../components/chat-history/index",
+    "chat-message": "../components/chat-message/index",
+    "chat-input": "../components/chat-input/index",
+    "chat-detail": "../components/chat-detail/index",
+    "chat-user-form": "../components/chat-user-form/index",
+    "chat-batch-bar": "../components/chat-batch-bar/index"
+  }
+}

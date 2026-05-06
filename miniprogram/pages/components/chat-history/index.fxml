@@ -1,0 +1,45 @@
+<view class="chat-history-mask {{visible ? 'is-visible' : ''}}" bindtap="close">
+  <view class="chat-history-panel {{visible ? 'is-visible' : ''}}" catchtap="noop">
+    <view class="chat-history-header">
+      <view class="chat-history-header-left">
+        <text class="chat-history-title">历史会话</text>
+      </view>
+      <view class="chat-history-actions">
+        <view class="chat-history-icon-btn" bindtap="create">
+          <text class="chat-history-icon">＋</text>
+        </view>
+        <view class="chat-history-icon-btn" bindtap="close">
+          <text class="chat-history-icon">×</text>
+        </view>
+      </view>
+    </view>
+    <scroll-view class="chat-history-list" scroll-y="true">
+      <block wx:for="{{list}}" wx:key="id">
+        <view class="chat-history-item" bindtap="select" data-id="{{item.id}}">
+          <view class="chat-history-item-main">
+            <view class="chat-history-item-bullet"></view>
+            <text class="chat-history-item-title">{{item.title}}</text>
+          </view>
+          <view class="chat-history-item-more" catchtap="toggleMenu" data-id="{{item.id}}">
+            <text class="chat-history-item-more-icon">⋯</text>
+          </view>
+          <view class="chat-history-item-menu" wx:if="{{activeMenuId === item.id}}" catchtap="noop">
+            <view class="chat-history-item-menu-item" catchtap="openRename" data-id="{{item.id}}">重命名</view>
+            <view class="chat-history-item-menu-item danger" catchtap="remove" data-id="{{item.id}}">删除</view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+
+    <view class="chat-history-rename-mask" wx:if="{{renamingId}}" catchtap="cancelRename">
+      <view class="chat-history-rename-panel" catchtap="noop">
+        <text class="chat-history-rename-title">重命名会话</text>
+        <input class="chat-history-rename-input" value="{{renameValue}}" placeholder="请输入会话名称" bindinput="onRenameInput" />
+        <view class="chat-history-rename-actions">
+          <view class="chat-history-rename-btn cancel" bindtap="cancelRename">取消</view>
+          <view class="chat-history-rename-btn primary" bindtap="confirmRename">确定</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

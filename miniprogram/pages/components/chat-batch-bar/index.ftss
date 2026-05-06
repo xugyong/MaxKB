@@ -1,0 +1,13 @@
+.chat-batch-bar {
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 24rpx;
+  z-index: 12;
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(31, 35, 41, 0.12);
+}

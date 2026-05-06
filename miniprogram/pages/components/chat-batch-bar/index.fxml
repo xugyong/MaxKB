@@ -1,0 +1,4 @@
+<view class="chat-batch-bar">
+  <text>批量分享模式</text>
+  <text bindtap="close">退出</text>
+</view>

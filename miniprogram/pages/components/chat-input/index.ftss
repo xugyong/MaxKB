@@ -1,0 +1,121 @@
+.chat-input-bar {
+  padding: 20rpx 24rpx 24rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  gap: 14rpx;
+  border-top: 1rpx solid #eef1f5;
+}
+
+.chat-input-menu {
+  position: relative;
+  z-index: 3;
+  width: 64rpx;
+  min-width: 64rpx;
+  min-height: 88rpx;
+  border-radius: 18rpx;
+  background: #f5f7fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  flex-shrink: 0;
+  align-self: stretch;
+  border: 1rpx solid #e6eaf0;
+}
+
+.chat-input-menu:active {
+  background: #eef3fb;
+  border-color: #d7e0ee;
+}
+
+.chat-input-menu-icon {
+  font-size: 34rpx;
+  color: #1f2329;
+  line-height: 1;
+}
+
+.chat-input-shell {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 88rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+  padding: 18rpx 84rpx 18rpx 20rpx;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  border: 1rpx solid #dfe5ee;
+}
+
+.chat-input-shell:focus-within,
+.chat-input-menu:focus,
+.chat-input-send:focus {
+  border-color: #3370ff;
+  box-shadow: 0 0 0 6rpx rgba(51, 112, 255, 0.12);
+}
+
+.chat-input-field {
+  width: 100%;
+  min-height: 52rpx;
+  max-height: 220rpx;
+  line-height: 36rpx;
+  box-sizing: border-box;
+  padding-right: 10rpx;
+  background: transparent;
+  color: #1f2329;
+}
+
+.chat-input-field::placeholder {
+  color: #8f959e;
+}
+
+.chat-input-send {
+  position: absolute;
+  right: 14rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #3370ff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1rpx solid rgba(51, 112, 255, 0.1);
+  z-index: 4;
+}
+
+.chat-input-send.loading {
+  opacity: 0.72;
+  background: #5d82e8;
+}
+
+.chat-input-send:active {
+  background: #2456d8;
+}
+
+.chat-input-menu:active,
+.chat-input-menu:focus,
+.chat-input-send:focus {
+  outline: none;
+}
+
+.chat-input-send,
+.chat-input-menu {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.chat-input-send-icon {
+  font-size: 28rpx;
+  line-height: 1;
+  transform: rotate(-45deg);
+  display: inline-block;
+}

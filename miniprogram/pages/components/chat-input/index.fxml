@@ -1,0 +1,26 @@
+<view class="chat-input-bar">
+  <view class="chat-input-menu" bindtap="openMenu">
+    <text class="chat-input-menu-icon">≡</text>
+  </view>
+  <view class="chat-input-shell">
+    <textarea
+      class="chat-input-field"
+      value="{{value}}"
+      placeholder="请输入问题"
+      auto-height="{{true}}"
+      maxlength="-1"
+      show-confirm-bar="{{false}}"
+      confirm-type="send"
+      adjust-position="{{false}}"
+      hold-keyboard="{{true}}"
+      bindinput="onInput"
+      bindconfirm="send"
+      bindfocus="onFocus"
+      bindblur="onBlur"
+      bindkeyboardheightchange="onKeyboardHeightChange"
+    ></textarea>
+    <view class="chat-input-send {{loading ? 'loading' : ''}}" bindtap="send">
+      <text class="chat-input-send-icon">➤</text>
+    </view>
+  </view>
+</view>
